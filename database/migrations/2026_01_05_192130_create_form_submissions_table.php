@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mayors', function (Blueprint $table) {
+        Schema::create('form_submissions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('name');
-$table->string('image_path');
-$table->longText('biography');
-$table->longText('message');
         });
     }
 
@@ -26,6 +22,6 @@ $table->longText('message');
      */
     public function down(): void
     {
-        Schema::dropIfExists('mayors');
+        Schema::dropIfExists('form_submissions');
     }
 };

@@ -79,7 +79,7 @@
                 
                 <!-- Footer Logo & Hakkında -->
                 <div class="col-lg-4 mb-4 mb-lg-0">
-                    <img src="logo.png" alt="Kırklareli Belediyesi" class="footer-logo">
+                <img src="https://yeni.kirklarelidev.com.tr/logo.png" alt="Logo" class="logo-img ">
                     <p class="footer-desc">
                         Kırklareli Belediyesi, şeffaf, katılımcı ve yenilikçi belediyecilik anlayışıyla şehrimize değer katmaya devam ediyor. Tarihi dokusu, kültürel zenginliği ve modern yüzüyle Kırklareli hepimizin.
                     </p>
