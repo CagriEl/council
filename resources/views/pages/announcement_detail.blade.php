@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $announcement->title }} - T.C. Kırklareli Belediyesi</title>
-      @include('layouts.header')    
+      @include('layouts.frontend-head')    
 
 </head>
 <body>
 
-    <!-- 2. ANA İÇERİK VE SIDEBAR -->
+@include('partials.accessibility')
+@include('partials.header', ['style' => 'solid'])
+
+<main id="main-content" tabindex="-1" class="outline-none">
     <div class="container mb-5">
         <div class="row">
             
@@ -19,9 +22,9 @@
                 
                 @php
                     // Yan menü için son 5 duyuruyu çekiyoruz (Mevcut duyuru hariç)
-                    $otherAnnouncements = \App\Models\Announcement::where('id', '!=', $announcement->id)
-                                            ->where('is_active', true)
-                                            ->latest()
+                    $otherAnnouncements = \App\Models\Announcement::publishedForPublic()
+                                            ->where('id', '!=', $announcement->id)
+                                            ->latest('date')
                                             ->take(5)
                                             ->get();
                 @endphp
@@ -81,6 +84,7 @@
             </div>
         </div>
     </div>
+</main>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

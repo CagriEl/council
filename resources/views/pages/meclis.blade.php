@@ -23,13 +23,13 @@
         /* --- HEADER --- */
         .internal-header {
             background-color: #1a3c6e;
-            border-bottom-left-radius: 50px;
-            padding: 1.5rem 0;
-            margin-bottom: 3rem;
+            border-bottom-left-radius: 28px;
+            padding: 0.65rem 0;
+            margin-bottom: 1rem;
             color: white;
         }
-        
-        .logo-img { height: 100px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+
+        .logo-img { height: 64px; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
         
         .internal-nav .nav-link {
             color: rgba(255,255,255,0.85) !important;
@@ -42,7 +42,7 @@
         /* --- SAYFA BAŞLIĞI --- */
         .page-title-wrapper {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 1.75rem;
         }
         .page-title {
             font-weight: 800;
@@ -152,6 +152,8 @@
 </head>
 <body>
 
+@include('partials.accessibility')
+
     <!-- HEADER -->
     <div class="internal-header">
         <div class="container">
@@ -183,6 +185,7 @@
         </div>
     </div>
 
+<main id="main-content" tabindex="-1" class="outline-none">
     <!-- ANA İÇERİK -->
     <div class="container mb-5">
         
@@ -257,6 +260,7 @@
 
         </div>
     </div>
+</main>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

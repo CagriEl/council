@@ -183,7 +183,7 @@
         </div>
 
         <!-- DASHBOARD (Kare Butonlar & Sol Slider) -->
-        <div class="container-fluid bottom-section">
+        <div id="main-content" tabindex="-1" class="container-fluid bottom-section">
             <div class="row align-items-end position-relative">
                 
                 <!-- SOL: KÜÇÜK HABER SLIDER (Dinamik) -->
@@ -245,7 +245,7 @@
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">KIRKLARELİ'DEN HABERLER</h2>
-                <a href="/haberler" class="btn-view-all">Tümünü Gör <i class="fas fa-arrow-right ms-2"></i></a>
+                <a href="{{ route('news.index') }}" class="btn-view-all">Tümünü Gör <i class="fas fa-arrow-right ms-2"></i></a>
             </div>
 
             <div class="row g-4">
@@ -330,7 +330,7 @@
                             </li>
                             @endforeach
                         </ul>
-                        <div class="ann-footer"><a href="#" class="btn-ann-all">Tüm Duyurular</a></div>
+                        <div class="ann-footer"><a href="{{ route('announcements.index', ['tip' => 'duyuru']) }}" class="btn-ann-all">Tüm Duyurular</a></div>
                     </div>
                 </div>
 
@@ -352,7 +352,7 @@
                             </li>
                             @endforeach
                         </ul>
-                        <div class="ann-footer"><a href="#" class="btn-ann-all">Tüm Resmi İlanlar</a></div>
+                        <div class="ann-footer"><a href="{{ route('announcements.index', ['tip' => 'resmi']) }}" class="btn-ann-all">Tüm Resmi İlanlar</a></div>
                     </div>
                 </div>
 
@@ -368,13 +368,13 @@
                                 @php
                                     $link = $ann->file_path ? asset('storage/' . $ann->file_path) : '#';
                                 @endphp
-                                <a href="{{ route('announcement.show', $announcement->slug) }}">
-                                    {{ $announcement->title }}
+                                <a href="{{ route('announcement.show', $ann->slug) }}">
+                                    {{ $ann->title }}
                                 </a>
                             </li>
                             @endforeach
                         </ul>
-                        <div class="ann-footer"><a href="#" class="btn-ann-all">Tüm İhaleler</a></div>
+                        <div class="ann-footer"><a href="{{ route('announcements.index', ['tip' => 'ihale']) }}" class="btn-ann-all">Tüm İhaleler</a></div>
                     </div>
                 </div>
             </div>

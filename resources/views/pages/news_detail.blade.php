@@ -4,19 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $news->title }} - T.C. Kırklareli Belediyesi</title>
-   @include('layouts.header')
+   @include('layouts.frontend-head')
 
 </head>
 <body>
 
-    <!-- İÇERİK -->
+@include('partials.accessibility')
+@include('partials.header', ['style' => 'solid'])
+
+<main id="main-content" tabindex="-1" class="outline-none">
     <div class="container mb-5">
         <div class="row">
             <!-- SOL SIDEBAR: DİĞER HABERLER -->
             <div class="col-lg-3 mb-4 mb-lg-0">
                 <h3 class="sidebar-title">DİĞER HABERLER</h3>
                 @php
-                    $otherNews = \App\Models\News::where('id', '!=', $news->id)->where('is_active', true)->latest()->take(5)->get();
+                    $otherNews = \App\Models\News::publishedForPublic()->where('id', '!=', $news->id)->latest('published_at')->take(5)->get();
                 @endphp
                 @foreach($otherNews as $item)
                     <a href="{{ route('news.detail', $item->slug) }}" class="news-list-item">
@@ -43,6 +46,7 @@
             </div>
         </div>
     </div>
+</main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

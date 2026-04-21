@@ -1,19 +1,38 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PageController;
 use App\Http\Controllers\Frontend\AnnouncementController;
 use App\Http\Controllers\Frontend\NewsController;
-use App\Models\CouncilMember;
+use App\Http\Controllers\Frontend\SearchController;
+use App\Http\Controllers\PageController;
 use App\Models\CouncilDecision;
+use App\Models\CouncilMember;
 use App\Models\Mayor;
-
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
+// API dokümantasyonu (Swagger UI) — tarayıcı: /api/docs
+Route::get('/api/docs/openapi.yaml', function () {
+    $path = base_path('docs/openapi.yaml');
+    abort_unless(File::isFile($path), 404);
+
+    return response()->file($path, [
+        'Content-Type' => 'application/yaml; charset=UTF-8',
+    ]);
+})->name('api.docs.openapi');
+
+Route::get('/api/docs', function () {
+    return response()->view('api.docs', [
+        'specUrl' => url('/api/docs/openapi.yaml'),
+    ]);
+})->name('api.docs');
+
+Route::view('/api-docs', 'api-docs')->name('api-docs');
 
 // Ana Sayfa
 Route::get('/', [PageController::class, 'home'])->name('home');
@@ -22,8 +41,8 @@ Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/baskan', function () {
     // Veritabanından aktif başkanı çek, yoksa boş bir nesne oluştur
     // (Böylece sayfa hata vermeden açılır)
-    $mayor = Mayor::where('is_active', true)->first() ?? new Mayor();
-    
+    $mayor = Mayor::where('is_active', true)->first() ?? new Mayor;
+
     return view('pages.baskan', compact('mayor'));
 })->name('baskan');
 
@@ -36,9 +55,11 @@ Route::get('/mudurler', [PageController::class, 'mudurler'])->name('mudurler');
 // Müdürlük Detay Sayfası
 Route::get('/mudurluk/{slug}', [PageController::class, 'mudurlukDetay'])->name('mudurluk.detay');
 
-
+Route::get('/duyurular', [AnnouncementController::class, 'index'])->name('announcements.index');
 Route::get('/duyurular/{slug}', [AnnouncementController::class, 'show'])->name('announcement.show');
 
+Route::get('/haberler', [NewsController::class, 'index'])->name('news.index');
+Route::get('/ara', [SearchController::class, 'index'])->name('search');
 Route::get('/haber/{slug}', [NewsController::class, 'show'])->name('news.detail');
 
 Route::get('/sayfa/{slug}', [App\Http\Controllers\Frontend\PageController::class, 'show'])->name('page.detail');
@@ -47,13 +68,12 @@ Route::get('/meclis-uyeleri', function () {
     // Veritabanından aktif üyeleri çekiyoruz
     // Eğer sort_order sütunu yoksa hata almamak için veritabanı yapınızı kontrol edin
     $members = CouncilMember::where('is_active', true)
-        ->orderBy('sort_order', 'asc') 
+        ->orderBy('sort_order', 'asc')
         ->orderBy('name', 'asc')
         ->get();
 
     return view('pages.meclis', compact('members'));
 })->name('council.index');
-
 
 Route::get('/meclis-kararlari', function () {
     // 1. Filtreleme için son 5 yılı oluştur
@@ -70,3 +90,11 @@ Route::get('/meclis-kararlari', function () {
 Route::get('/iletisim', function () {
     return view('pages.iletisim');
 })->name('iletisim');
+
+Route::get('/gorev', function () {
+    return view('pages.gorev');
+})->name('gorev');
+
+Route::get('/rehber', function () {
+    return view('pages.rehber');
+})->name('rehber');
