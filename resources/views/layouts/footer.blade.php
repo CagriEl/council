@@ -78,15 +78,15 @@
             <div class="row">
                 <!-- Footer Logo & Hakkında -->
                 <div class="col-lg-4 mb-4 mb-lg-0">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img"> &nbsp;
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="footer-logo">
                      <p class="footer-desc">
                         Kırklareli Belediyesi, şeffaf, katılımcı ve yenilikçi belediyecilik anlayışıyla şehrimize değer katmaya devam ediyor. Tarihi dokusu, kültürel zenginliği ve modern yüzüyle Kırklareli hepimizin.
                     </p>
                     <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.facebook.com/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://x.com/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="X"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
 
@@ -94,11 +94,11 @@
                 <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
                     <h5 class="footer-title">KURUMSAL</h5>
                     <ul class="footer-links">
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Başkan</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Meclis Üyeleri</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Organizasyon Şeması</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Stratejik Plan</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Faaliyet Raporları</a></li>
+                        <li><a href="{{ route('baskan') }}"><i class="fas fa-chevron-right"></i> Başkan</a></li>
+                        <li><a href="{{ route('meclis') }}"><i class="fas fa-chevron-right"></i> Meclis Üyeleri</a></li>
+                        <li><a href="{{ route('mudurler') }}"><i class="fas fa-chevron-right"></i> Organizasyon Şeması</a></li>
+                        <li><a href="{{ route('coming-soon', ['modul' => 'Stratejik Plan']) }}"><i class="fas fa-chevron-right"></i> Stratejik Plan</a></li>
+                        <li><a href="{{ route('coming-soon', ['modul' => 'Faaliyet Raporları']) }}"><i class="fas fa-chevron-right"></i> Faaliyet Raporları</a></li>
                     </ul>
                 </div>
 
@@ -106,11 +106,13 @@
                 <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
                     <h5 class="footer-title">E-BELEDİYE</h5>
                     <ul class="footer-links">
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Borç Sorgulama</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Online Tahsilat</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> E-İmar</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Nöbetçi Eczaneler</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Vefat İlanları</a></li>
+                        <li><a href="{{ route('e-services') }}"><i class="fas fa-chevron-right"></i> Online İşlemler Merkezi</a></li>
+                        <li><a href="{{ route('service-requests.page') }}"><i class="fas fa-chevron-right"></i> Talep / Şikayet</a></li>
+                        <li><a href="{{ route('citizen-applications.page') }}"><i class="fas fa-chevron-right"></i> Ruhsat / İmar / Evrak</a></li>
+                        <li><a href="{{ route('coming-soon', ['modul' => 'Borç Sorgulama']) }}"><i class="fas fa-chevron-right"></i> Borç Sorgulama</a></li>
+                        <li><a href="{{ route('coming-soon', ['modul' => 'Online Tahsilat']) }}"><i class="fas fa-chevron-right"></i> Online Tahsilat</a></li>
+                        <li><a href="{{ route('citizen-applications.page') }}"><i class="fas fa-chevron-right"></i> Sosyal Destek Başvurusu</a></li>
+                        <li><a href="{{ route('coming-soon', ['modul' => 'Vefat İlanları']) }}"><i class="fas fa-chevron-right"></i> Vefat İlanları</a></li>
                     </ul>
                 </div>
 

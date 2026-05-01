@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\CitizenApplicationController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\MobileAnnouncementController;
 use App\Http\Controllers\Api\MobileCouncilDecisionController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Api\MobileNewsController;
 use App\Http\Controllers\Api\MobileObituaryController;
 use App\Http\Controllers\Api\MobileOrganisationController;
 use App\Http\Controllers\Api\MobilePageController;
+use App\Http\Controllers\Api\ServiceRequestController;
 use App\Http\Controllers\Api\UniversalFormController;
 use Illuminate\Support\Facades\Route;
 
@@ -68,3 +70,14 @@ Route::post('/contact/submit', [ContactController::class, 'submit'])
 
 Route::post('/forms/submit', [UniversalFormController::class, 'submit'])
     ->name('api.forms.submit');
+
+Route::middleware('throttle:30,1')->group(function () {
+    Route::post('/service-requests', [ServiceRequestController::class, 'submit'])
+        ->name('api.service-requests.submit');
+    Route::get('/service-requests/{trackingNo}', [ServiceRequestController::class, 'track'])
+        ->name('api.service-requests.track');
+    Route::post('/citizen-applications', [CitizenApplicationController::class, 'submit'])
+        ->name('api.citizen-applications.submit');
+    Route::get('/citizen-applications/{trackingNo}', [CitizenApplicationController::class, 'track'])
+        ->name('api.citizen-applications.track');
+});

@@ -992,7 +992,6 @@
         }
     
 
-        <style>
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f4f7f6;
@@ -1240,7 +1239,94 @@
             .internal-header { text-align: center; border-radius: 0; }
             .internal-nav { justify-content: center !important; margin-top: 15px; }
         }
-    
+
+        /* =========================
+           HEADER MENU FIX (FINAL OVERRIDES)
+        ========================= */
+        .header-wrapper .header-brand-mobile,
+        .header-wrapper .header-brand-desktop {
+            gap: 0.5rem;
+        }
+
+        .header-wrapper .header-logo-img {
+            width: auto !important;
+            height: 10px !important;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+        }
+
+        .header-wrapper .header-ataturk-img {
+            width: auto !important;
+            height: 8px !important;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+        }
+
+        .header-wrapper #mainNav {
+            flex: 1 1 auto;
+        }
+
+        .header-wrapper .center-brand {
+            margin: 0 0.35rem;
+            flex-shrink: 0;
+        }
+
+        .header-wrapper .custom-nav {
+            flex-wrap: nowrap;
+            gap: 0.1rem;
+        }
+
+        .header-wrapper .custom-nav .nav-link {
+            white-space: nowrap;
+            font-size: 0.56rem !important;
+            padding: 0.15rem 0.22rem !important;
+            margin: 0 !important;
+            text-shadow: none !important;
+        }
+
+        @media (min-width: 1400px) {
+            .header-wrapper #mainNav {
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .header-wrapper .custom-nav .nav-link {
+                letter-spacing: 0.01em;
+            }
+        }
+
+        @media (max-width: 1399.98px) {
+            .header-wrapper .header-logo-img {
+                height: 10px !important;
+            }
+
+            .header-wrapper .header-ataturk-img {
+                height: 8px !important;
+            }
+
+            .header-wrapper #mainNav {
+                background: rgba(0, 0, 0, 0.18);
+                margin-top: 0.5rem;
+                border-radius: 10px;
+                padding: 0.6rem 0.8rem;
+            }
+
+            .header-wrapper .custom-nav {
+                flex-wrap: wrap;
+                align-items: flex-start !important;
+                width: 100%;
+            }
+
+            .header-wrapper #mainNav .navbar-nav {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            .header-wrapper .custom-nav .nav-link {
+                padding: 0.35rem 0 !important;
+                font-size: 0.76rem !important;
+            }
+        }
+
     </style>
 
     {{-- Page specific styles --}}

@@ -59,11 +59,6 @@ class ObituaryResource extends Resource
                     ->maxLength(255)
                     ->visible(fn (Get $get): bool => $get('burial_place_type') === 'other')
                     ->required(fn (Get $get): bool => $get('burial_place_type') === 'other'),
-                Forms\Components\TextInput::make('sort_order')
-                    ->label('Sıralama')
-                    ->numeric()
-                    ->default(0)
-                    ->required(),
                 Forms\Components\Toggle::make('is_active')
                     ->label('Aktif')
                     ->default(true),

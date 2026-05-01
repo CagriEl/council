@@ -70,7 +70,7 @@
                     Daha önce oluşturduğumuz 'api-form' bileşenini kullanıyoruz.
                     code="iletisim-sayfasi" diyerek panelde bu formun kaynağını ayırt ediyoruz.
                 -->
-                <x-contact-form source="iletisim-sayfasi" />
+                <x-contact-form source="iletisim-sayfasi" :enable-tracking="true" />
             </div>
         </div>
 

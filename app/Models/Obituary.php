@@ -27,6 +27,17 @@ class Obituary extends Model
         'sort_order',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (self $obituary): void {
+            if (! blank($obituary->sort_order)) {
+                return;
+            }
+
+            $obituary->sort_order = ((int) self::query()->max('sort_order')) + 1;
+        });
+    }
+
     /**
      * @return array<string, string>
      */

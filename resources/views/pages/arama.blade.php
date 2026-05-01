@@ -41,7 +41,7 @@
     @if(\Illuminate\Support\Str::length($q) > 0 && \Illuminate\Support\Str::length($q) < 2)
         <p class="text-muted">Arama yapmak için en az 2 karakter girin.</p>
     @elseif(\Illuminate\Support\Str::length($q) >= 2)
-        @if($news->isEmpty() && $announcements->isEmpty())
+        @if($news->isEmpty() && $announcements->isEmpty() && $pages->isEmpty() && $councilDecisions->isEmpty() && $directorates->isEmpty())
             <p class="text-muted">“{{ $q }}” için sonuç bulunamadı.</p>
         @else
             @if($news->isNotEmpty())
@@ -65,9 +65,44 @@
                     </a>
                 @endforeach
             @endif
+
+            @if($pages->isNotEmpty())
+                <h2 class="search-section-title">Sayfalar ({{ $pages->count() }})</h2>
+                @foreach($pages as $item)
+                    <a href="{{ route('page.detail', $item->slug) }}" class="search-result-card">
+                        <span class="badge-type text-success">Sayfa</span>
+                        <div class="res-title">{{ $item->title }}</div>
+                        <div class="res-snippet">{{ Str::limit(strip_tags((string) $item->content), 160) }}</div>
+                    </a>
+                @endforeach
+            @endif
+
+            @if($councilDecisions->isNotEmpty())
+                <h2 class="search-section-title">Meclis Kararları ({{ $councilDecisions->count() }})</h2>
+                @foreach($councilDecisions as $item)
+                    <a href="{{ route('meclis-kararlari') }}" class="search-result-card">
+                        <span class="badge-type text-warning">Meclis Kararı</span>
+                        <div class="res-title">{{ $item->title }}</div>
+                        <div class="res-snippet">
+                            {{ $item->year }} {{ $item->month }} @if($item->meeting_date) • {{ $item->meeting_date->format('d.m.Y') }} @endif
+                        </div>
+                    </a>
+                @endforeach
+            @endif
+
+            @if($directorates->isNotEmpty())
+                <h2 class="search-section-title">Müdürlükler ({{ $directorates->count() }})</h2>
+                @foreach($directorates as $item)
+                    <a href="{{ route('mudurluk.detay', $item->slug) }}" class="search-result-card">
+                        <span class="badge-type text-info">Müdürlük</span>
+                        <div class="res-title">{{ $item->name }}</div>
+                        <div class="res-snippet">{{ Str::limit(strip_tags((string) $item->description), 160) }}</div>
+                    </a>
+                @endforeach
+            @endif
         @endif
     @else
-        <p class="text-muted">Haber ve duyuru başlıkları ile içeriklerinde arama yapabilirsiniz.</p>
+        <p class="text-muted">Haber, duyuru, sayfa, meclis kararları ve müdürlük içeriklerinde arama yapabilirsiniz.</p>
     @endif
 
 </div>
