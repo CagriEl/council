@@ -44,6 +44,8 @@ tags:
     description: Meclis üyeleri ve kararlar
   - name: Müdürlükler
     description: Müdürlük listesi, detay ve organizasyon şeması
+  - name: Vefat
+    description: Vefat kayıtları
 
 paths:
   /news:
@@ -357,6 +359,26 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/OrganisationVicePresident'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /obituaries:
+    get:
+      tags: [Vefat]
+      summary: Vefat kayıtları
+      description: Aktif vefat kayıtlarını sıralı döner.
+      operationId: listObituaries
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Obituary'
         '429':
           $ref: '#/components/responses/TooManyRequests'
 
@@ -830,6 +852,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DirectorateListItem'
+
+    Obituary:
+      type: object
+      properties:
+        id: { type: integer }
+        full_name: { type: string }
+        death_date: { type: string, format: date }
+        prayer_time: { type: string, example: '14:30' }
+        mosque: { type: string }
+        burial_place: { type: string, example: 'Şehir Mezarlığı' }
+        burial_place_type:
+          type: string
+          enum: [city_cemetery, other]
+        burial_place_other: { type: string, nullable: true }
 
     ContactSubmitRequest:
       type: object

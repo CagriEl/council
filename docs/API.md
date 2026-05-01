@@ -54,6 +54,7 @@ Uygulama çalışırken (ör. Valet ile `http://kirklareli.test`):
 | GET | `/api/council/decisions` | Meclis kararları (PDF URL’leri; `year`, sayfalama). |
 | GET | `/api/directorates`, `/api/directorates/{slug}` | Müdürlük listesi ve detay (+ son duyurular). |
 | GET | `/api/organisation/tree` | Başkan yardımcıları ve bağlı müdürlükler. |
+| GET | `/api/obituaries` | Aktif vefat kayıtları (ad-soyad, tarih, namaz saati, camii, defin yeri). |
 | GET | `/api/test` | Basit sağlık kontrolü (throttle dışı). |
 | POST | `/api/contact/submit` | İletişim (zorunlu: `name`, `message`). |
 | POST | `/api/forms/submit` | Genel form (panel: Gelen Formlar). |
@@ -72,6 +73,8 @@ GET /api/announcements/{slug}
 GET /api/pages
 GET /api/pages/hakkimizda
 GET /api/menus?location=header
+
+GET /api/obituaries
 
 GET /api/test
 POST /api/contact/submit

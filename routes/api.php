@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\MobileHomeController;
 use App\Http\Controllers\Api\MobileMayorController;
 use App\Http\Controllers\Api\MobileMenuController;
 use App\Http\Controllers\Api\MobileNewsController;
+use App\Http\Controllers\Api\MobileObituaryController;
 use App\Http\Controllers\Api\MobileOrganisationController;
 use App\Http\Controllers\Api\MobilePageController;
 use App\Http\Controllers\Api\UniversalFormController;
@@ -55,6 +56,7 @@ Route::middleware('throttle:120,1')->group(function () {
     Route::get('/directorates', [MobileDirectorateController::class, 'index'])->name('api.directorates.index');
     Route::get('/directorates/{slug}', [MobileDirectorateController::class, 'show'])->name('api.directorates.show');
     Route::get('/organisation/tree', [MobileOrganisationController::class, 'tree'])->name('api.organisation.tree');
+    Route::get('/obituaries', [MobileObituaryController::class, 'index'])->name('api.obituaries.index');
 });
 
 Route::get('/test', function () {
