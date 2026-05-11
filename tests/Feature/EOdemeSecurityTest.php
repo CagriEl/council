@@ -42,6 +42,7 @@ class EOdemeSecurityTest extends TestCase
     public function test_it_returns_standard_error_when_turnstile_validation_fails(): void
     {
         config()->set('services.turnstile.enabled', true);
+        config()->set('services.turnstile.site_key', 'site-key');
         config()->set('services.turnstile.secret_key', 'secret');
         config()->set('services.turnstile.verify_url', 'https://turnstile.test/verify');
 
@@ -68,6 +69,7 @@ class EOdemeSecurityTest extends TestCase
     public function test_it_masks_sensitive_fields_and_records_audit_on_success(): void
     {
         config()->set('services.turnstile.enabled', true);
+        config()->set('services.turnstile.site_key', 'site-key');
         config()->set('services.turnstile.secret_key', 'secret');
         config()->set('services.turnstile.verify_url', 'https://turnstile.test/verify');
 
