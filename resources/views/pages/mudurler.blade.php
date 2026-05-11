@@ -26,9 +26,15 @@
             margin-bottom: 1rem;
             color: white;
         }
+        .internal-header .navbar.navbar-dark {
+            --bs-navbar-color: #ffffff;
+            --bs-navbar-hover-color: #ffffff;
+            --bs-navbar-active-color: #ffffff;
+            --bs-navbar-disabled-color: rgba(255, 255, 255, 0.55);
+        }
         .logo-img { height: 64px; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
-        .internal-nav .nav-link { color: rgba(255,255,255,0.85) !important; font-weight: 600; margin-left: 15px; transition: color 0.2s; }
-        .internal-nav .nav-link:hover { color: #3498db !important; }
+        .internal-nav .nav-link { color: #ffffff !important; font-weight: 600; margin-left: 15px; transition: color 0.2s, text-decoration 0.2s; opacity: 1; }
+        .internal-nav .nav-link:hover, .internal-nav .nav-link:focus { color: #ffffff !important; text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 2px; }
 
         /* --- SAYFA BAŞLIĞI --- */
         .page-title-wrapper { text-align: center; margin-bottom: 1.75rem; }
@@ -283,63 +289,59 @@
         <div class="org-chart-wrapper">
             <div class="tree">
                 <ul>
-                    {{-- 1. SEVİYE: BELEDİYE BAŞKANI (SABİT) --}}
+                    {{-- 1. SEVİYE: BELEDİYE BAŞKANI --}}
                     <li>
+                        @php
+                            $mayorName = $mayor?->name ?? 'Derya BULUT';
+                            $mayorTitle = $mayor?->title ?? 'Belediye Başkanı';
+                            $mayorImg = ($mayor?->image_path)
+                                ? asset('storage/'.$mayor->image_path)
+                                : asset('assets/baskan-small.png');
+                        @endphp
                         <a href="{{ route('baskan') }}" class="org-card type-mayor">
-                            {{-- Başkanın fotosu sabit veya modelden gelebilir --}}
-                            <img src="{{ asset('assets/baskan-small.png') }}" 
-                                 onerror="this.src='https://ui-avatars.com/api/?name=Derya+Bulut&background=fff&color=1a3c6e'" 
+                            <img src="{{ $mayorImg }}"
+                                 onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($mayorName) }}&background=fff&color=1a3c6e'"
+                                 alt="{{ $mayorName }}"
                                  class="org-img">
-                            <span class="org-name">Derya BULUT</span>
-                            <span class="org-title">Belediye Başkanı</span>
+                            <span class="org-name">{{ $mayorName }}</span>
+                            <span class="org-title">{{ $mayorTitle }}</span>
                         </a>
 
-                        @php
-                            // Başkan Yardımcılarını Çekiyoruz
-                            $vicePresidents = collect([]);
-                            try {
-                                if (class_exists('App\Models\VicePresident')) {
-                                    $vicePresidents = \App\Models\VicePresident::orderBy('order', 'asc')->get();
-                                }
-                            } catch (\Exception $e) {}
-                        @endphp
+                        @if(isset($mayorDirectorates) && $mayorDirectorates->count() > 0)
+                            <ul class="vertical-nodes">
+                                @foreach($mayorDirectorates as $directorate)
+                                    <li>
+                                        <a href="{{ route('mudurluk.detay', $directorate->slug) }}" class="org-card type-unit">
+                                            <span class="org-name">{{ $directorate->name }}</span>
+                                            @if($directorate->manager_name)
+                                                <span class="org-title">{{ $directorate->manager_name }}</span>
+                                            @endif
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
 
                         @if($vicePresidents->count() > 0)
                             <ul>
                                 {{-- 2. SEVİYE: BAŞKAN YARDIMCILARI (YAN YANA) --}}
                                 @foreach($vicePresidents as $vicePresident)
                                     <li>
-                                        {{-- Başkan Yardımcıları için şimdilik # linki --}}
                                         <a href="#" class="org-card type-vice_mayor">
-                                            @if($vicePresident->image)
-                                                <img src="{{ Storage::url($vicePresident->image) }}" class="org-img">
+                                            @if($vicePresident->image_path)
+                                                <img src="{{ \Illuminate\Support\Facades\Storage::url($vicePresident->image_path) }}" class="org-img" alt="">
                                             @else
-                                                <img src="https://ui-avatars.com/api/?name={{ urlencode($vicePresident->name ?? 'Baskan Yrd') }}&background=f0f2f5&color=1a3c6e" class="org-img">
+                                                <img src="https://ui-avatars.com/api/?name={{ urlencode($vicePresident->name ?? 'Baskan Yrd') }}&background=f0f2f5&color=1a3c6e" class="org-img" alt="">
                                             @endif
                                             <span class="org-name">{{ $vicePresident->name }}</span>
                                             <span class="org-title">{{ $vicePresident->title ?? 'Belediye Başkan Yrd.' }}</span>
                                         </a>
 
-                                        @php
-                                            // Başkan yardımcısına bağlı müdürlükleri çekiyoruz
-                                            $directorates = collect([]);
-                                            try {
-                                                if (class_exists('App\Models\Directorate')) {
-                                                    $directorates = \App\Models\Directorate::where('vice_president_id', $vicePresident->id)
-                                                        ->orderBy('name', 'asc')
-                                                        ->get();
-                                                }
-                                            } catch (\Exception $e) {}
-                                        @endphp
-
-                                        @if($directorates->count() > 0)
-                                            {{-- 3. SEVİYE: MÜDÜRLÜKLER (ALT ALTA / DİKEY) --}}
-                                            {{-- 'vertical-nodes' sınıfını buraya ekliyoruz --}}
+                                        @if($vicePresident->directorates->count() > 0)
                                             <ul class="vertical-nodes">
-                                                @foreach($directorates as $directorate)
+                                                @foreach($vicePresident->directorates as $directorate)
                                                     <li>
-                                                        {{-- HATA ÇÖZÜMÜ: Linki # olarak değiştirdik çünkü rota yok --}}
-                                                        <a href="#" class="org-card type-unit">
+                                                        <a href="{{ route('mudurluk.detay', $directorate->slug) }}" class="org-card type-unit">
                                                             <span class="org-name">{{ $directorate->name }}</span>
                                                             @if($directorate->manager_name)
                                                                 <span class="org-title">{{ $directorate->manager_name }}</span>

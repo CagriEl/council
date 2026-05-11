@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\EOdemeController;
 use App\Http\Controllers\Frontend\AnnouncementController;
 use App\Http\Controllers\Frontend\NewsController;
 use App\Http\Controllers\Frontend\SearchController;
 use App\Http\Controllers\PageController;
 use App\Models\CouncilDecision;
 use App\Models\Mayor;
+use App\Models\Obituary;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
@@ -60,8 +62,8 @@ Route::get('/sayfa/{slug}', [App\Http\Controllers\Frontend\PageController::class
 Route::redirect('/meclis-uyeleri', '/meclis', 301)->name('council.index');
 
 Route::get('/meclis-kararlari', function () {
-    $currentYear = date('Y');
-    $years = range($currentYear, $currentYear - 5);
+    $currentYear = (int) date('Y');
+    $years = range($currentYear, 2019);
 
     $decisions = CouncilDecision::orderBy('meeting_date', 'desc')->get();
 
@@ -84,11 +86,26 @@ Route::get('/e-belediye', function () {
     return view('pages.e-belediye');
 })->name('e-services');
 
-Route::redirect('/talep-sikayet', '/iletisim', 301)->name('service-requests.page');
+Route::get('/e-belediye/borc-sorgulama', function () {
+    return view('pages.e-belediye-borc-sorgulama');
+})->name('e-services.debt-query');
 
-Route::get('/e-hizmetler/basvuru', function () {
-    return view('pages.e-hizmet-basvuru');
-})->name('citizen-applications.page');
+Route::post('/e-belediye/borc-sorgulama', [EOdemeController::class, 'borcSorgula'])
+    ->middleware('throttle:eodeme-debt-query')
+    ->name('e-services.debt-query.submit');
+
+Route::get('/vefat-ilanlari', function () {
+    $obituaries = Obituary::query()
+        ->active()
+        ->orderBy('sort_order')
+        ->orderByDesc('death_date')
+        ->orderBy('full_name')
+        ->get();
+
+    return view('pages.vefat-ilanlari', compact('obituaries'));
+})->name('obituaries.public');
+
+Route::redirect('/talep-sikayet', '/iletisim', 301)->name('service-requests.page');
 
 Route::get('/hizmetler/yakinda', function () {
     $module = request()->query('modul', 'Bu hizmet');

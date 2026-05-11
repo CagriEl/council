@@ -72,10 +72,10 @@
             white-space: nowrap;
         }
         .header-topbar-contact:hover {
-            color: #e0f4ff !important;
+            color: #ffffff !important;
         }
         .header-topbar-contact-label {
-            opacity: 0.92;
+            opacity: 1;
         }
         .header-topbar-sep {
             width: 1px;
@@ -95,11 +95,23 @@
         .atatr-img { max-height: 80px; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); margin-left: 10px; }
         .header-wrapper.header-solid .atatr-img { max-height: 52px; }
 
-        .custom-nav .nav-link { color: white !important; font-weight: 700; font-size: 1rem; text-transform: uppercase; padding: 0.5rem 1.2rem; margin: 0 2px; transition: all 0.3s; text-shadow: 0 2px 4px rgba(0,0,0,0.8); position: relative; }
+        .header-wrapper .navbar.navbar-dark {
+            --bs-navbar-color: #ffffff;
+            --bs-navbar-hover-color: #ffffff;
+            --bs-navbar-active-color: #ffffff;
+            --bs-navbar-disabled-color: rgba(255, 255, 255, 0.55);
+        }
+        .header-wrapper .navbar.navbar-dark .navbar-nav .nav-link,
+        .header-wrapper .navbar.navbar-dark .navbar-nav .nav-link:focus {
+            color: #ffffff !important;
+            opacity: 1;
+        }
+
+        .custom-nav .nav-link { color: #ffffff !important; font-weight: 700; font-size: 1rem; text-transform: uppercase; padding: 0.5rem 1.2rem; margin: 0 2px; transition: all 0.3s; text-shadow: none; position: relative; }
         .header-wrapper.header-solid .custom-nav .nav-link { font-size: 0.82rem; padding: 0.35rem 0.75rem; }
-        .custom-nav .nav-link::after { content: ''; display: block; width: 0; height: 2px; background: #00c6ff; transition: width .3s; margin: 0 auto; }
+        .custom-nav .nav-link::after { content: ''; display: block; width: 0; height: 2px; background: rgba(255, 255, 255, 0.85); transition: width .3s; margin: 0 auto; }
         .custom-nav .nav-link:hover::after { width: 100%; }
-        .custom-nav .nav-link:hover { color: #00c6ff !important; }
+        .custom-nav .nav-link:hover { color: #ffffff !important; }
 
         /* FOOTER STİLLERİ */
         footer { background-color: #112240; color: #fff; padding-top: 70px; position: relative; font-size: 0.9rem; margin-top: auto; }

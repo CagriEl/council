@@ -39,14 +39,14 @@
 
                                 <div class="collapse navbar-collapse flex-grow-0" id="detailNav">
                                     <ul class="navbar-nav detail-nav">
-                                        <li class="nav-item"><a class="nav-link" href="{{ route('baskan') }}">BAŞKAN</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="{{ route('mudurler') }}">KURUMSAL</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="#">KIRKLARELİ</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="{{ route('meclis-kararlari') }}">Meclis Karalari</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="{{ route('news.index') }}">HABERLER</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="{{ route('announcements.index') }}">DUYURULAR</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="#">HİZMET REHBERİ</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="#">E-BELEDİYE</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="{{ route('baskan') }}">Başkan</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="{{ route('mudurler') }}">Kurumsal</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="#">Kırklareli</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="{{ route('meclis-kararlari') }}">Meclis Kararları</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="{{ route('news.index') }}">Haberler</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="{{ route('announcements.index') }}">Duyurular</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="#">Hizmet Rehberi</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="#">E-Belediye</a></li>
                                     </ul>
                                 </div>
                             </div>

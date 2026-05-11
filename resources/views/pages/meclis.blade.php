@@ -29,15 +29,29 @@
             color: white;
         }
 
+        .internal-header .navbar.navbar-dark {
+            --bs-navbar-color: #ffffff;
+            --bs-navbar-hover-color: #ffffff;
+            --bs-navbar-active-color: #ffffff;
+            --bs-navbar-disabled-color: rgba(255, 255, 255, 0.55);
+        }
+
         .logo-img { height: 64px; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
         
         .internal-nav .nav-link {
-            color: rgba(255,255,255,0.85) !important;
+            color: #ffffff !important;
             font-weight: 600;
             margin-left: 15px;
-            transition: color 0.2s;
+            transition: color 0.2s, text-decoration 0.2s;
+            opacity: 1;
         }
-        .internal-nav .nav-link:hover { color: #3498db !important; }
+        .internal-nav .nav-link:hover,
+        .internal-nav .nav-link:focus {
+            color: #ffffff !important;
+            text-decoration: underline;
+            text-underline-offset: 0.2em;
+            text-decoration-thickness: 2px;
+        }
 
         /* --- SAYFA BAŞLIĞI --- */
         .page-title-wrapper {

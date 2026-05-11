@@ -24,6 +24,45 @@
         .header-wrapper.header-solid .atatr-img { max-height: 52px !important; height: auto !important; }
         .header-wrapper.header-solid .custom-nav .nav-link { font-size: 0.82rem; padding: 0.35rem 0.75rem; }
 
+        /*
+         * Bootstrap 5.3 navbar-dark: --bs-navbar-color rgba(255,255,255,.55) menüyü silik gösterir.
+         * Ana ve detay başlıklarında tam beyaz + okunaklı hover.
+         */
+        .header-wrapper .navbar.navbar-dark {
+            --bs-navbar-color: #ffffff;
+            --bs-navbar-hover-color: #ffffff;
+            --bs-navbar-active-color: #ffffff;
+            --bs-navbar-disabled-color: rgba(255, 255, 255, 0.55);
+        }
+        .header-wrapper .navbar.navbar-dark .navbar-nav .nav-link,
+        .header-wrapper .navbar.navbar-dark .navbar-nav .nav-link:focus {
+            color: #ffffff !important;
+            opacity: 1;
+        }
+        .header-wrapper .navbar.navbar-dark .navbar-nav .nav-link:hover {
+            color: #ffffff !important;
+            opacity: 1;
+            text-decoration: underline;
+            text-underline-offset: 0.2em;
+            text-decoration-thickness: 2px;
+        }
+        .header-wrapper .navbar.navbar-dark .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.65);
+        }
+
+        .detail-header-bg .navbar.navbar-dark {
+            --bs-navbar-color: #ffffff;
+            --bs-navbar-hover-color: #ffffff;
+            --bs-navbar-active-color: #ffffff;
+            --bs-navbar-disabled-color: rgba(255, 255, 255, 0.55);
+        }
+        .detail-header-bg .contact-info,
+        .detail-header-bg .contact-info span,
+        .detail-header-bg .contact-info i {
+            color: #ffffff !important;
+            opacity: 1;
+        }
+
         .header-topbar { width: 100%; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
         .header-wrapper.header-solid .header-topbar { background: rgba(0, 0, 0, 0.2); }
         .header-wrapper.header-transparent .header-topbar { background: rgba(0, 0, 0, 0.4); }
@@ -66,8 +105,8 @@
             text-decoration: none;
             white-space: nowrap;
         }
-        .header-topbar-contact:hover { color: #e0f4ff !important; }
-        .header-topbar-contact-label { opacity: 0.92; }
+        .header-topbar-contact:hover { color: #ffffff !important; }
+        .header-topbar-contact-label { opacity: 1; }
         .header-topbar-sep {
             width: 1px;
             height: 12px;
@@ -130,16 +169,22 @@
         }
 
         .detail-nav .nav-link {
-            color: rgba(255,255,255,0.9) !important;
+            color: #ffffff !important;
             font-weight: 600;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            margin-left: 15px;
-            transition: color 0.2s;
+            font-size: 0.92rem;
+            text-transform: none;
+            letter-spacing: 0.02em;
+            margin-left: 8px;
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px;
+            transition: background 0.2s, box-shadow 0.2s;
         }
 
-        .detail-nav .nav-link:hover {
-            color: #3498db !important;
+        .detail-nav .nav-link:hover,
+        .detail-nav .nav-link:focus {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: inset 0 -2px 0 rgba(255, 255, 255, 0.55);
         }
 
         /* =========================
@@ -329,14 +374,22 @@
     .detail-logo-img { max-height: 72px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
     
     .detail-nav .nav-link {
-        color: rgba(255,255,255,0.9) !important;
+        color: #ffffff !important;
         font-weight: 600;
-        font-size: 0.95rem;
-        text-transform: uppercase;
-        margin-left: 15px;
-        transition: color 0.2s;
+        font-size: 0.92rem;
+        text-transform: none;
+        letter-spacing: 0.02em;
+        margin-left: 8px;
+        padding: 0.4rem 0.6rem;
+        border-radius: 8px;
+        transition: background 0.2s, box-shadow 0.2s;
     }
-    .detail-nav .nav-link:hover { color: #3498db !important; }
+    .detail-nav .nav-link:hover,
+    .detail-nav .nav-link:focus {
+        color: #ffffff !important;
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: inset 0 -2px 0 rgba(255, 255, 255, 0.55);
+    }
 
     .contact-info {
         color: white;
@@ -605,14 +658,22 @@
         .detail-logo-img { max-height: 72px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
 
         .detail-nav .nav-link {
-            color: rgba(255,255,255,0.9) !important;
+            color: #ffffff !important;
             font-weight: 600;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            margin-left: 15px;
-            transition: color 0.2s;
+            font-size: 0.92rem;
+            text-transform: none;
+            letter-spacing: 0.02em;
+            margin-left: 8px;
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px;
+            transition: background 0.2s, box-shadow 0.2s;
         }
-        .detail-nav .nav-link:hover { color: #3498db !important; }
+        .detail-nav .nav-link:hover,
+        .detail-nav .nav-link:focus {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: inset 0 -2px 0 rgba(255, 255, 255, 0.55);
+        }
 
         .contact-info {
             color: white;
@@ -854,15 +915,29 @@
             color: white;
         }
 
+        .internal-header .navbar.navbar-dark {
+            --bs-navbar-color: #ffffff;
+            --bs-navbar-hover-color: #ffffff;
+            --bs-navbar-active-color: #ffffff;
+            --bs-navbar-disabled-color: rgba(255, 255, 255, 0.55);
+        }
+
         .logo-img { height: 64px; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
         
         .internal-nav .nav-link {
-            color: rgba(255,255,255,0.85) !important;
+            color: #ffffff !important;
             font-weight: 600;
             margin-left: 15px;
-            transition: color 0.2s;
+            transition: color 0.2s, text-decoration 0.2s;
+            opacity: 1;
         }
-        .internal-nav .nav-link:hover { color: #3498db !important; }
+        .internal-nav .nav-link:hover,
+        .internal-nav .nav-link:focus {
+            color: #ffffff !important;
+            text-decoration: underline;
+            text-underline-offset: 0.2em;
+            text-decoration-thickness: 2px;
+        }
 
         /* --- SAYFA BAŞLIĞI --- */
         .page-title-wrapper {
@@ -992,6 +1067,7 @@
         }
     
 
+        <style>
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f4f7f6;
@@ -1007,15 +1083,29 @@
             color: white;
         }
 
+        .internal-header .navbar.navbar-dark {
+            --bs-navbar-color: #ffffff;
+            --bs-navbar-hover-color: #ffffff;
+            --bs-navbar-active-color: #ffffff;
+            --bs-navbar-disabled-color: rgba(255, 255, 255, 0.55);
+        }
+
         .logo-img { height: 64px; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
         
         .internal-nav .nav-link {
-            color: rgba(255,255,255,0.85) !important;
+            color: #ffffff !important;
             font-weight: 600;
             margin-left: 15px;
-            transition: color 0.2s;
+            transition: color 0.2s, text-decoration 0.2s;
+            opacity: 1;
         }
-        .internal-nav .nav-link:hover { color: #3498db !important; }
+        .internal-nav .nav-link:hover,
+        .internal-nav .nav-link:focus {
+            color: #ffffff !important;
+            text-decoration: underline;
+            text-underline-offset: 0.2em;
+            text-decoration-thickness: 2px;
+        }
 
         /* --- SAYFA ÖZEL STİLLERİ (Sizin Tasarımınız) --- */
         
@@ -1144,15 +1234,29 @@
             color: white;
         }
 
+        .internal-header .navbar.navbar-dark {
+            --bs-navbar-color: #ffffff;
+            --bs-navbar-hover-color: #ffffff;
+            --bs-navbar-active-color: #ffffff;
+            --bs-navbar-disabled-color: rgba(255, 255, 255, 0.55);
+        }
+
         .logo-img { height: 64px; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
         
         .internal-nav .nav-link {
-            color: rgba(255,255,255,0.85) !important;
+            color: #ffffff !important;
             font-weight: 600;
             margin-left: 15px;
-            transition: color 0.2s;
+            transition: color 0.2s, text-decoration 0.2s;
+            opacity: 1;
         }
-        .internal-nav .nav-link:hover { color: #3498db !important; }
+        .internal-nav .nav-link:hover,
+        .internal-nav .nav-link:focus {
+            color: #ffffff !important;
+            text-decoration: underline;
+            text-underline-offset: 0.2em;
+            text-decoration-thickness: 2px;
+        }
 
         /* --- SAYFA BAŞLIĞI --- */
         .page-title {
@@ -1239,94 +1343,7 @@
             .internal-header { text-align: center; border-radius: 0; }
             .internal-nav { justify-content: center !important; margin-top: 15px; }
         }
-
-        /* =========================
-           HEADER MENU FIX (FINAL OVERRIDES)
-        ========================= */
-        .header-wrapper .header-brand-mobile,
-        .header-wrapper .header-brand-desktop {
-            gap: 0.5rem;
-        }
-
-        .header-wrapper .header-logo-img {
-            width: auto !important;
-            height: 10px !important;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
-        }
-
-        .header-wrapper .header-ataturk-img {
-            width: auto !important;
-            height: 8px !important;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
-        }
-
-        .header-wrapper #mainNav {
-            flex: 1 1 auto;
-        }
-
-        .header-wrapper .center-brand {
-            margin: 0 0.35rem;
-            flex-shrink: 0;
-        }
-
-        .header-wrapper .custom-nav {
-            flex-wrap: nowrap;
-            gap: 0.1rem;
-        }
-
-        .header-wrapper .custom-nav .nav-link {
-            white-space: nowrap;
-            font-size: 0.56rem !important;
-            padding: 0.15rem 0.22rem !important;
-            margin: 0 !important;
-            text-shadow: none !important;
-        }
-
-        @media (min-width: 1400px) {
-            .header-wrapper #mainNav {
-                display: flex !important;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            .header-wrapper .custom-nav .nav-link {
-                letter-spacing: 0.01em;
-            }
-        }
-
-        @media (max-width: 1399.98px) {
-            .header-wrapper .header-logo-img {
-                height: 10px !important;
-            }
-
-            .header-wrapper .header-ataturk-img {
-                height: 8px !important;
-            }
-
-            .header-wrapper #mainNav {
-                background: rgba(0, 0, 0, 0.18);
-                margin-top: 0.5rem;
-                border-radius: 10px;
-                padding: 0.6rem 0.8rem;
-            }
-
-            .header-wrapper .custom-nav {
-                flex-wrap: wrap;
-                align-items: flex-start !important;
-                width: 100%;
-            }
-
-            .header-wrapper #mainNav .navbar-nav {
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-
-            .header-wrapper .custom-nav .nav-link {
-                padding: 0.35rem 0 !important;
-                font-size: 0.76rem !important;
-            }
-        }
-
+    
     </style>
 
     {{-- Page specific styles --}}

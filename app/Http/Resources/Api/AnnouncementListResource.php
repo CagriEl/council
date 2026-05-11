@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Support\HtmlContentSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -14,7 +15,10 @@ class AnnouncementListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $plain = Str::limit(strip_tags((string) $this->content), 220);
+        $plain = Str::limit(
+            strip_tags(HtmlContentSanitizer::stripKaynakSayfayiAcBlocks((string) $this->content)),
+            220
+        );
 
         return [
             'id' => $this->id,
@@ -23,7 +27,7 @@ class AnnouncementListResource extends JsonResource
             'type' => $this->type,
             'type_label' => self::typeLabel($this->type),
             'excerpt' => $plain,
-            'image_url' => $this->image_path ? asset('storage/'.$this->image_path) : null,
+            'image_url' => $this->coverImageUrl(),
             'date' => $this->date?->toIso8601String(),
             'published_at' => $this->published_at?->toIso8601String(),
             'unpublished_at' => $this->unpublished_at?->toIso8601String(),

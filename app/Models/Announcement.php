@@ -16,6 +16,21 @@ class Announcement extends Model
      */
     protected $guarded = [];
 
+    /** Kapak görseli yoksa kullanılan varsayılan görsel (SVG; içinde logo, yolu görece bağımsız). */
+    public static function defaultCoverImageUrl(): string
+    {
+        return asset('assets/announcement-cover-default.svg');
+    }
+
+    public function coverImageUrl(): string
+    {
+        if (filled($this->image_path)) {
+            return asset('storage/'.$this->image_path);
+        }
+
+        return self::defaultCoverImageUrl();
+    }
+
     /**
      * Sitede görünürlük başlangıcı: published_at doluysa o, değilse date.
      * Yayından kalkma: unpublished_at seçilen günden sonra gizlenir (o gün dahil değil).

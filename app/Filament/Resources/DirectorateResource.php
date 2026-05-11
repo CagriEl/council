@@ -18,9 +18,13 @@ class DirectorateResource extends Resource
 
     // Türkçe İsimlendirmeler
     protected static ?string $modelLabel = 'Müdürlük';
+
     protected static ?string $pluralModelLabel = 'Müdürlükler';
+
     protected static ?string $navigationLabel = 'Müdürlükler';
+
     protected static ?string $navigationGroup = 'Kurumsal';
+
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
     public static function form(Form $form): Form
@@ -32,11 +36,12 @@ class DirectorateResource extends Resource
                     ->schema([
                         // Başkan Yardımcısı Seçimi
                         Forms\Components\Select::make('vice_president_id')
-                            ->relationship('vicePresident', 'name') // Modeldeki 'vicePresident' fonksiyonunu kullanır
-                            ->label('Bağlı Olduğu Başkan Yardımcısı')
+                            ->relationship('vicePresident', 'name')
+                            ->label('Bağlı Makam')
+                            ->helperText('Boş bırakılırsa müdürlük doğrudan belediye başkanına bağlı sayılır.')
                             ->searchable()
                             ->preload()
-                            ->nullable(), // Zorunlu değilse boş bırakılabilir
+                            ->nullable(),
 
                         // Müdürlük Adı ve Otomatik Slug
                         Forms\Components\TextInput::make('name')
@@ -59,11 +64,12 @@ class DirectorateResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('manager_name')
                             ->label('Müdür Adı Soyadı'),
-                        
+
                         Forms\Components\TextInput::make('manager_title')
                             ->label('Unvan')
-                            ->default('Müdür V.'),
-                        
+                            ->default('Müdür V.')
+                            ->helperText('Boş veya "Müdür V." ise sitede müdürlük adından üretilir (örn. Bilgi İşlem Müdürü). Özel unvan için buraya yazın.'),
+
                         Forms\Components\FileUpload::make('manager_image')
                             ->label('Müdür Fotoğrafı')
                             ->image()
@@ -77,7 +83,7 @@ class DirectorateResource extends Resource
                         Forms\Components\TextInput::make('phone')
                             ->label('Telefon')
                             ->tel(),
-                        
+
                         Forms\Components\TextInput::make('email')
                             ->label('E-Posta')
                             ->email(),
@@ -99,7 +105,8 @@ class DirectorateResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('vicePresident.name')
-                    ->label('Bağlı Olduğu Bşk. Yrd.')
+                    ->label('Bağlı Makam')
+                    ->placeholder('Belediye Başkanı')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('manager_name')

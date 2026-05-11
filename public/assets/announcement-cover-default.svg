@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="450" viewBox="0 0 800 450" role="img" aria-labelledby="ann-cover-title">
+  <title id="ann-cover-title">Duyuru — T.C. Kırklareli Belediyesi</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="800" y2="450" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1a3c6e"/>
+      <stop offset="0.55" stop-color="#15325e"/>
+      <stop offset="1" stop-color="#0f2748"/>
+    </linearGradient>
+    <clipPath id="logo-panel-clip">
+      <rect x="175" y="55" width="450" height="280" rx="28"/>
+    </clipPath>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)"/>
+  <path fill="#ffffff" opacity="0.06" d="M0 280c200-50 400-40 600-15s200 35 200 35v150H0V280z"/>
+  <!-- Önceki kapak çerçevesi -->
+  <rect x="175" y="55" width="450" height="280" rx="28" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff" stroke-opacity="0.22" stroke-width="2"/>
+  <!-- Logo: SVG dosyası /assets/ altında; logo /images/ altında → görece yol ../images/logo.png -->
+  <g clip-path="url(#logo-panel-clip)">
+    <image href="../images/logo.png" xlink:href="../images/logo.png" x="240" y="100" width="320" height="200" preserveAspectRatio="xMidYMid meet"/>
+  </g>
+  <text x="400" y="380" text-anchor="middle" fill="#ffffff" fill-opacity="0.9" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="20" font-weight="700" letter-spacing="0.18em">DUYURU</text>
+  <text x="400" y="412" text-anchor="middle" fill="#ffffff" fill-opacity="0.4" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" letter-spacing="0.16em">T.C. KIRKLARELİ BELEDİYESİ</text>
+</svg>

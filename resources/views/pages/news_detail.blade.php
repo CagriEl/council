@@ -25,14 +25,20 @@
                     <a href="{{ route('news.detail', $item->slug) }}" class="news-list-item">
                         <span class="badge-cat">HABER</span>
                         <div style="font-weight:700; font-size:0.9rem;">{{ $item->title }}</div>
-                        <div style="font-size:0.75rem; color:#999;">{{ $item->created_at->format('d.m.Y') }}</div>
+                        @php
+                            $newsSide = \Illuminate\Support\Carbon::parse($item->published_at ?? $item->created_at)->locale('tr');
+                        @endphp
+                        <div style="font-size:0.75rem; color:#999;">{{ $newsSide->isoFormat('DD.MM.YYYY') }}</div>
                     </a>
                 @endforeach
             </div>
 
             <!-- SAĞ TARAF: HABER DETAYI -->
             <div class="col-lg-9 ps-lg-5">
-                <div class="content-date"><i class="far fa-calendar-alt me-2"></i>{{ $news->created_at->format('d.m.Y l') }}</div>
+                @php
+                    $newsMainDate = \Illuminate\Support\Carbon::parse($news->published_at ?? $news->created_at)->locale('tr');
+                @endphp
+                <div class="content-date"><i class="far fa-calendar-alt me-2"></i>{{ $newsMainDate->isoFormat('DD.MM.YYYY dddd') }}</div>
                 <h1 class="content-title">{{ $news->title }}</h1>
                 
                 <div class="row">
@@ -40,7 +46,7 @@
                         @if($news->image_path)
                             <img src="{{ asset('storage/' . $news->image_path) }}" alt="{{ $news->title }}" class="featured-image float-lg-end ms-lg-4 mb-3" style="max-width: 50%; height: auto;">
                         @endif
-                        <div class="content-text">{!! $news->content !!}</div>
+                        <div class="content-text">{!! \App\Support\HtmlContentSanitizer::stripKaynakSayfayiAcBlocks((string) $news->content) !!}</div>
                     </div>
                 </div>
             </div>

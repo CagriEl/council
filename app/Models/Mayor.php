@@ -17,8 +17,11 @@ class Mayor extends Model
         'name',
         'title',
         'image_path',
+        'image',
         'description',
         'message',
+        'content',
+        'biography',
         'is_active',
     ];
 }

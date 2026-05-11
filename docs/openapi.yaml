@@ -10,9 +10,10 @@ info:
     **Görseller ve dosyalar:** `image_url` ve `file_url` alanları tam URL üretir; sunucuda
     `.env` içindeki `APP_URL` değerine bağlıdır. `php artisan storage:link` gerekir.
 
-    **Kısıtlama:** Aşağıdaki okuma uçları (haber, duyuru, ana sayfa paketi, sayfalar, menü, başkan,
-    meclis, müdürlükler vb.) `throttle:120,1` ile dakikada en fazla 120 istek. `POST /contact/submit`
-    ve `POST /forms/submit` bu limite dahil değildir.
+    **Kısıtlama:** Okuma uçları (haber, duyuru, ana sayfa paketi, sayfalar, menü, başkan,
+    meclis, müdürlükler vb.) `throttle:120,1` ile korunur. `POST /service-requests` için
+    `throttle:30,1` uygulanır. `POST /eodeme/borc-sorgula` endpoint'i ayrıca özel limiter +
+    Turnstile doğrulaması kullanır.
   version: 1.1.0
   contact:
     name: Kırklareli Belediyesi Bilgi İşlem
@@ -46,6 +47,8 @@ tags:
     description: Müdürlük listesi, detay ve organizasyon şeması
   - name: Vefat
     description: Vefat kayıtları
+  - name: E-Ödeme
+    description: Public borç sorgulama
 
 paths:
   /news:
@@ -143,6 +146,42 @@ paths:
                 $ref: '#/components/schemas/AnnouncementDetail'
         '404':
           $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /announcements/official:
+    get:
+      tags: [Duyurular]
+      summary: Resmî duyuru önizleme (HTML scrape)
+      operationId: listOfficialAnnouncementsPreview
+      parameters:
+        - name: source_url
+          in: query
+          required: false
+          description: Opsiyonel kaynak URL (varsayılan kirklareli.bel.tr resmî duyurular).
+          schema:
+            type: string
+            format: uri
+        - name: refresh
+          in: query
+          required: false
+          description: true ise cache temizlenir ve canlı çekim yapılır.
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          required: false
+          description: Dönecek kayıt sayısı (1-200, varsayılan 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficialAnnouncementPreviewResponse'
         '429':
           $ref: '#/components/responses/TooManyRequests'
 
@@ -255,7 +294,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Mayor'
+                $ref: '#/components/schemas/MayorResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /baskan:
+    get:
+      tags: [Başkan]
+      summary: Belediye başkanı (/mayor ile aynı yanıt)
+      operationId: showBaskan
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MayorResponse'
         '404':
           $ref: '#/components/responses/NotFound'
         '429':
@@ -346,7 +401,7 @@ paths:
   /organisation/tree:
     get:
       tags: [Müdürlükler]
-      summary: Organizasyon şeması (başkan yardımcıları ve müdürlükler)
+      summary: Organizasyon şeması (başkana bağlı müdürlükler + başkan yardımcıları)
       operationId: organisationTree
       responses:
         '200':
@@ -355,6 +410,11 @@ paths:
               schema:
                 type: object
                 properties:
+                  mayor_directorates:
+                    type: array
+                    description: Belediye başkanına doğrudan bağlı müdürlükler
+                    items:
+                      $ref: '#/components/schemas/DirectorateListItem'
                   data:
                     type: array
                     items:
@@ -381,6 +441,60 @@ paths:
                       $ref: '#/components/schemas/Obituary'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+
+  /eodeme/borc-sorgula:
+    post:
+      tags: [E-Ödeme]
+      summary: Public borç sorgulama
+      description: |
+        Turnstile doğrulaması zorunludur. İstekler IP ve mükellef numarası bazlı rate limit ile korunur.
+        Yanıtlar güvenlik nedeniyle maskelenmiş alanlar içerebilir.
+      operationId: debtQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EOdemeDebtQueryRequest'
+            examples:
+              tckn:
+                value:
+                  mukellef_tipi: TCKN
+                  mukellef_no: '12345678901'
+                  indirimli_odenecek_mi: false
+                  sadece_su_borclari: false
+                  cf_turnstile_response: token-from-widget
+      responses:
+        '200':
+          description: Sorgu tamamlandı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EOdemeDebtQuerySuccess'
+        '422':
+          description: Doğrulama veya captcha hatası
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Upstream servis geçici olarak kullanılamıyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Beklenmeyen hata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
 
   /test:
     get:
@@ -590,6 +704,28 @@ components:
         unpublished_at: { type: string, format: date-time, nullable: true }
         updated_at: { type: string, format: date-time, nullable: true }
 
+    OfficialAnnouncementPreviewItem:
+      type: object
+      properties:
+        title: { type: string }
+        image_url: { type: string, format: uri, nullable: true }
+        detail_url: { type: string, format: uri }
+
+    OfficialAnnouncementPreviewResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfficialAnnouncementPreviewItem'
+        meta:
+          type: object
+          properties:
+            source_url: { type: string, format: uri }
+            cached_ttl_seconds: { type: integer }
+            refresh: { type: boolean }
+            count: { type: integer }
+
     PaginationLinks:
       type: object
       properties:
@@ -740,14 +876,30 @@ components:
 
     Mayor:
       type: object
+      description: Başkan alanları (data içinde)
       properties:
         id: { type: integer }
-        name: { type: string }
+        updated_at: { type: string, format: date-time, nullable: true }
+        ad_soyad: { type: string, nullable: true }
+        ad: { type: string, nullable: true }
+        soyad: { type: string, nullable: true }
+        unvan: { type: string, nullable: true }
+        fotograf_url: { type: string, format: uri, nullable: true }
+        ozgecmis_html: { type: string, nullable: true }
+        ozgecmis_plain: { type: string, nullable: true }
+        mesaj_html: { type: string, nullable: true }
+        name: { type: string, nullable: true }
         title: { type: string, nullable: true }
         image_url: { type: string, format: uri, nullable: true }
         description_html: { type: string, nullable: true }
         message_html: { type: string, nullable: true }
         is_active: { type: boolean }
+
+    MayorResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Mayor'
 
     PoliticalPartySnippet:
       type: object
@@ -903,3 +1055,80 @@ components:
           example: error
         message:
           type: string
+
+    ApiError:
+      type: object
+      required: [status, message, error_code, request_id]
+      properties:
+        status:
+          type: string
+          enum: [error]
+        message:
+          type: string
+        error_code:
+          type: string
+          enum: [CAPTCHA_FAILED, RATE_LIMITED, UPSTREAM_UNAVAILABLE, VALIDATION_FAILED, NOT_FOUND, UNKNOWN_ERROR]
+        request_id:
+          type: string
+          format: uuid
+        errors:
+          type: object
+          additionalProperties: true
+
+    EOdemeDebtQueryRequest:
+      type: object
+      required: [mukellef_tipi, mukellef_no, cf_turnstile_response]
+      properties:
+        mukellef_tipi:
+          type: string
+          enum: [SICIL, TCKN, VKN, SUABN, JEOABN]
+        mukellef_no:
+          type: string
+          maxLength: 15
+        indirimli_odenecek_mi:
+          type: boolean
+        sadece_su_borclari:
+          type: boolean
+        cf_turnstile_response:
+          type: string
+
+    EOdemeDebtItem:
+      type: object
+      properties:
+        tahakkukNo: { type: string, nullable: true }
+        modulBilgisi: { type: string, nullable: true }
+        sonOdemeTarihi: { type: string, nullable: true }
+        odenecekTutar: { type: string, nullable: true }
+        aktifMi: { type: integer, nullable: true }
+
+    EOdemeDebtPayload:
+      type: object
+      properties:
+        sonucKodu: { type: string, nullable: true }
+        sonucAciklamasi: { type: string, nullable: true }
+        kayitSayisi: { type: integer, nullable: true }
+        tahakkukListesi:
+          oneOf:
+            - type: array
+              items:
+                $ref: '#/components/schemas/EOdemeDebtItem'
+            - type: object
+            - type: string
+              nullable: true
+
+    EOdemeDebtQuerySuccess:
+      type: object
+      required: [status, message, request_id, data]
+      properties:
+        status:
+          type: string
+          enum: [success]
+        message:
+          type: string
+        request_id:
+          type: string
+          format: uuid
+        data:
+          oneOf:
+            - $ref: '#/components/schemas/EOdemeDebtPayload'
+            - type: object

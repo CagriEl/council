@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Api;
 
 use App\Support\Api\StorageUrl;
+use App\Support\HtmlContentSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,11 +20,11 @@ class DirectorateDetailResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'manager_name' => $this->manager_name,
-            'manager_title' => $this->manager_title,
+            'manager_title' => $this->displayManagerRole(),
             'manager_image_url' => StorageUrl::fromPath($this->manager_image),
             'phone' => $this->phone,
             'email' => $this->email,
-            'description_html' => $this->description,
+            'description_html' => HtmlContentSanitizer::stripKaynakSayfayiAcBlocks((string) ($this->description ?? '')),
             'vice_president' => $this->when(
                 $this->relationLoaded('vicePresident') && $this->vicePresident,
                 fn () => [

@@ -20,11 +20,11 @@
         </div>
     </div>
 
-    <nav class="navbar navbar-expand-xxl navbar-dark py-1">
+    <nav class="navbar navbar-expand-lg navbar-dark py-lg-1">
         <div class="container-fluid px-lg-5">
-            <a class="navbar-brand d-xxl-none d-flex align-items-center header-brand-mobile" href="{{ route('home') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="header-logo-img">
-                <img src="{{ asset('images/atatr.png') }}" alt="Atatürk" class="header-ataturk-img">
+            <a class="navbar-brand d-lg-none d-flex align-items-center" href="{{ route('home') }}">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img"> &nbsp;
+                <img src="{{ asset('images/atatr.png') }}" alt="Logo" class="logo-img">
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
@@ -39,16 +39,15 @@
                     <li class="nav-item"><a class="nav-link" href="{{ route('news.index') }}">HABERLER</a></li>
                 </ul>
 
-                <a class="navbar-brand d-none d-xxl-flex center-brand header-brand-desktop" href="{{ route('home') }}">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="header-logo-img">
-                    <img src="{{ asset('images/atatr.png') }}" alt="Atatürk" class="header-ataturk-img">
+                <a class="navbar-brand d-none d-lg-flex center-brand" href="{{ route('home') }}">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img"> &nbsp;
+                    <img src="{{ asset('images/atatr.png') }}" alt="Logo" class="logo-img">
                 </a>
 
                 <ul class="navbar-nav ms-auto align-items-center custom-nav">
                     <li class="nav-item"><a class="nav-link" href="{{ route('announcements.index') }}">DUYURULAR</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('meclis-kararlari') }}">Meclis Kararları</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('e-services') }}">E-BELEDİYE</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('coming-soon', ['modul' => 'Kültür - Sanat']) }}">KÜLTÜR - SANAT</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">KÜLTÜR - SANAT</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('iletisim') }}">İLETİŞİM</a></li>
                 </ul>
             </div>

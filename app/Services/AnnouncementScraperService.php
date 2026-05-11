@@ -38,7 +38,7 @@ class AnnouncementScraperService
             return $configured;
         }
 
-        return rtrim((string) config('app.url'), '/').'/duyurular?tip=resmi';
+        return 'https://kirklareli.bel.tr/resmi-duyurular/2';
     }
 
     /**
@@ -59,6 +59,13 @@ class AnnouncementScraperService
         libxml_clear_errors();
 
         $xpath = new \DOMXPath($dom);
+
+        // kirklareli.bel.tr — Resmî Duyurular (PDF bağlantıları, calling__ şablonu)
+        $callingLinks = $xpath->query("//ul[contains(concat(' ', normalize-space(@class), ' '), ' calling__list ')]//a[contains(concat(' ', normalize-space(@class), ' '), ' calling__link ')][@href]");
+        if ($callingLinks instanceof \DOMNodeList && $callingLinks->length > 0) {
+            return $this->parseCallingListLinks($callingLinks, $xpath, $baseForLinks);
+        }
+
         $nodes = $xpath->query("//a[contains(concat(' ', normalize-space(@class), ' '), ' ann-list-card ')]");
 
         if (! $nodes instanceof \DOMNodeList) {
@@ -66,6 +73,7 @@ class AnnouncementScraperService
         }
 
         $items = [];
+        $seen = [];
 
         foreach ($nodes as $node) {
             if (! $node instanceof \DOMElement) {
@@ -100,11 +108,103 @@ class AnnouncementScraperService
                 }
             }
 
-            $items[] = [
+            $record = [
                 'title' => $title !== '' ? $title : 'Duyuru',
                 'image_url' => $imageUrl,
                 'detail_url' => $detailUrl,
             ];
+            if (! isset($seen[$record['detail_url']])) {
+                $items[] = $record;
+                $seen[$record['detail_url']] = true;
+            }
+        }
+
+        // Yeni kirklareli.bel.tr şablonu çoğunlukla liste bağlantıları (li > a) yayımlıyor.
+        if ($items === []) {
+            $linkNodes = $xpath->query('//li//a[@href]');
+            if ($linkNodes instanceof \DOMNodeList) {
+                foreach ($linkNodes as $linkNode) {
+                    if (! $linkNode instanceof \DOMElement) {
+                        continue;
+                    }
+
+                    $href = trim($linkNode->getAttribute('href'));
+                    if ($href === '') {
+                        continue;
+                    }
+                    $hrefLower = mb_strtolower($href);
+                    $looksLikeAnnouncementLink = str_contains($hrefLower, '.pdf')
+                        || str_contains($hrefLower, '/files/')
+                        || str_contains($hrefLower, 'dokuman')
+                        || str_contains($hrefLower, '/duyurular/');
+                    if (! $looksLikeAnnouncementLink) {
+                        continue;
+                    }
+
+                    $title = trim(preg_replace('/\s+/u', ' ', $linkNode->textContent ?? '') ?? '');
+                    if ($title === '') {
+                        continue;
+                    }
+
+                    $detailUrl = $this->toAbsoluteUrl($baseForLinks, $href);
+                    if (isset($seen[$detailUrl])) {
+                        continue;
+                    }
+
+                    $items[] = [
+                        'title' => $title,
+                        'image_url' => null,
+                        'detail_url' => $detailUrl,
+                    ];
+                    $seen[$detailUrl] = true;
+                }
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * @return list<array{title: string, image_url: ?string, detail_url: string}>
+     */
+    protected function parseCallingListLinks(\DOMNodeList $callingLinks, \DOMXPath $xpath, string $baseForLinks): array
+    {
+        $items = [];
+        $seen = [];
+
+        foreach ($callingLinks as $node) {
+            if (! $node instanceof \DOMElement) {
+                continue;
+            }
+
+            $href = trim($node->getAttribute('href'));
+            if ($href === '') {
+                continue;
+            }
+
+            $detailUrl = $this->toAbsoluteUrl($baseForLinks, $href);
+            if (isset($seen[$detailUrl])) {
+                continue;
+            }
+
+            $title = '';
+            $spanNodes = $xpath->query('.//span', $node);
+            if ($spanNodes instanceof \DOMNodeList && $spanNodes->length > 0) {
+                $title = trim(preg_replace('/\s+/u', ' ', $spanNodes->item(0)?->textContent ?? '') ?? '');
+            }
+            if ($title === '') {
+                $title = trim(preg_replace('/\s+/u', ' ', $node->textContent ?? '') ?? '');
+            }
+            if ($title === '') {
+                $title = 'Resmî duyuru';
+            }
+
+            $items[] = [
+                'title' => $title,
+                'image_url' => null,
+                'detail_url' => $detailUrl,
+            ];
+            $seen[$detailUrl] = true;
         }
 
         return $items;
@@ -142,12 +242,34 @@ class AnnouncementScraperService
             return $scheme.':'.$pathOrUrl;
         }
 
-        $appBase = rtrim((string) config('app.url'), '/');
+        $baseParts = parse_url($originOrBase);
+        $scheme = $baseParts['scheme'] ?? 'https';
+        $host = $baseParts['host'] ?? null;
+        $port = isset($baseParts['port']) ? ':'.$baseParts['port'] : '';
+        $path = isset($baseParts['path']) ? trim((string) $baseParts['path']) : '';
 
-        if (str_starts_with($pathOrUrl, '/')) {
-            return $appBase.$pathOrUrl;
+        if (! $host) {
+            $fallback = parse_url((string) config('app.url'));
+            $scheme = $fallback['scheme'] ?? $scheme;
+            $host = $fallback['host'] ?? null;
+            $port = isset($fallback['port']) ? ':'.$fallback['port'] : '';
         }
 
-        return $appBase.'/'.ltrim($pathOrUrl, '/');
+        if (! $host) {
+            return $pathOrUrl;
+        }
+
+        $origin = $scheme.'://'.$host.$port;
+
+        if (str_starts_with($pathOrUrl, '/')) {
+            return $origin.$pathOrUrl;
+        }
+
+        $basePath = $path !== '' ? rtrim(dirname($path), '/') : '';
+        if ($basePath === '.' || $basePath === DIRECTORY_SEPARATOR) {
+            $basePath = '';
+        }
+
+        return $origin.($basePath !== '' ? $basePath.'/' : '/').ltrim($pathOrUrl, '/');
     }
 }

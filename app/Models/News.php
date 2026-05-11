@@ -16,6 +16,15 @@ class News extends Model
      */
     protected $guarded = [];
 
+    public function coverImageUrl(): string
+    {
+        if (filled($this->image_path)) {
+            return asset('storage/'.$this->image_path);
+        }
+
+        return asset('images/logo.png');
+    }
+
     /**
      * Ön yüzde: aktif, yayın tarihi gelmiş ve yayından kalkma tarihi geçmemiş kayıtlar.
      */

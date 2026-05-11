@@ -4,12 +4,12 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AnnouncementResource\Pages;
 use App\Models\Announcement;
+use App\Support\AnnouncementSlug;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 
 class AnnouncementResource extends Resource
 {
@@ -34,7 +34,7 @@ class AnnouncementResource extends Resource
                         Forms\Components\TextInput::make('title')
                             ->label('Duyuru Başlığı')
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($set, $state) => $set('slug', Str::slug($state)))
+                            ->afterStateUpdated(fn ($set, $state) => $set('slug', AnnouncementSlug::baseFromTitle((string) $state)))
                             ->required(),
                         Forms\Components\TextInput::make('slug')
                             ->label('URL')

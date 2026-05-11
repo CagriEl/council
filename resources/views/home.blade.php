@@ -80,13 +80,17 @@
     .btn-view-all { color: #1a3c6e; font-weight: 700; text-decoration: none; border: 2px solid #1a3c6e; padding: 8px 20px; border-radius: 50px; transition: all 0.3s; }
     .btn-view-all:hover { background: #1a3c6e; color: white; }
 
-    /* Büyük Manşet Kartı */
+    /* Büyük Manşet Kartı (görsel tam sığar: contain) */
     .headline-card { position: relative; border-radius: 15px; overflow: hidden; height: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: transform 0.3s; cursor: pointer; }
     .headline-card:hover { transform: translateY(-5px); }
-    .headline-cover { width: 100%; height: 100%; }
-    .headline-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-    .headline-card:hover .headline-cover img { transform: scale(1.05); }
-    .headline-card::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 70%; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); pointer-events: none; }
+    .headline-cover {
+        width: 100%; height: 100%;
+        background: linear-gradient(180deg, #eef2f7 0%, #e4eaf2 100%);
+        display: flex; align-items: center; justify-content: center;
+        padding: 12px;
+    }
+    .headline-cover img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; object-position: center; }
+    .headline-card::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 70%; background: linear-gradient(to top, rgba(0,0,0,0.88), transparent); pointer-events: none; }
     .headline-body { position: absolute; bottom: 0; left: 0; padding: 30px; z-index: 2; color: white; width: 100%; }
     .headline-tag { background: #e74c3c; color: white; padding: 5px 12px; font-size: 0.75rem; font-weight: 700; border-radius: 4px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
     .headline-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 10px; line-height: 1.3; }
@@ -95,8 +99,8 @@
 
     /* Thumbnails (Küçük Resimler) */
     .headline-thumbs { display: flex; gap: 15px; margin-top: 15px; overflow-x: auto; padding-bottom: 10px; }
-    .headline-thumb-item { flex: 0 0 120px; height: 80px; border-radius: 10px; overflow: hidden; cursor: pointer; position: relative; border: 2px solid transparent; transition: all 0.3s; }
-    .headline-thumb-item img { width: 100%; height: 100%; object-fit: cover; }
+    .headline-thumb-item { flex: 0 0 120px; height: 80px; border-radius: 10px; overflow: hidden; cursor: pointer; position: relative; border: 2px solid transparent; transition: all 0.3s; background: linear-gradient(180deg, #eef2f7, #e4eaf2); display: flex; align-items: center; justify-content: center; padding: 4px; }
+    .headline-thumb-item img { max-width: 100%; max-height: 100%; object-fit: contain; object-position: center; }
     .headline-thumb-item.active { border-color: #e74c3c; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3); }
     .headline-thumb-item::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); transition: background 0.3s; }
     .headline-thumb-item.active::after { background: transparent; }
@@ -105,15 +109,22 @@
     .main-slider-controls .slider-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); color: white; display: flex; align-items: center; justify-content: center; transition: all 0.3s; cursor: pointer; }
     .main-slider-controls .slider-btn:hover { background: white; color: #1a3c6e; }
 
-    /* Liste Haberler (Sağ Taraf) */
-    .news-list-card { display: flex; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; height: 125px; transition: all 0.3s; text-decoration: none; color: inherit; border: 1px solid #eee; }
-    .news-list-card:hover { transform: translateX(5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #3498db; }
-    .news-list-img-wrapper { width: 160px; flex-shrink: 0; overflow: hidden; }
-    .news-list-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-    .news-list-card:hover .news-list-img { transform: scale(1.1); }
-    .news-list-body { padding: 15px; display: flex; flex-direction: column; justify-content: center; }
-    .news-list-title { font-size: 0.95rem; font-weight: 700; color: #1a3c6e; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .news-list-date { font-size: 0.8rem; color: #888; margin-top: auto; display: flex; align-items: center; gap: 5px; }
+    /* Sağ liste (Kırklareli duyuruları) */
+    .kd-side-card {
+        display: flex; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        margin-bottom: 16px; min-height: 108px; text-decoration: none; color: inherit; border: 2px solid #eee;
+        transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .kd-side-card:hover { border-color: #3498db; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: translateX(4px); color: inherit; }
+    .kd-side-card.active { border-color: #e74c3c; box-shadow: 0 5px 16px rgba(231, 76, 60, 0.2); }
+    .kd-side-thumb {
+        width: 130px; flex-shrink: 0; background: linear-gradient(180deg, #eef2f7, #e4eaf2);
+        display: flex; align-items: center; justify-content: center; padding: 8px;
+    }
+    .kd-side-thumb img { max-width: 100%; max-height: 100px; object-fit: contain; object-position: center; }
+    .kd-side-body { padding: 12px 14px; display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; }
+    .kd-side-title { font-size: 0.92rem; font-weight: 700; color: #1a3c6e; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px; }
+    .kd-side-meta { font-size: 0.78rem; color: #888; margin-top: auto; }
 
     /* DUYURULAR BÖLÜMÜ (3 Sütun) */
     .announcements-section { background-color: #fff; padding: 60px 0; border-top: 1px solid #eee; }
@@ -129,10 +140,30 @@
     .ann-item { padding: 15px 20px; border-bottom: 1px solid #f5f5f5; transition: background 0.2s; }
     .ann-item:last-child { border-bottom: none; }
     .ann-item:hover { background-color: #fcfcfc; }
-    .ann-link { text-decoration: none; display: block; }
-    .ann-text { font-size: 0.9rem; color: #333; font-weight: 500; line-height: 1.4; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .ann-date { font-size: 0.75rem; color: #888; display: flex; align-items: center; gap: 5px; }
-    .ann-item:hover .ann-text { color: #0052cc; }
+    .ann-link {
+        text-decoration: none;
+        display: block;
+        color: inherit;
+        border-radius: 8px;
+        margin: -4px -8px;
+        padding: 4px 8px;
+        transition: color 0.2s, background 0.2s;
+    }
+    .ann-link:hover { text-decoration: none; color: inherit; }
+    .ann-text {
+        font-size: 0.9rem;
+        color: #2c3e50;
+        font-weight: 600;
+        line-height: 1.45;
+        margin-bottom: 6px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .ann-date { font-size: 0.75rem; color: #8892a0; display: flex; align-items: center; gap: 6px; font-weight: 500; }
+    .ann-item:hover .ann-text { color: #1a3c6e; }
+    .ann-item:hover .ann-date { color: #5c6b7a; }
     .ann-footer { padding: 20px; border-top: 1px solid #eee; text-align: center; }
     .btn-ann-all { display: block; width: 100%; padding: 10px; border-radius: 50px; background: #f8f9fa; color: #1a3c6e; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: all 0.3s; border: 1px solid #eee; }
     .btn-ann-all:hover { background: #1a3c6e; color: white; }
@@ -147,8 +178,9 @@
         .headline-card { height: 300px; }
         .headline-title { font-size: 1.3rem; }
         .headline-thumbs { display: none; }
-        .news-list-card { height: auto; flex-direction: column; }
-        .news-list-img-wrapper { width: 100%; height: 160px; }
+        .kd-side-card { flex-direction: column; min-height: 0; }
+        .kd-side-thumb { width: 100%; height: 140px; }
+        .kd-side-thumb img { max-height: 120px; }
         .main-slider-controls { display: none; }
     }
 </style>
@@ -170,12 +202,12 @@
                     <source src="{{ asset('storage/' . $sliders->first()->video_path) }}" type="video/mp4">
                     Tarayıcınız video etiketini desteklemiyor.
                 </video>
-            @elseif($sliders->isNotEmpty())
+            @elseif($sliders->isNotEmpty() && $sliders->first()->image_path)
                 <!-- Video yoksa ama slider resmi varsa onu kullan -->
                 <img src="{{ asset('storage/' . $sliders->first()->image_path) }}" alt="Arkaplan">
             @else
-                <!-- Hiçbir şey yoksa varsayılan görsel -->
-                <img src="{{ asset('background.png') }}" alt="Varsayılan Arkaplan">
+                <!-- Slider görseli yoksa -->
+                <img src="{{ asset('images/logo.png') }}" alt="" style="object-fit: cover;">
             @endif
             
             <!-- Karartma Katmanı -->
@@ -186,23 +218,22 @@
         <div id="main-content" tabindex="-1" class="container-fluid bottom-section">
             <div class="row align-items-end position-relative">
                 
-                <!-- SOL: KÜÇÜK HABER SLIDER (Dinamik) -->
+                <!-- SOL: küçük vitrin — «Kırklareli'den Haberler» ile aynı kaynaktan son 3 genel duyuru -->
                 <div class="col-xl-3 col-lg-3 col-12 d-flex justify-content-center justify-content-lg-start order-2 order-lg-1 mb-3 mb-lg-0 ps-lg-4">
-                    @if($heroNews->count() > 0)
+                    @if($kirklareliHeroMini->isNotEmpty())
                     <div class="news-container">
                         <div id="newsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000">
                             <button class="slider-arrow prev-arrow" type="button" data-bs-target="#newsCarousel" data-bs-slide="prev"><i class="fas fa-chevron-left"></i></button>
                             <button class="slider-arrow next-arrow" type="button" data-bs-target="#newsCarousel" data-bs-slide="next"><i class="fas fa-chevron-right"></i></button>
                             
                             <div class="carousel-inner">
-                                @foreach($heroNews as $index => $news)
+                                @foreach($kirklareliHeroMini as $index => $ann)
                                 <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                                    <!-- Storage Klasöründen Görsel -->
-                                    <img src="{{ asset('storage/' . $news->image_path) }}" alt="{{ $news->title }}" class="news-img">
+                                    <img src="{{ $ann->coverImageUrl() }}" alt="{{ $ann->title }}" class="news-img">
                                     <div class="news-caption">
-                                        <span class="news-tag">GÜNCEL</span>
-                                        <div class="news-text">{{ Str::limit($news->title, 80) }}</div>
-                                        <a href="{{ route('news.detail', $news->slug) }}" class="read-more-link">Devamını Oku <i class="fas fa-arrow-right"></i></a>
+                                        <span class="news-tag">DUYURU</span>
+                                        <div class="news-text">{{ Str::limit($ann->title, 80) }}</div>
+                                        <a href="{{ route('announcement.show', $ann->slug) }}" class="read-more-link">İncele <i class="fas fa-arrow-right"></i></a>
                                     </div>
                                 </div>
                                 @endforeach
@@ -239,65 +270,56 @@
         </div>
     </div>
 
-    <!-- HABERLER MODÜLÜ (Dinamik) -->
-    @if($headlines->count() > 0)
+    <!-- KIRKLARELİ'DEN HABERLER: son 5 genel duyuru (slider) -->
+    @if($kirklareliFromDuyurular->isNotEmpty())
     <div class="latest-news-section">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">KIRKLARELİ'DEN HABERLER</h2>
-                <a href="{{ route('news.index') }}" class="btn-view-all">Tümünü Gör <i class="fas fa-arrow-right ms-2"></i></a>
+                <a href="{{ route('announcements.index', ['tip' => 'duyuru']) }}" class="btn-view-all">Tümünü Gör <i class="fas fa-arrow-right ms-2"></i></a>
             </div>
 
-            <div class="row g-4">
-                <!-- SOL: Manşet Slider -->
+            <div class="row g-4 align-items-start">
                 <div class="col-lg-7">
-                    <div id="headlineSlider" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="15000">
+                    <div id="headlineSlider" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="9000" data-bs-pause="false">
                         <div class="carousel-inner">
-                            @foreach($headlines as $index => $news)
+                            @foreach($kirklareliFromDuyurular as $index => $ann)
                             <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                                <div class="headline-card" onclick="location.href='{{ route('news.detail', $news->slug) }}'">
+                                <div class="headline-card" onclick="location.href='{{ route('announcement.show', $ann->slug) }}'">
                                     <div class="headline-cover">
-                                        <!-- RESİM GÖSTERİMİ -->
-                                        <img src="{{ asset('storage/' . $news->image_path) }}" alt="{{ $news->title }}">
+                                        <img src="{{ $ann->coverImageUrl() }}" alt="{{ $ann->title }}">
                                     </div>
                                     <div class="headline-body">
-                                        <span class="headline-tag">MANŞET</span>
-                                        <h3 class="headline-title">{{ $news->title }}</h3>
-                                        <div class="headline-text">{{ Str::limit(strip_tags($news->content), 120) }}</div>
-                                        {{-- <div class="headline-date"><i class="far fa-calendar-alt"></i> {{ $news->published_at->format('d.m.Y') }}</div> --}}
+                                        <span class="headline-tag">DUYURU</span>
+                                        <h3 class="headline-title">{{ $ann->title }}</h3>
+                                        <div class="headline-text">{{ Str::limit(strip_tags((string) $ann->content), 120) }}</div>
                                     </div>
                                 </div>
                             </div>
                             @endforeach
                         </div>
-                        <!-- Kontroller -->
                         <div class="main-slider-controls">
                             <button class="slider-btn" type="button" data-bs-target="#headlineSlider" data-bs-slide="prev"><i class="fas fa-chevron-left"></i></button>
                             <button class="slider-btn" type="button" data-bs-target="#headlineSlider" data-bs-slide="next"><i class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>
-                    <!-- Thumbnails -->
                     <div class="headline-thumbs">
-                        @foreach($headlines as $index => $news)
-                        <div class="headline-thumb-item {{ $index == 0 ? 'active' : '' }}" data-bs-target="#headlineSlider" data-bs-slide-to="{{ $index }}">
-                            <!-- RESİM GÖSTERİMİ -->
-                            <img src="{{ asset('storage/' . $news->image_path) }}">
+                        @foreach($kirklareliFromDuyurular as $index => $ann)
+                        <div class="headline-thumb-item {{ $index == 0 ? 'active' : '' }}" data-bs-target="#headlineSlider" data-bs-slide-to="{{ $index }}" role="button" tabindex="0">
+                            <img src="{{ $ann->coverImageUrl() }}" alt="">
                         </div>
                         @endforeach
                     </div>
                 </div>
-
-                <!-- SAĞ: Liste Haberleri -->
                 <div class="col-lg-5">
-                    @foreach($sideNews as $news)
-                    <a href="{{ route('news.detail', $news->slug) }}" class="news-list-card">
-                        <div class="news-list-img-wrapper">
-                            <!-- RESİM GÖSTERİMİ -->
-                            <img src="{{ asset('storage/' . $news->image_path) }}" class="news-list-img">
+                    @foreach($kirklareliFromDuyurular as $index => $ann)
+                    <a href="{{ route('announcement.show', $ann->slug) }}" class="kd-side-card {{ $index === 0 ? 'active' : '' }}">
+                        <div class="kd-side-thumb">
+                            <img src="{{ $ann->coverImageUrl() }}" alt="">
                         </div>
-                        <div class="news-list-body">
-                            <h4 class="news-list-title">{{ $news->title }}</h4>
-                            <div class="news-list-date"><i class="far fa-calendar-alt"></i> {{ $news->published_at->format('d.m.Y') }}</div>
+                        <div class="kd-side-body">
+                            <div class="kd-side-title">{{ $ann->title }}</div>
+                            <div class="kd-side-meta"><i class="far fa-calendar-alt me-1"></i>{{ $ann->date->format('d.m.Y') }}</div>
                         </div>
                     </a>
                     @endforeach
@@ -318,17 +340,16 @@
                             <i class="fas fa-bullhorn text-white"></i> <h3>DUYURULAR</h3>
                         </div>
                         <ul class="ann-list">
-                            @foreach($generalAnnouncements as $ann)
+                            @forelse($generalAnnouncements as $ann)
                             <li class="ann-item">
-                                <!-- Dosya varsa dosya linki, yoksa # -->
-                                @php
-                                    $link = $ann->file_path ? asset('storage/' . $ann->file_path) : '#';
-                                @endphp
-                                <a href="{{ route('announcement.show', $ann->slug) }}">
-                                    {{ $ann->title }}
+                                <a href="{{ route('announcement.show', $ann->slug) }}" class="ann-link">
+                                    <div class="ann-text">{{ $ann->title }}</div>
+                                    <div class="ann-date"><i class="far fa-calendar-alt" aria-hidden="true"></i>{{ $ann->date->format('d.m.Y') }}</div>
                                 </a>
                             </li>
-                            @endforeach
+                            @empty
+                            <li class="ann-item text-muted small">Üst vitrinde son duyurular listelenmiştir; arşiv için «Tüm Duyurular»a bakınız.</li>
+                            @endforelse
                         </ul>
                         <div class="ann-footer"><a href="{{ route('announcements.index', ['tip' => 'duyuru']) }}" class="btn-ann-all">Tüm Duyurular</a></div>
                     </div>
@@ -343,11 +364,9 @@
                         <ul class="ann-list">
                             @foreach($officialAds as $ann)
                             <li class="ann-item">
-                                @php
-                                    $link = $ann->file_path ? asset('storage/' . $ann->file_path) : '#';
-                                @endphp
-                                <a href="{{ route('announcement.show', $ann->slug) }}">
-                                    {{ $ann->title }}
+                                <a href="{{ route('announcement.show', $ann->slug) }}" class="ann-link">
+                                    <div class="ann-text">{{ $ann->title }}</div>
+                                    <div class="ann-date"><i class="far fa-calendar-alt" aria-hidden="true"></i>{{ $ann->date->format('d.m.Y') }}</div>
                                 </a>
                             </li>
                             @endforeach
@@ -365,11 +384,9 @@
                         <ul class="ann-list">
                             @foreach($tenders as $ann)
                             <li class="ann-item">
-                                @php
-                                    $link = $ann->file_path ? asset('storage/' . $ann->file_path) : '#';
-                                @endphp
-                                <a href="{{ route('announcement.show', $ann->slug) }}">
-                                    {{ $ann->title }}
+                                <a href="{{ route('announcement.show', $ann->slug) }}" class="ann-link">
+                                    <div class="ann-text">{{ $ann->title }}</div>
+                                    <div class="ann-date"><i class="far fa-calendar-alt" aria-hidden="true"></i>{{ $ann->date->format('d.m.Y') }}</div>
                                 </a>
                             </li>
                             @endforeach
@@ -387,11 +404,12 @@
     // Slider ve Thumbnail Senkronizasyonu
     var headlineSlider = document.getElementById('headlineSlider');
     var thumbs = document.querySelectorAll('.headline-thumb-item');
-    if(headlineSlider && thumbs.length > 0) {
+    var sideCards = document.querySelectorAll('.kd-side-card');
+    if (headlineSlider && thumbs.length > 0) {
         headlineSlider.addEventListener('slide.bs.carousel', function (e) {
             var slideIndex = e.to;
-            thumbs.forEach(function(thumb) { thumb.classList.remove('active'); });
-            if(thumbs[slideIndex]) { thumbs[slideIndex].classList.add('active'); }
+            thumbs.forEach(function (thumb, i) { thumb.classList.toggle('active', i === slideIndex); });
+            sideCards.forEach(function (card, i) { card.classList.toggle('active', i === slideIndex); });
         });
     }
 </script>

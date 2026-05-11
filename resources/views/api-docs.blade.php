@@ -464,14 +464,16 @@
           </div>
           <p class="desc">
             Web sayfasındaki resmî duyuru kartlarından üretilen liste. Sonuç <strong>3600 sn</strong> önbelleğe alınır.
-            Kaynak URL varsayılan olarak <code>APP_URL/duyurular?tip=resmi</code> (<code>ANNOUNCEMENTS_SCRAPER_URL</code> ile değiştirilebilir).
+            Varsayılan kaynak <code>https://kirklareli.bel.tr/resmi-duyurular/2</code> (<code>ANNOUNCEMENTS_SCRAPER_URL</code> ile değiştirilebilir).
           </p>
           <table class="params">
             <thead>
               <tr><th>Parametre</th><th>Konum</th><th>Açıklama</th></tr>
             </thead>
             <tbody>
-              <tr><td colspan="3">Path/query parametresi yok (önbellek sunucu tarafında).</td></tr>
+              <tr><td><code>source_url</code></td><td>query</td><td>Opsiyonel kaynak URL (önizleme için).</td></tr>
+              <tr><td><code>refresh</code></td><td>query</td><td><code>true</code> olursa cache temizlenip canlı çekilir.</td></tr>
+              <tr><td><code>limit</code></td><td>query</td><td>Dönecek kayıt sayısı (1-200, varsayılan 50).</td></tr>
             </tbody>
           </table>
           <div class="json-label">Örnek JSON çıktısı</div>
@@ -482,7 +484,13 @@
       "image_url": "{{ rtrim(config('app.url'), '/') }}/storage/duyurular/gorsel.jpg",
       "detail_url": "{{ url('/duyurular/resmi-ilan-slug') }}"
     }
-  ]
+  ],
+  "meta": {
+    "source_url": "https://kirklareli.bel.tr/resmi-duyurular/2",
+    "cached_ttl_seconds": 3600,
+    "refresh": false,
+    "count": 1
+  }
 }</pre>
           <p class="note">Siteye ulaşılamazsa veya ayrıştırma boş kalırsa <code>data</code> dizisi <code>[]</code> olabilir.</p>
         </article>
@@ -495,7 +503,11 @@
             <span class="method method-get">GET</span>
             <span class="url">{BASE_URL}/api/mayor</span>
           </div>
-          <p class="desc">Önce <code>is_active = true</code> kayıt; yoksa ilk kayıt. Kayıt yoksa HTTP 404.</p>
+          <div class="endpoint-head" style="margin-top:0.5rem;">
+            <span class="method method-get">GET</span>
+            <span class="url">{BASE_URL}/api/baskan</span>
+          </div>
+          <p class="desc">İki yol aynı yanıtı döner. Önce <code>is_active = true</code> kayıt; yoksa ilk kayıt. Kayıt yoksa HTTP 404. Türkçe alanlar: <code>ad_soyad</code>, <code>ad</code>, <code>soyad</code>, <code>unvan</code>, <code>fotograf_url</code>, <code>ozgecmis_html</code>, <code>ozgecmis_plain</code>, <code>mesaj_html</code> (İngilizce eşleri: <code>name</code>, <code>title</code>, <code>image_url</code>, <code>description_html</code>, <code>message_html</code>).</p>
           <table class="params">
             <thead>
               <tr><th>Parametre</th><th>Konum</th><th>Açıklama</th></tr>
@@ -508,10 +520,19 @@
           <pre class="json">{
   "data": {
     "id": 1,
-    "name": "Örnek Başkan",
+    "updated_at": "2026-05-01T12:00:00+00:00",
+    "ad_soyad": "Derya BULUT",
+    "ad": "Derya",
+    "soyad": "BULUT",
+    "unvan": "Belediye Başkanı",
+    "fotograf_url": "{{ rtrim(config('app.url'), '/') }}/storage/baskan/foto.jpg",
+    "ozgecmis_html": "&lt;p&gt;Özgeçmiş HTML.&lt;/p&gt;",
+    "ozgecmis_plain": "Özgeçmiş HTML.",
+    "mesaj_html": "&lt;p&gt;Başkan mesajı HTML.&lt;/p&gt;",
+    "name": "Derya BULUT",
     "title": "Belediye Başkanı",
     "image_url": "{{ rtrim(config('app.url'), '/') }}/storage/baskan/foto.jpg",
-    "description_html": "&lt;p&gt;Kısa tanıtım HTML.&lt;/p&gt;",
+    "description_html": "&lt;p&gt;Özgeçmiş HTML.&lt;/p&gt;",
     "message_html": "&lt;p&gt;Başkan mesajı HTML.&lt;/p&gt;",
     "is_active": true
   }

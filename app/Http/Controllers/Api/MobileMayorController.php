@@ -10,7 +10,9 @@ use Illuminate\Http\JsonResponse;
 class MobileMayorController extends Controller
 {
     /**
-     * Aktif belediye başkanı kaydı (panelde işaretli veya tek kayıt).
+     * Başkan sayfası verisi (JSON). Rotalar: GET /api/mayor, GET /api/baskan.
+     *
+     * Önce `is_active = true` kayıt; yoksa ilk kayıt.
      */
     public function show(): JsonResponse|MayorResource
     {

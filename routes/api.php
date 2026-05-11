@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AnnouncementController;
-use App\Http\Controllers\Api\CitizenApplicationController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\EOdemeController;
 use App\Http\Controllers\Api\MobileAnnouncementController;
 use App\Http\Controllers\Api\MobileCouncilDecisionController;
 use App\Http\Controllers\Api\MobileCouncilMemberController;
@@ -37,6 +37,7 @@ Route::get('/', function () {
             'GET '.url('/api/test'),
             'GET '.url('/api/home'),
             'GET '.url('/api/news'),
+            'GET '.url('/api/baskan'),
         ],
     ]);
 })->name('api.index');
@@ -53,6 +54,7 @@ Route::middleware('throttle:120,1')->group(function () {
     Route::get('/pages/{slug}', [MobilePageController::class, 'show'])->name('api.pages.show');
     Route::get('/menus', [MobileMenuController::class, 'index'])->name('api.menus.index');
     Route::get('/mayor', [MobileMayorController::class, 'show'])->name('api.mayor.show');
+    Route::get('/baskan', [MobileMayorController::class, 'show'])->name('api.baskan.show');
     Route::get('/council/members', [MobileCouncilMemberController::class, 'index'])->name('api.council.members');
     Route::get('/council/decisions', [MobileCouncilDecisionController::class, 'index'])->name('api.council.decisions');
     Route::get('/directorates', [MobileDirectorateController::class, 'index'])->name('api.directorates.index');
@@ -76,8 +78,9 @@ Route::middleware('throttle:30,1')->group(function () {
         ->name('api.service-requests.submit');
     Route::get('/service-requests/{trackingNo}', [ServiceRequestController::class, 'track'])
         ->name('api.service-requests.track');
-    Route::post('/citizen-applications', [CitizenApplicationController::class, 'submit'])
-        ->name('api.citizen-applications.submit');
-    Route::get('/citizen-applications/{trackingNo}', [CitizenApplicationController::class, 'track'])
-        ->name('api.citizen-applications.track');
+});
+
+Route::middleware('throttle:eodeme-debt-query')->group(function () {
+    Route::post('/eodeme/borc-sorgula', [EOdemeController::class, 'borcSorgula'])
+        ->name('api.eodeme.borc-sorgula');
 });

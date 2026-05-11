@@ -23,7 +23,7 @@
 
         <div class="row g-4">
             <div class="col-md-6 col-lg-4">
-                <a class="text-decoration-none d-block h-100" href="{{ route('coming-soon', ['modul' => 'Borç Sorgulama']) }}">
+                <a class="text-decoration-none d-block h-100" href="{{ route('e-services.debt-query') }}">
                     <div class="card h-100 shadow-sm border-0">
                         <div class="card-body">
                             <h5 class="card-title">Borç Sorgulama</h5>
@@ -34,22 +34,11 @@
             </div>
 
             <div class="col-md-6 col-lg-4">
-                <a class="text-decoration-none d-block h-100" href="{{ route('coming-soon', ['modul' => 'Online Tahsilat']) }}">
+                <a class="text-decoration-none d-block h-100" href="{{ route('e-services.debt-query') }}">
                     <div class="card h-100 shadow-sm border-0">
                         <div class="card-body">
                             <h5 class="card-title">Online Tahsilat</h5>
                             <p class="card-text text-muted mb-0">Kart ile güvenli ödeme adımlarına erişim.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a class="text-decoration-none d-block h-100" href="{{ route('citizen-applications.page') }}">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body">
-                            <h5 class="card-title">Evrak Takibi</h5>
-                            <p class="card-text text-muted mb-0">Başvuru ve evrak süreçlerinizin durumunu takip edin.</p>
                         </div>
                     </div>
                 </a>
@@ -67,18 +56,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4">
-                <a class="text-decoration-none d-block h-100" href="{{ route('citizen-applications.page') }}">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body">
-                            <h5 class="card-title">E-İmar</h5>
-                            <p class="card-text text-muted mb-0">İmar durumu, plan ve ruhsat süreçleri için hizmetler.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a class="text-decoration-none d-block h-100" href="{{ route('coming-soon', ['modul' => 'Nöbetçi Eczaneler']) }}">
+                <a class="text-decoration-none d-block h-100" href="https://www.turkiye.gov.tr/saglik-titck-nobetci-eczane-sorgulama" target="_blank" rel="noopener noreferrer">
                     <div class="card h-100 shadow-sm border-0">
                         <div class="card-body">
                             <h5 class="card-title">Nöbetçi Eczaneler</h5>
@@ -89,29 +67,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4">
-                <a class="text-decoration-none d-block h-100" href="{{ route('citizen-applications.page') }}">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body">
-                            <h5 class="card-title">Ruhsat Başvuruları</h5>
-                            <p class="card-text text-muted mb-0">İşyeri açma ve ilgili ruhsat işlemleri başvuru ekranı.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a class="text-decoration-none d-block h-100" href="{{ route('citizen-applications.page') }}">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body">
-                            <h5 class="card-title">Sosyal Destek Başvurusu</h5>
-                            <p class="card-text text-muted mb-0">Sosyal yardım ve destek başvurularınızı oluşturun.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a class="text-decoration-none d-block h-100" href="{{ route('coming-soon', ['modul' => 'Vefat İlanları']) }}">
+                <a class="text-decoration-none d-block h-100" href="{{ route('obituaries.public') }}">
                     <div class="card h-100 shadow-sm border-0">
                         <div class="card-body">
                             <h5 class="card-title">Vefat İlanları</h5>

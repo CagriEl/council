@@ -108,10 +108,8 @@
                     <ul class="footer-links">
                         <li><a href="{{ route('e-services') }}"><i class="fas fa-chevron-right"></i> Online İşlemler Merkezi</a></li>
                         <li><a href="{{ route('service-requests.page') }}"><i class="fas fa-chevron-right"></i> Talep / Şikayet</a></li>
-                        <li><a href="{{ route('citizen-applications.page') }}"><i class="fas fa-chevron-right"></i> Ruhsat / İmar / Evrak</a></li>
                         <li><a href="{{ route('coming-soon', ['modul' => 'Borç Sorgulama']) }}"><i class="fas fa-chevron-right"></i> Borç Sorgulama</a></li>
                         <li><a href="{{ route('coming-soon', ['modul' => 'Online Tahsilat']) }}"><i class="fas fa-chevron-right"></i> Online Tahsilat</a></li>
-                        <li><a href="{{ route('citizen-applications.page') }}"><i class="fas fa-chevron-right"></i> Sosyal Destek Başvurusu</a></li>
                         <li><a href="{{ route('coming-soon', ['modul' => 'Vefat İlanları']) }}"><i class="fas fa-chevron-right"></i> Vefat İlanları</a></li>
                     </ul>
                 </div>

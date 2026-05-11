@@ -25,7 +25,7 @@
 
             <!-- İçerik -->
             <div class="page-content">
-                {!! $page->content !!}
+                {!! \App\Support\HtmlContentSanitizer::stripKaynakSayfayiAcBlocks((string) $page->content) !!}
             </div>
         </div>
     </div>

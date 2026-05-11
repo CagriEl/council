@@ -47,13 +47,14 @@ Uygulama çalışırken (ör. Valet ile `http://kirklareli.test`):
 | GET | `/api/home` | Açılış ekranı: slider, hızlı linkler, başkan, manşet haberler, duyuru önizlemeleri. `?include=...` ile modül seçimi. |
 | GET | `/api/news`, `/api/news/{slug}` | Haberler (`kategori`, sayfalama). |
 | GET | `/api/announcements`, `/api/announcements/{slug}` | Duyurular (`tip`, sayfalama). |
+| GET | `/api/announcements/official` | kirklareli.bel.tr resmî duyuru önizleme (DB'ye yazmaz). Query: `source_url`, `refresh`, `limit`. Web’de `/duyurular?tip=resmi` için aynı kaynağı veritabanına almak: `php artisan sync:resmi-announcements`. |
 | GET | `/api/pages`, `/api/pages/{slug}` | Paneldeki statik sayfalar (web’deki `/sayfa/{slug}` ile aynı içerik). |
 | GET | `/api/menus?location=header` veya `footer` | Menü ağacı; `page_slug` ile sayfa içeriği çekilir. |
-| GET | `/api/mayor` | Belediye başkanı. |
+| GET | `/api/mayor` veya `/api/baskan` | Belediye başkanı (aynı JSON; ad, soyad, özgeçmiş, mesaj, fotoğraf URL). |
 | GET | `/api/council/members` | Meclis üyeleri. |
 | GET | `/api/council/decisions` | Meclis kararları (PDF URL’leri; `year`, sayfalama). |
 | GET | `/api/directorates`, `/api/directorates/{slug}` | Müdürlük listesi ve detay (+ son duyurular). |
-| GET | `/api/organisation/tree` | Başkan yardımcıları ve bağlı müdürlükler. |
+| GET | `/api/organisation/tree` | `mayor_directorates` (başkana bağlı) + `data` (başkan yardımcıları ve müdürlükleri). |
 | GET | `/api/obituaries` | Aktif vefat kayıtları (ad-soyad, tarih, namaz saati, camii, defin yeri). |
 | GET | `/api/test` | Basit sağlık kontrolü (throttle dışı). |
 | POST | `/api/contact/submit` | İletişim (zorunlu: `name`, `message`). |
@@ -69,6 +70,7 @@ GET /api/news/{slug}
 
 GET /api/announcements?tip=duyuru
 GET /api/announcements/{slug}
+GET /api/announcements/official?refresh=true&limit=20
 
 GET /api/pages
 GET /api/pages/hakkimizda

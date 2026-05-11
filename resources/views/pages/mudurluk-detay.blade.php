@@ -20,7 +20,7 @@
                 @endif
 
                 <div class="dept-manager-name">{{ $mudurluk->manager_name }}</div>
-                <div class="dept-manager-title">{{ $mudurluk->manager_title ?? 'Müdür V.' }}</div>
+                <div class="dept-manager-title">{{ $mudurluk->displayManagerRole() }}</div>
                 <hr>
                 
                 <ul class="contact-list">
@@ -51,7 +51,7 @@
                 <!-- İçerik (Panelden gelen HTML) -->
                 <div class="content-text">
                     @if($mudurluk->description)
-                        {!! $mudurluk->description !!}
+                        {!! \App\Support\HtmlContentSanitizer::stripKaynakSayfayiAcBlocks((string) ($mudurluk->description ?? '')) !!}
                     @else
                         <p>Bu müdürlük için henüz detaylı bilgi girilmemiştir.</p>
                     @endif

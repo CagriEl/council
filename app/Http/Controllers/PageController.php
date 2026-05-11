@@ -27,36 +27,18 @@ class PageController extends Controller
         // 2. Kare Butonlar (Hızlı Linkler)
         $quickLinks = QuickLink::orderBy('order', 'asc')->get();
 
-        // 3. Manşet Haberler (Büyük Slider İçin)
-        // 'is_headline' sütunu true olan son 5 haber
-        $headlines = News::publishedForPublic()
-            ->where('is_headline', true)
-            ->latest('published_at')
-            ->take(5)
-            ->get();
-
-        // 4. Yan Liste Haberleri (Slider Yanı)
-        // 'is_headline' sütunu false olan son 3 haber
-        $sideNews = News::publishedForPublic()
-            ->where('is_headline', false)
-            ->latest('published_at')
-            ->take(3)
-            ->get();
-
-        // 5. HATA ÇÖZÜMÜ: Sol Küçük Slider Haberleri ($heroNews)
-        // En son eklenen 5 haberi burası için çekiyoruz
-        $heroNews = News::publishedForPublic()
-            ->latest('published_at')
-            ->take(5)
-            ->get();
-
-        // 6. Duyurular (3 Sütun)
-        // Veritabanındaki 'type' alanlarına göre (duyuru, resmi, ihale)
-        $generalAnnouncements = Announcement::publishedForPublic()
+        // 3. Ana sayfa «KIRKLARELİ'DEN HABERLER»: son 5 genel duyuru (type=duyuru) + alttaki sütun için devamı
+        $duyuruAnaSayfa = Announcement::publishedForPublic()
             ->where('type', 'duyuru')
             ->latest('date')
-            ->take(5)
+            ->take(10)
             ->get();
+
+        $kirklareliFromDuyurular = $duyuruAnaSayfa->take(5);
+        $generalAnnouncements = $duyuruAnaSayfa->slice(5)->values();
+
+        // 4. Sol küçük slider (hero): «Kırklareli'den Haberler» ile aynı kaynaktan son 3 genel duyuru
+        $kirklareliHeroMini = $kirklareliFromDuyurular->take(3)->values();
 
         $officialAds = Announcement::publishedForPublic()
             ->where('type', 'resmi')
@@ -76,9 +58,8 @@ class PageController extends Controller
         return view('home', compact(
             'sliders',
             'quickLinks',
-            'headlines',
-            'sideNews',
-            'heroNews', // <-- EKLENDİ: Artık view dosyasında hata vermeyecek
+            'kirklareliFromDuyurular',
+            'kirklareliHeroMini',
             'generalAnnouncements',
             'officialAds',
             'tenders',
@@ -102,7 +83,10 @@ class PageController extends Controller
     public function meclis()
     {
         $mayor = Mayor::first();
-        $members = CouncilMember::with('politicalParty')->orderBy('order')->get();
+        $members = CouncilMember::with('politicalParty')
+            ->where('is_active', true)
+            ->orderBy('order')
+            ->get();
 
         return view('pages.meclis', compact('mayor', 'members'));
     }
@@ -112,10 +96,20 @@ class PageController extends Controller
      */
     public function mudurler()
     {
-        $vicePresidents = VicePresident::with('directorates')->orderBy('order')->get();
-        $allDirectorates = Directorate::with('vicePresident')->orderBy('name')->get();
+        $mayor = Mayor::query()->where('is_active', true)->first()
+            ?? Mayor::query()->first();
 
-        return view('pages.mudurler', compact('vicePresidents', 'allDirectorates'));
+        $mayorDirectorates = Directorate::query()
+            ->whereNull('vice_president_id')
+            ->orderBy('name')
+            ->get();
+
+        $vicePresidents = VicePresident::query()
+            ->with(['directorates' => fn ($q) => $q->orderBy('name')])
+            ->orderBy('order')
+            ->get();
+
+        return view('pages.mudurler', compact('mayor', 'mayorDirectorates', 'vicePresidents'));
     }
 
     /**

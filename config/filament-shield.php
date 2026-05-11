@@ -23,7 +23,8 @@ return [
     'super_admin' => [
         'enabled' => true,
         'name' => 'super_admin',
-        'define_via_gate' => false,
+        // true: super_admin rolü tüm yetkileri Gate üzerinden alır (izin tablosunu doldurmadan panel kullanımı).
+        'define_via_gate' => true,
         'intercept_gate' => 'before', // after
     ],
 
