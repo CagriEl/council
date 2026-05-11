@@ -254,7 +254,14 @@
                 }
 
                 if (!response.ok || result.status !== 'success') {
-                    setAlert('danger', result.message || 'Sorgulama sırasında bir hata oluştu.');
+                    let msg = result.message || 'Sorgulama sırasında bir hata oluştu.';
+                    if (result.errors && typeof result.errors === 'object') {
+                        const lines = Object.values(result.errors).flat().filter(Boolean);
+                        if (lines.length) {
+                            msg = String(lines[0]);
+                        }
+                    }
+                    setAlert('danger', msg);
                     return;
                 }
 
