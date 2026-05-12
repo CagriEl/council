@@ -830,3 +830,61 @@ Artisan::command(
         return self::SUCCESS;
     }
 )->purpose('BELSIS (veya diğer) WSDL URL’sinin erişilebilirliğini ve içerik türünü teşhis eder');
+
+Artisan::command(
+    'belsis:fetch-wsdl {url : WSDL kaynak URL’si} {--output=belsis/tahakkuk.wsdl : storage/app altında hedef (göreli)} {--insecure : TLS doğrulamasını kapat}',
+    function (string $url): int {
+        $insecure = (bool) $this->option('insecure');
+        $relative = ltrim(str_replace('\\', '/', (string) $this->option('output')), '/');
+        $targetPath = storage_path('app/'.$relative);
+        $dir = dirname($targetPath);
+        if (! is_dir($dir)) {
+            if (! @mkdir($dir, 0755, true) && ! is_dir($dir)) {
+                $this->error('Klasör oluşturulamadı: '.$dir);
+
+                return self::FAILURE;
+            }
+        }
+
+        $this->info('Kaynak: '.$url);
+        $this->info('Hedef: '.$targetPath);
+
+        try {
+            $response = Http::timeout(30)->withOptions(['verify' => ! $insecure])->get($url);
+        } catch (\Throwable $e) {
+            $this->error('İndirme hatası: '.$e->getMessage());
+
+            return self::FAILURE;
+        }
+
+        if (! $response->successful()) {
+            $this->error('HTTP '.$response->status());
+
+            return self::FAILURE;
+        }
+
+        $body = $response->body();
+        $lower = mb_strtolower($body);
+        $looksWsdl = str_contains($lower, 'definitions') && (str_contains($lower, 'wsdl:') || str_contains($lower, 'targetnamespace') || str_contains($lower, '<types'));
+        $looksHtml = str_contains($lower, '<!doctype html') || str_contains($lower, '<html');
+
+        if ($looksHtml || ! $looksWsdl) {
+            $this->warn('Yanıt WSDL gibi görünmüyor (HTML veya hata sayfası olabilir). Dosya yazılmadı.');
+            $this->line(mb_substr($body, 0, 500));
+
+            return self::FAILURE;
+        }
+
+        if (file_put_contents($targetPath, $body) === false) {
+            $this->error('Dosya yazılamadı.');
+
+            return self::FAILURE;
+        }
+
+        $this->info('WSDL kaydedildi. .env örneği:');
+        $this->line('E_ODEME_WSDL_LOCAL='.$relative);
+        $this->line('E_ODEME_SOAP_VERIFY_SSL='.($insecure ? 'false' : 'true'));
+
+        return self::SUCCESS;
+    }
+)->purpose('BELSIS WSDL’yi indirip storage/app altına yazar (yalnızca gerçek WSDL XML ise)');

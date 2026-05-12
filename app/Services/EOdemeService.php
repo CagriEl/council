@@ -44,8 +44,28 @@ class EOdemeService
 
     protected function resolveWsdl(): string
     {
+        $localRelative = trim((string) config('services.e_odeme.wsdl_local', ''));
+        if ($localRelative !== '') {
+            $normalized = str_replace(['\\', '//'], '/', $localRelative);
+            $path = storage_path('app/'.ltrim($normalized, '/'));
+            if (is_file($path)) {
+                return $path;
+            }
+        }
+
         $primary = trim((string) config('services.e_odeme.wsdl', ''));
         if ($primary !== '') {
+            if (str_starts_with($primary, 'file://')) {
+                $filePath = (string) substr($primary, 7);
+                if (is_file($filePath)) {
+                    return $filePath;
+                }
+            }
+            if ((str_starts_with($primary, '/') || (strlen($primary) > 2 && $primary[1] === ':' && ($primary[2] === '\\' || $primary[2] === '/')))
+                && is_file($primary)) {
+                return $primary;
+            }
+
             return $primary;
         }
 
@@ -111,11 +131,19 @@ class EOdemeService
 
     protected function hasEndpointConfiguration(): bool
     {
-        $hasWsdl = $this->resolveWsdl() !== '';
-        $hasLocation = trim((string) config('services.e_odeme.location', '')) !== '';
-        $hasUri = trim((string) config('services.e_odeme.uri', '')) !== '';
+        $resolved = $this->resolveWsdl();
+        if ($resolved === '') {
+            $hasLocation = trim((string) config('services.e_odeme.location', '')) !== '';
+            $hasUri = trim((string) config('services.e_odeme.uri', '')) !== '';
 
-        return $hasWsdl || ($hasLocation && $hasUri);
+            return $hasLocation && $hasUri;
+        }
+
+        if (is_file($resolved)) {
+            return true;
+        }
+
+        return filter_var($resolved, FILTER_VALIDATE_URL) !== false;
     }
 
     /**

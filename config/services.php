@@ -47,6 +47,8 @@ return [
         // BELSIS ayrı uçlar (çoğunlukla borç sorgusu tahakkuk WSDL üzerinden; tahsilat ödeme akışı içindir)
         'tahakkuk_wsdl' => env('E_ODEME_TAHAKKUK_WSDL'),
         'tahsilat_wsdl' => env('E_ODEME_TAHSILAT_WSDL'),
+        // storage/app altında göreli yol (örn. belsis/tahakkuk.wsdl) — uzaktan WSDL HTML dönüyorsa kullanın
+        'wsdl_local' => env('E_ODEME_WSDL_LOCAL'),
         'location' => env('E_ODEME_LOCATION'),
         'uri' => env('E_ODEME_URI'),
         'banka_kodu' => env('E_ODEME_BANKA_KODU'),
