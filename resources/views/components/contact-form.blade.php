@@ -32,6 +32,7 @@
             <label class="form-label fw-bold">Konu</label>
             <select name="subject" class="form-select">
                 <option selected>Genel İstek / Öneri</option>
+                <option>KVKK başvurusu (bilgi, düzeltme, silme vb.)</option>
                 <option>Park ve Bahçeler</option>
                 <option>Fen İşleri / Yol</option>
                 <option>Temizlik İşleri</option>
@@ -60,7 +61,7 @@
             <form onsubmit="submitTrackingForm(event)" class="row g-3" data-track-form>
                 <div class="col-md-8">
                     <label class="form-label fw-bold">Takip Numarası</label>
-                    <input type="text" name="tracking_no" class="form-control" placeholder="TS-20260501-XXXXXX" required>
+                    <input type="text" name="tracking_no" class="form-control" placeholder="KRKLR-20260501-XXXXXX" required>
                 </div>
                 <div class="col-md-4 d-grid align-items-end">
                     <button type="submit" class="btn btn-outline-primary btn-track-submit">Durum Sorgula</button>

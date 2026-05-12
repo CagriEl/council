@@ -59,6 +59,8 @@ return [
         'rate_limit_ip_attempts' => (int) env('E_ODEME_RATE_LIMIT_IP_ATTEMPTS', 60),
         'rate_limit_id_attempts' => (int) env('E_ODEME_RATE_LIMIT_ID_ATTEMPTS', 30),
         'rate_limit_decay_minutes' => (int) env('E_ODEME_RATE_LIMIT_DECAY_MINUTES', 10),
+        // Borç sorgusu denetim (debt_query_audits) saklama süresi — yasal metinde gösterilir; silme için ayrı job gerekir
+        'audit_retention_days' => (int) env('E_ODEME_AUDIT_RETENTION_DAYS', 365),
     ],
 
 ];

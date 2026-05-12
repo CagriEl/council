@@ -32,6 +32,7 @@ class EOdemeController extends Controller
             'mukellef_no' => ['required', 'string', 'max:15'],
             'indirimli_odenecek_mi' => ['nullable', 'boolean'],
             'sadece_su_borclari' => ['nullable', 'boolean'],
+            'borc_sorgu_kvkk_onay' => ['required', 'accepted'],
             'cf_turnstile_response' => $this->turnstileService->isEnabled()
                 ? ['required', 'string']
                 : ['nullable', 'string'],

@@ -122,6 +122,7 @@ class ServiceRequestResource extends Resource
                         'iletisim-sayfasi' => 'İletişim',
                         'baskan-sayfasi' => 'Başkan',
                         'talep-sikayet-sayfasi' => 'Talep/Şikayet',
+                        'kvkk-sayfasi' => 'KVKK sayfası',
                         default => $state ?: '-',
                     }),
                 Tables\Columns\TextColumn::make('subject')
@@ -159,6 +160,7 @@ class ServiceRequestResource extends Resource
                         'iletisim-sayfasi' => 'İletişim',
                         'baskan-sayfasi' => 'Başkan',
                         'talep-sikayet-sayfasi' => 'Talep/Şikayet',
+                        'kvkk-sayfasi' => 'KVKK sayfası',
                     ]),
                 SelectFilter::make('status')
                     ->label('Durum')

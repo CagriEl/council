@@ -105,7 +105,12 @@ Route::get('/vefat-ilanlari', function () {
     return view('pages.vefat-ilanlari', compact('obituaries'));
 })->name('obituaries.public');
 
-Route::redirect('/talep-sikayet', '/iletisim', 301)->name('service-requests.page');
+Route::get('/talep-sikayet', function () {
+    return view('pages.talep-sikayet');
+})->name('service-requests.page');
+
+Route::view('/yasal/kvkk', 'pages.yasal-kvkk')->name('legal.kvkk');
+Route::view('/yasal/borc-sorgulama-veri-isleme', 'pages.yasal-borc-sorgulama-veri')->name('legal.debt-query-processing');
 
 Route::get('/hizmetler/yakinda', function () {
     $module = request()->query('modul', 'Bu hizmet');

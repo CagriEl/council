@@ -99,6 +99,8 @@
                         <li><a href="{{ route('mudurler') }}"><i class="fas fa-chevron-right"></i> Organizasyon Şeması</a></li>
                         <li><a href="{{ route('coming-soon', ['modul' => 'Stratejik Plan']) }}"><i class="fas fa-chevron-right"></i> Stratejik Plan</a></li>
                         <li><a href="{{ route('coming-soon', ['modul' => 'Faaliyet Raporları']) }}"><i class="fas fa-chevron-right"></i> Faaliyet Raporları</a></li>
+                        <li><a href="{{ route('legal.kvkk') }}"><i class="fas fa-chevron-right"></i> KVKK</a></li>
+                        <li><a href="{{ route('legal.debt-query-processing') }}"><i class="fas fa-chevron-right"></i> Borç sorgu — veri işleme</a></li>
                     </ul>
                 </div>
 
@@ -108,9 +110,9 @@
                     <ul class="footer-links">
                         <li><a href="{{ route('e-services') }}"><i class="fas fa-chevron-right"></i> Online İşlemler Merkezi</a></li>
                         <li><a href="{{ route('service-requests.page') }}"><i class="fas fa-chevron-right"></i> Talep / Şikayet</a></li>
-                        <li><a href="{{ route('coming-soon', ['modul' => 'Borç Sorgulama']) }}"><i class="fas fa-chevron-right"></i> Borç Sorgulama</a></li>
+                        <li><a href="{{ route('e-services.debt-query') }}"><i class="fas fa-chevron-right"></i> Borç Sorgulama</a></li>
                         <li><a href="{{ route('coming-soon', ['modul' => 'Online Tahsilat']) }}"><i class="fas fa-chevron-right"></i> Online Tahsilat</a></li>
-                        <li><a href="{{ route('coming-soon', ['modul' => 'Vefat İlanları']) }}"><i class="fas fa-chevron-right"></i> Vefat İlanları</a></li>
+                        <li><a href="{{ route('obituaries.public') }}"><i class="fas fa-chevron-right"></i> Vefat İlanları</a></li>
                     </ul>
                 </div>
 
@@ -142,7 +144,9 @@
                         &copy; 2026 T.C. Kırklareli Belediyesi. Tüm Hakları Saklıdır.
                     </div>
                     <div class="col-md-6 text-center text-md-end">
-                        Gizlilik Politikası | Kullanım Şartları
+                        <a href="{{ route('legal.kvkk') }}" class="text-white-50 text-decoration-none">KVKK</a>
+                        <span class="text-white-50"> · </span>
+                        <a href="{{ route('legal.debt-query-processing') }}" class="text-white-50 text-decoration-none">Borç sorgu veri işleme</a>
                     </div>
                 </div>
             </div>

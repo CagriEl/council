@@ -21,6 +21,12 @@
                     <h2 class="page-title">İletişim Bilgileri</h2>
                     <div class="title-divider"></div>
                     <p class="text-muted mb-4">Her türlü soru, öneri ve talepleriniz için aşağıdaki iletişim kanallarından veya yandaki formu kullanarak bize ulaşabilirsiniz.</p>
+                    <div class="alert alert-light border small mb-0" role="note">
+                        <strong>Talep / şikayet kaydı ve takip:</strong>
+                        Resmî kayıt numarası almak ve durum sorgulamak için
+                        <a href="{{ route('service-requests.page') }}">Talep / Şikayet</a> sayfasını kullanın.
+                        Kişisel veriler: <a href="{{ route('legal.kvkk') }}">KVKK</a>.
+                    </div>
 
                     <!-- Adres -->
                     <div class="info-item">

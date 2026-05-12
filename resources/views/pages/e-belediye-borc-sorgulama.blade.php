@@ -64,6 +64,17 @@
                                 </div>
                             </div>
                             <div class="col-12">
+                                <div class="border rounded p-3 mb-3 bg-light small">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="1" id="borc_sorgu_kvkk_onay" name="borc_sorgu_kvkk_onay" required>
+                                        <label class="form-check-label" for="borc_sorgu_kvkk_onay">
+                                            <a href="{{ route('legal.kvkk') }}" target="_blank" rel="noopener noreferrer">KVKK aydınlatma metnini</a>
+                                            ve
+                                            <a href="{{ route('legal.debt-query-processing') }}" target="_blank" rel="noopener noreferrer">borç sorgulama veri işleme</a>
+                                            sayfalarını okudum; kişisel verilerimin bu kapsamda işlenmesini ve denetim için sınırlı log tutulmasını kabul ediyorum.
+                                        </label>
+                                    </div>
+                                </div>
                                 @if (config('services.turnstile.enabled') && config('services.turnstile.site_key'))
                                     <div class="cf-turnstile mb-3"
                                          data-sitekey="{{ config('services.turnstile.site_key') }}"
@@ -200,16 +211,23 @@
             resultBox.classList.add('d-none');
             tableBody.innerHTML = '';
 
+            const kvkkCheckbox = document.getElementById('borc_sorgu_kvkk_onay');
             const payload = {
                 mukellef_tipi: form.mukellef_tipi.value,
                 mukellef_no: form.mukellef_no.value.trim(),
                 indirimli_odenecek_mi: form.indirimli_odenecek_mi.checked,
                 sadece_su_borclari: form.sadece_su_borclari.checked,
+                borc_sorgu_kvkk_onay: kvkkCheckbox ? kvkkCheckbox.checked : false,
                 cf_turnstile_response: turnstileTokenField ? turnstileTokenField.value : '',
             };
 
             if (!payload.mukellef_no) {
                 setAlert('warning', 'Lütfen sorgu numarasını girin.');
+                return;
+            }
+
+            if (!payload.borc_sorgu_kvkk_onay) {
+                setAlert('warning', 'Devam etmek için KVKK ve veri işleme metinlerini okuyup onay kutusunu işaretleyin.');
                 return;
             }
 

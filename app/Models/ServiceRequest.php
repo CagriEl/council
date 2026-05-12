@@ -65,7 +65,7 @@ class ServiceRequest extends Model
     private static function generateTrackingNo(): string
     {
         do {
-            $value = 'TS-'.now()->format('Ymd').'-'.Str::upper(Str::random(6));
+            $value = 'KRKLR-'.now()->format('Ymd').'-'.Str::upper(Str::random(6));
         } while (self::query()->where('tracking_no', $value)->exists());
 
         return $value;

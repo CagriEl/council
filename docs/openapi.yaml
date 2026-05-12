@@ -447,8 +447,9 @@ paths:
       tags: [E-Ödeme]
       summary: Public borç sorgulama
       description: |
-        Turnstile doğrulaması zorunludur. İstekler IP ve mükellef numarası bazlı rate limit ile korunur.
-        Yanıtlar güvenlik nedeniyle maskelenmiş alanlar içerebilir.
+        `borc_sorgu_kvkk_onay` alanı zorunludur (KVKK aydınlatma ve veri işleme onayı).
+        Turnstile, site ve secret anahtarları tanımlıysa `cf_turnstile_response` zorunludur.
+        İstekler IP ve mükellef numarası bazlı rate limit ile korunur. Yanıtlar güvenlik nedeniyle maskelenebilir.
       operationId: debtQuery
       requestBody:
         required: true
@@ -463,6 +464,7 @@ paths:
                   mukellef_no: '12345678901'
                   indirimli_odenecek_mi: false
                   sadece_su_borclari: false
+                  borc_sorgu_kvkk_onay: true
                   cf_turnstile_response: token-from-widget
       responses:
         '200':
@@ -1077,7 +1079,7 @@ components:
 
     EOdemeDebtQueryRequest:
       type: object
-      required: [mukellef_tipi, mukellef_no, cf_turnstile_response]
+      required: [mukellef_tipi, mukellef_no, borc_sorgu_kvkk_onay]
       properties:
         mukellef_tipi:
           type: string
@@ -1089,8 +1091,12 @@ components:
           type: boolean
         sadece_su_borclari:
           type: boolean
+        borc_sorgu_kvkk_onay:
+          type: boolean
+          description: KVKK ve borç sorgu veri işleme metinlerinin okunup kabul edildiğini belirtir (true/1).
         cf_turnstile_response:
           type: string
+          description: Turnstile etkinse zorunlu.
 
     EOdemeDebtItem:
       type: object

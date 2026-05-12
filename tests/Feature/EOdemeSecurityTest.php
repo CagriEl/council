@@ -57,6 +57,7 @@ class EOdemeSecurityTest extends TestCase
         $response = $this->postJson('/api/eodeme/borc-sorgula', [
             'mukellef_tipi' => 'TCKN',
             'mukellef_no' => '12345678901',
+            'borc_sorgu_kvkk_onay' => true,
             'cf_turnstile_response' => 'invalid-token',
         ]);
 
@@ -89,6 +90,7 @@ class EOdemeSecurityTest extends TestCase
         $response = $this->postJson('/api/eodeme/borc-sorgula', [
             'mukellef_tipi' => 'TCKN',
             'mukellef_no' => '12345678901',
+            'borc_sorgu_kvkk_onay' => true,
             'cf_turnstile_response' => 'valid-token',
         ]);
 
@@ -121,6 +123,7 @@ class EOdemeSecurityTest extends TestCase
         $payload = [
             'mukellef_tipi' => 'TCKN',
             'mukellef_no' => '12345678901',
+            'borc_sorgu_kvkk_onay' => true,
         ];
 
         $firstResponse = $this->postJson('/api/eodeme/borc-sorgula', $payload);
@@ -149,6 +152,7 @@ class EOdemeSecurityTest extends TestCase
         $response = $this->postJson('/api/eodeme/borc-sorgula', [
             'mukellef_tipi' => 'TCKN',
             'mukellef_no' => '12345678901',
+            'borc_sorgu_kvkk_onay' => true,
         ]);
 
         $response->assertStatus(503);
