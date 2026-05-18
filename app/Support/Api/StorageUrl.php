@@ -10,6 +10,33 @@ final class StorageUrl
             return null;
         }
 
-        return asset('storage/'.$path);
+        $relativePath = 'storage/'.ltrim($path, '/');
+
+        return self::baseUrl().'/'.$relativePath;
+    }
+
+    private static function baseUrl(): string
+    {
+        $publicPrefix = trim((string) config('app.public_prefix'), '/');
+
+        $request = request();
+        if ($request !== null) {
+            $baseUrl = rtrim($request->getSchemeAndHttpHost().$request->getBaseUrl(), '/');
+
+            return self::appendPrefixIfNeeded($baseUrl, $publicPrefix);
+        }
+
+        $appUrl = rtrim((string) config('app.url'), '/');
+
+        return self::appendPrefixIfNeeded($appUrl, $publicPrefix);
+    }
+
+    private static function appendPrefixIfNeeded(string $baseUrl, string $publicPrefix): string
+    {
+        if ($publicPrefix !== '' && ! str_ends_with($baseUrl, '/'.$publicPrefix)) {
+            $baseUrl .= '/'.$publicPrefix;
+        }
+
+        return $baseUrl;
     }
 }

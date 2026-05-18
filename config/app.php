@@ -56,6 +56,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Public Prefix
+    |--------------------------------------------------------------------------
+    |
+    | If the app is served from a subdirectory (e.g. /public), set this
+    | prefix so API resources can generate correct absolute URLs.
+    |
+    */
+    'public_prefix' => env('APP_PUBLIC_PREFIX', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

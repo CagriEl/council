@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Support\Api\StorageUrl;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -23,7 +24,7 @@ class AnnouncementListResource extends JsonResource
             'type' => $this->type,
             'type_label' => self::typeLabel($this->type),
             'excerpt' => $plain,
-            'image_url' => $this->image_path ? asset('storage/'.$this->image_path) : null,
+            'image_url' => StorageUrl::fromPath($this->image_path),
             'date' => $this->date?->toIso8601String(),
             'published_at' => $this->published_at?->toIso8601String(),
             'unpublished_at' => $this->unpublished_at?->toIso8601String(),

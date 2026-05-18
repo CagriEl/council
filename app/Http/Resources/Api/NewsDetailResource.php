@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Support\Api\StorageUrl;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,7 +22,7 @@ class NewsDetailResource extends JsonResource
             'content_html' => $this->content,
             'category' => $this->category,
             'category_label' => NewsListResource::categoryLabel($this->category),
-            'image_url' => $this->image_path ? asset('storage/'.$this->image_path) : null,
+            'image_url' => StorageUrl::fromPath($this->image_path),
             'published_at' => $this->published_at?->toIso8601String(),
             'unpublished_at' => $this->unpublished_at?->toIso8601String(),
             'is_headline' => (bool) $this->is_headline,

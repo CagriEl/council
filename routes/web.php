@@ -9,6 +9,7 @@ use App\Models\CouncilDecision;
 use App\Models\CouncilMember;
 use App\Models\Mayor;
 use App\Models\StrategicPlan;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
@@ -19,11 +20,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 // API dokümantasyonu (Swagger UI) — tarayıcı: /api/docs
-Route::get('/api/docs/openapi.yaml', function () {
+Route::get('/api/docs/openapi.yaml', function (Request $request) {
     $path = base_path('docs/openapi.yaml');
     abort_unless(File::isFile($path), 404);
 
-    return response()->file($path, [
+    $yaml = File::get($path);
+    $apiBaseUrl = rtrim($request->getSchemeAndHttpHost().$request->getBaseUrl(), '/').'/api';
+    $yaml = str_replace('__API_BASE_URL__', $apiBaseUrl, $yaml);
+
+    return response($yaml, 200, [
         'Content-Type' => 'application/yaml; charset=UTF-8',
     ]);
 })->name('api.docs.openapi');

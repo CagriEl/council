@@ -18,10 +18,9 @@ info:
     name: Kırklareli Belediyesi Bilgi İşlem
 
 servers:
-  - url: 'http://kirklareli.test/api'
+  - url: '__API_BASE_URL__'
     description: |
-      Yerel geliştirme (Valet). Şema **http** — Swagger “Try it out” / Computed URL bu adresi kullanır.
-      Üretimde bu dosyada `servers.url` değerini https kökünüze güncelleyin.
+      Dokümantasyon endpoint'i üzerinden istek yapılan alan adına göre dinamik üretilir.
 
 tags:
   - name: Haberler
