@@ -1,0 +1,869 @@
+openapi: 3.0.3
+info:
+  title: Kırklareli Belediyesi API
+  description: |
+    Mobil ve harici istemciler için JSON API.
+
+    **Yayın kuralları:** Haber ve duyuru listeleri/detayları yalnızca ön yüzde “yayında”
+    sayılan kayıtları döner (`is_active`, yayın tarihi, yayından kalkış tarihi).
+
+    **Görseller ve dosyalar:** `image_url` ve `file_url` alanları tam URL üretir; sunucuda
+    `.env` içindeki `APP_URL` değerine bağlıdır. `php artisan storage:link` gerekir.
+
+    **Kısıtlama:** Aşağıdaki okuma uçları (haber, duyuru, ana sayfa paketi, sayfalar, menü, başkan,
+    meclis, müdürlükler vb.) `throttle:120,1` ile dakikada en fazla 120 istek. `POST /contact/submit`
+    ve `POST /forms/submit` bu limite dahil değildir.
+  version: 1.1.0
+  contact:
+    name: Kırklareli Belediyesi Bilgi İşlem
+
+servers:
+  - url: 'http://kirklareli.test/api'
+    description: |
+      Yerel geliştirme (Valet). Şema **http** — Swagger “Try it out” / Computed URL bu adresi kullanır.
+      Üretimde bu dosyada `servers.url` değerini https kökünüze güncelleyin.
+
+tags:
+  - name: Haberler
+    description: Haber listesi ve detay
+  - name: Duyurular
+    description: Duyuru listesi ve detay
+  - name: Sistem
+    description: Sağlık kontrolü
+  - name: İletişim
+    description: İletişim ve genel form gönderimi
+  - name: Ana sayfa
+    description: Tek istekte açılış verisi
+  - name: Sayfalar
+    description: Yönetim panelindeki statik sayfalar (/sayfa/{slug})
+  - name: Menü
+    description: Header / footer menü ağacı
+  - name: Başkan
+    description: Belediye başkanı bilgisi
+  - name: Meclis
+    description: Meclis üyeleri ve kararlar
+  - name: Müdürlükler
+    description: Müdürlük listesi, detay ve organizasyon şeması
+
+paths:
+  /news:
+    get:
+      tags: [Haberler]
+      summary: Haber listesi
+      description: Sayfalanmış haber listesi. `kategori` ile süzülebilir.
+      operationId: listNews
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - name: kategori
+          in: query
+          description: |
+            Kategori kodu. Boş veya geçersiz değerde tüm yayında haberler.
+          schema:
+            type: string
+            enum: [belediye, kultur, spor, cevre, sosyal]
+      responses:
+        '200':
+          description: Laravel sayfalı yanıt (`data`, `links`, `meta`)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNewsList'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /news/{slug}:
+    get:
+      tags: [Haberler]
+      summary: Haber detayı
+      operationId: showNews
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          example: ornek-haber-belediye-01
+      responses:
+        '200':
+          description: Tekil haber
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /announcements:
+    get:
+      tags: [Duyurular]
+      summary: Duyuru listesi
+      description: Sayfalanmış duyuru listesi. `tip` ile süzülebilir.
+      operationId: listAnnouncements
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - name: tip
+          in: query
+          description: Duyuru tipi. Boşta tüm yayında duyurular.
+          schema:
+            type: string
+            enum: [duyuru, resmi, ihale]
+      responses:
+        '200':
+          description: Laravel sayfalı yanıt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAnnouncementList'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /announcements/{slug}:
+    get:
+      tags: [Duyurular]
+      summary: Duyuru detayı
+      operationId: showAnnouncement
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tekil duyuru
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnouncementDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /home:
+    get:
+      tags: [Ana sayfa]
+      summary: Ana sayfa özet paketi
+      description: |
+        Slider, hızlı linkler, başkan, manşet haberler ve duyuru önizlemeleri (tipe göre).
+        `include` ile modül seçebilirsiniz; boş veya `*` tümünü döndürür.
+      operationId: homeOverview
+      parameters:
+        - name: include
+          in: query
+          description: |
+            Virgülle ayrılmış modüller: `sliders`, `quick_links`, `mayor`, `headline_news`,
+            `announcements_by_type`
+          schema:
+            type: string
+            example: sliders,mayor,headline_news
+      responses:
+        '200':
+          description: İstenen modüllerin birleşik JSON nesnesi (anahtarlar seçime göre değişir)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeOverview'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /pages:
+    get:
+      tags: [Sayfalar]
+      summary: Aktif statik sayfa listesi
+      operationId: listPages
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Sayfalanmış liste
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPageList'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /pages/{slug}:
+    get:
+      tags: [Sayfalar]
+      summary: Statik sayfa detayı (HTML içerik)
+      operationId: showPage
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /menus:
+    get:
+      tags: [Menü]
+      summary: Menü ağacı
+      description: |
+        `page_slug` dolu kayıtlar için içerik `GET /pages/{page_slug}` ile alınır.
+      operationId: listMenus
+      parameters:
+        - name: location
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [header, footer]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuResponse'
+        '422':
+          description: location eksik veya geçersiz
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /mayor:
+    get:
+      tags: [Başkan]
+      summary: Belediye başkanı
+      operationId: showMayor
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mayor'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /council/members:
+    get:
+      tags: [Meclis]
+      summary: Meclis üyeleri
+      operationId: listCouncilMembers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CouncilMember'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /council/decisions:
+    get:
+      tags: [Meclis]
+      summary: Meclis kararları (sayfalı)
+      operationId: listCouncilDecisions
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - name: year
+          in: query
+          schema:
+            type: integer
+          description: Yıla göre süzme (isteğe bağlı)
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCouncilDecisions'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /directorates:
+    get:
+      tags: [Müdürlükler]
+      summary: Müdürlük listesi
+      operationId: listDirectorates
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DirectorateListItem'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /directorates/{slug}:
+    get:
+      tags: [Müdürlükler]
+      summary: Müdürlük detayı
+      operationId: showDirectorate
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectorateDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /organisation/tree:
+    get:
+      tags: [Müdürlükler]
+      summary: Organizasyon şeması (başkan yardımcıları ve müdürlükler)
+      operationId: organisationTree
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrganisationVicePresident'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /test:
+    get:
+      tags: [Sistem]
+      summary: API erişim testi
+      operationId: apiTest
+      responses:
+        '200':
+          description: Basit durum yanıtı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: API Calisiyor
+
+  /contact/submit:
+    post:
+      tags: [İletişim]
+      summary: İletişim mesajı gönder
+      description: |
+        `name` ve `message` zorunludur. Diğer alanlar (e-posta, telefon vb.) JSON gövdesinde
+        serbestçe eklenebilir; sunucu `payload` içinde saklar.
+
+        İsteğe bağlı başlık: `X-Platform` (ör. `ios`, `android`, `web`). Varsayılan `web`.
+      operationId: contactSubmit
+      parameters:
+        - name: X-Platform
+          in: header
+          required: false
+          schema:
+            type: string
+            default: web
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactSubmitRequest'
+            examples:
+              minimal:
+                value:
+                  name: Ayşe Yılmaz
+                  message: Merhaba, bilgi almak istiyorum.
+              full:
+                value:
+                  name: Ayşe Yılmaz
+                  message: Merhaba.
+                  email: ayse@example.com
+                  phone: '05551234567'
+                  source: mobil-app
+      responses:
+        '200':
+          description: Kayıt alındı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactSuccess'
+        '400':
+          description: Eksik alan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactError'
+        '500':
+          description: Sunucu hatası
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactError'
+
+  /forms/submit:
+    post:
+      tags: [İletişim]
+      summary: Evrensel form gönderimi (panelde Gelen Formlar)
+      description: |
+        Gövde serbest yapıda JSON kabul eder; `source` ve `platform` ayrılır, kalan alanlar `data`
+        içinde saklanır. Başlık `X-Platform` (ios, android, web) gönderilebilir.
+      operationId: universalFormSubmit
+      parameters:
+        - name: X-Platform
+          in: header
+          required: false
+          schema:
+            type: string
+            default: web
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              example:
+                source: mobil-app
+                name: Test Kullanıcı
+                message: Merhaba
+      responses:
+        '200':
+          description: Kayıt alındı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+        '400':
+          description: Boş gövde
+        '500':
+          description: Sunucu hatası
+
+components:
+  parameters:
+    Page:
+      name: page
+      in: query
+      description: Sayfa numarası (Laravel pagination)
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PerPage:
+      name: per_page
+      in: query
+      description: Sayfa başına kayıt (1–50, varsayılan 15)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 15
+
+  responses:
+    NotFound:
+      description: Kayıt bulunamadı veya yayında değil
+      content:
+        application/json:
+          schema:
+            type: object
+            description: Laravel JSON hata gövdesi (mesaj alanı ortam ayarına göre değişebilir)
+    TooManyRequests:
+      description: Çok fazla istek (429)
+
+  schemas:
+    NewsListItem:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        summary: { type: string, nullable: true }
+        category: { type: string, nullable: true }
+        category_label: { type: string }
+        image_url: { type: string, format: uri, nullable: true }
+        published_at: { type: string, format: date-time, nullable: true }
+        unpublished_at: { type: string, format: date-time, nullable: true }
+        is_headline: { type: boolean }
+        updated_at: { type: string, format: date-time, nullable: true }
+
+    NewsDetail:
+      allOf:
+        - $ref: '#/components/schemas/NewsListItem'
+        - type: object
+          properties:
+            content_html:
+              type: string
+              description: Haber gövdesi (HTML)
+          required: [content_html]
+
+    AnnouncementListItem:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        type: { type: string, enum: [duyuru, resmi, ihale] }
+        type_label: { type: string }
+        excerpt: { type: string, description: Düz metin özet (HTML şeritlenmiş) }
+        image_url: { type: string, format: uri, nullable: true }
+        date: { type: string, format: date-time, nullable: true }
+        published_at: { type: string, format: date-time, nullable: true }
+        unpublished_at: { type: string, format: date-time, nullable: true }
+        has_attachment: { type: boolean }
+        updated_at: { type: string, format: date-time, nullable: true }
+
+    AnnouncementDetail:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        type: { type: string }
+        type_label: { type: string }
+        content_html: { type: string, nullable: true }
+        image_url: { type: string, format: uri, nullable: true }
+        file_url: { type: string, format: uri, nullable: true, description: PDF ek varsa tam URL }
+        date: { type: string, format: date-time, nullable: true }
+        published_at: { type: string, format: date-time, nullable: true }
+        unpublished_at: { type: string, format: date-time, nullable: true }
+        updated_at: { type: string, format: date-time, nullable: true }
+
+    PaginationLinks:
+      type: object
+      properties:
+        first: { type: string, format: uri, nullable: true }
+        last: { type: string, format: uri, nullable: true }
+        prev: { type: string, format: uri, nullable: true }
+        next: { type: string, format: uri, nullable: true }
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page: { type: integer }
+        from: { type: integer, nullable: true }
+        last_page: { type: integer }
+        path: { type: string }
+        per_page: { type: integer }
+        to: { type: integer, nullable: true }
+        total: { type: integer }
+
+    PaginatedNewsList:
+      type: object
+      required: [data, links, meta]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewsListItem'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    PaginatedAnnouncementList:
+      type: object
+      required: [data, links, meta]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnnouncementListItem'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    PageListItem:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        image_url: { type: string, format: uri, nullable: true }
+        updated_at: { type: string, format: date-time, nullable: true }
+
+    PageDetail:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        content_html: { type: string, nullable: true }
+        image_url: { type: string, format: uri, nullable: true }
+        updated_at: { type: string, format: date-time, nullable: true }
+
+    PaginatedPageList:
+      type: object
+      required: [data, links, meta]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PageListItem'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    MenuNode:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        url: { type: string, nullable: true }
+        page_slug: { type: string, nullable: true }
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuNode'
+
+    MenuResponse:
+      type: object
+      properties:
+        location:
+          type: string
+          enum: [header, footer]
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuNode'
+
+    HomeOverview:
+      type: object
+      description: Alanlar `include` parametresine göre isteğe bağlıdır
+      properties:
+        sliders:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              title: { type: string, nullable: true }
+              image_url: { type: string, format: uri, nullable: true }
+              link: { type: string, nullable: true }
+              order: { type: integer }
+        quick_links:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              title: { type: string }
+              url: { type: string }
+              icon_class: { type: string }
+              order: { type: integer }
+        mayor:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/Mayor'
+        headline_news:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewsListItem'
+        announcements_by_type:
+          type: object
+          properties:
+            duyuru:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnnouncementListItem'
+            resmi:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnnouncementListItem'
+            ihale:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnnouncementListItem'
+
+    Mayor:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        title: { type: string, nullable: true }
+        image_url: { type: string, format: uri, nullable: true }
+        description_html: { type: string, nullable: true }
+        message_html: { type: string, nullable: true }
+        is_active: { type: boolean }
+
+    PoliticalPartySnippet:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        short_name: { type: string, nullable: true }
+        logo_url: { type: string, format: uri, nullable: true }
+        color: { type: string, nullable: true }
+
+    CouncilMember:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        title: { type: string, nullable: true }
+        party: { type: string, nullable: true }
+        image_url: { type: string, format: uri, nullable: true }
+        sort_order: { type: integer }
+        political_party:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/PoliticalPartySnippet'
+
+    CouncilDecision:
+      type: object
+      properties:
+        id: { type: integer }
+        year: { type: integer }
+        month: { type: string }
+        title: { type: string }
+        meeting_date: { type: string, format: date-time, nullable: true }
+        agenda_file_url: { type: string, format: uri, nullable: true }
+        decision_file_url: { type: string, format: uri, nullable: true }
+        commission_file_url: { type: string, format: uri, nullable: true }
+        updated_at: { type: string, format: date-time, nullable: true }
+
+    PaginatedCouncilDecisions:
+      type: object
+      required: [data, links, meta]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CouncilDecision'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    VicePresidentSnippet:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        title: { type: string, nullable: true }
+
+    DirectorateListItem:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        vice_president:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/VicePresidentSnippet'
+
+    DirectorateDetail:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        manager_name: { type: string, nullable: true }
+        manager_title: { type: string, nullable: true }
+        manager_image_url: { type: string, format: uri, nullable: true }
+        phone: { type: string, nullable: true }
+        email: { type: string, nullable: true }
+        description_html: { type: string, nullable: true }
+        vice_president:
+          type: object
+          nullable: true
+          properties:
+            id: { type: integer }
+            name: { type: string }
+            title: { type: string, nullable: true }
+            image_url: { type: string, format: uri, nullable: true }
+        latest_announcements:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnnouncementListItem'
+
+    OrganisationVicePresident:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        title: { type: string, nullable: true }
+        order: { type: integer }
+        directorates:
+          type: array
+          items:
+            $ref: '#/components/schemas/DirectorateListItem'
+
+    ContactSubmitRequest:
+      type: object
+      required: [name, message]
+      properties:
+        name:
+          type: string
+        message:
+          type: string
+        source:
+          type: string
+          description: Kaynak etiketi (ör. mobil-app)
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+      additionalProperties: true
+
+    ContactSuccess:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Mesaj alındı.
+
+    ContactError:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
