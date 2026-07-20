@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Actions\SendMobilePushAction;
 use App\Filament\Resources\AnnouncementResource\Pages;
 use App\Models\Announcement;
 use Filament\Forms;
@@ -98,6 +99,7 @@ class AnnouncementResource extends Resource
                 Tables\Columns\TextColumn::make('unpublished_at')->label('Kalkış')->date('d.m.Y')->placeholder('—'),
             ])
             ->actions([
+                SendMobilePushAction::table('announcement'),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ]);

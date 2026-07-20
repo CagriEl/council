@@ -142,6 +142,32 @@
             color: #3498db !important;
         }
 
+        .detail-nav .dropdown-toggle::after {
+            display: none;
+        }
+
+        .detail-nav .dropdown-menu {
+            background: #fff;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            padding: 0.35rem 0;
+            min-width: 220px;
+        }
+
+        .detail-nav .dropdown-item {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #112240;
+            padding: 0.45rem 1rem;
+            text-transform: none;
+        }
+
+        .detail-nav .dropdown-item:hover {
+            background: #e8f4ff;
+            color: #0052cc;
+        }
+
         /* =========================
            SIDEBAR (Kullanılan sayfalarda)
         ========================= */
@@ -300,6 +326,30 @@
             max-width: 100%;
             height: auto;
             border-radius: 8px;
+        }
+
+        .page-content-list ul {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .page-content-list li {
+            margin-bottom: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #0052cc;
+        }
+
+        .page-content-list a {
+            color: #112240;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .page-content-list a:hover {
+            color: #0052cc;
+            text-decoration: underline;
         }
 
         .breadcrumb-back {
@@ -694,6 +744,30 @@
             /* Resim oranını korumak için */
             object-fit: cover;
             aspect-ratio: 3/4; 
+        }
+
+        .past-mayors-content .past-mayors-grid,
+        .page-content .past-mayors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .past-mayors-content .past-mayor-chip,
+        .page-content .past-mayor-chip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 56px;
+            padding: 14px 16px;
+            border: 1px solid #c8d9ef;
+            border-radius: 12px;
+            background: #f8fbff;
+            color: #1a3c6e;
+            font-weight: 700;
+            font-size: 0.88rem;
+            line-height: 1.35;
+            text-align: center;
         }
 
         /* Form */
@@ -1259,6 +1333,11 @@
         .detail-nav .nav-link:focus,
         .detail-nav .nav-link.active {
             color: #ffffff !important;
+        }
+
+        .custom-nav .dropdown-toggle::after,
+        .detail-nav .dropdown-toggle::after {
+            display: none;
         }
     </style>
 

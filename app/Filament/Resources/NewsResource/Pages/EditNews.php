@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NewsResource\Pages;
 
+use App\Filament\Actions\SendMobilePushAction;
 use App\Filament\Resources\NewsResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,6 +14,7 @@ class EditNews extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            SendMobilePushAction::make('news'),
             Actions\DeleteAction::make(),
         ];
     }

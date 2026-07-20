@@ -26,7 +26,9 @@ class AppServiceProvider extends ServiceProvider
                                    ->where('is_active', true)
                                    ->whereNull('parent_id')
                                    ->orderBy('order')
-                                   ->with('children') 
+                                   ->with(['children' => fn ($query) => $query
+                                       ->where('is_active', true)
+                                       ->orderBy('order')])
                                    ->get();
 
                 $view->with('headerMenus', $headerMenus);

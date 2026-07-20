@@ -40,9 +40,7 @@
                                 <div class="collapse navbar-collapse flex-grow-0" id="detailNav">
                                     <ul class="navbar-nav detail-nav">
                                         <li class="nav-item"><a class="nav-link" href="{{ route('baskan') }}">Başkan</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="{{ route('mudurler') }}">Kurumsal</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="#">Kırklareli</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="{{ route('meclis-kararlari') }}">Meclis Karalari</a></li>
+                                        @include('partials.header-nav-items', ['menus' => ($headerMenus ?? collect())->whereIn('title', ['Kurumsal', 'Mevzuat'])])
                                         <li class="nav-item"><a class="nav-link" href="{{ route('news.index') }}">Haberler</a></li>
                                         <li class="nav-item"><a class="nav-link" href="{{ route('announcements.index') }}">Duyurular</a></li>
                                         <li class="nav-item"><a class="nav-link" href="#">Hizmet Rehberi</a></li>

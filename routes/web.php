@@ -3,6 +3,7 @@
 use App\Http\Controllers\Frontend\AnnouncementController;
 use App\Http\Controllers\Frontend\NewsController;
 use App\Http\Controllers\Frontend\SearchController;
+use App\Http\Controllers\Frontend\TransparencyController;
 use App\Http\Controllers\PageController;
 use App\Models\ActivityReport;
 use App\Models\CouncilDecision;
@@ -82,6 +83,9 @@ Route::get('/stratejik-plan', function () {
 
     return view('pages.stratejik-plan', compact('plans'));
 })->name('strategic-plans.index');
+
+Route::get('/seffaflik-hesap-verilebilirlik/{section?}', [TransparencyController::class, 'show'])
+    ->name('transparency.show');
 
 Route::get('/haberler', function () {
     return redirect()->route('announcements.index', ['tip' => 'duyuru']);

@@ -130,6 +130,18 @@
     .ann-item:last-child { border-bottom: none; }
     .ann-item:hover { background-color: #fcfcfc; }
     .ann-link { text-decoration: none; display: block; }
+    /* Ana sayfadaki duyuru başlık linklerinin (a etiketi) varsayılan mavi/underline görünümünü düzelt */
+    .ann-card .ann-item > a {
+        text-decoration: none;
+        color: #1a3c6e;
+        font-weight: 700;
+        display: block;
+    }
+    .ann-card .ann-item > a:hover,
+    .ann-card .ann-item > a:focus {
+        text-decoration: none;
+        color: #0052cc;
+    }
     .ann-text { font-size: 0.9rem; color: #333; font-weight: 500; line-height: 1.4; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .ann-date { font-size: 0.75rem; color: #888; display: flex; align-items: center; gap: 5px; }
     .ann-item:hover .ann-text { color: #0052cc; }
@@ -230,7 +242,7 @@
                 <div class="col-xl-2 col-lg-2 d-none d-lg-block order-3 p-0">
                     @if($mayor)
                     <div class="mayor-wrapper">
-                        <img src="{{ asset('assest/images/baskan.webp') }}" alt="{{ $mayor->name }}" class="mayor-img">
+                        <img src="{{ asset('images/deryabulut.webp') }}" alt="{{ $mayor->name }}" class="mayor-img">
                     </div>
                     @endif
                 </div>

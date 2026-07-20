@@ -97,9 +97,37 @@
 
         .custom-nav .nav-link { color: #ffffff !important; font-weight: 700; font-size: 1rem; text-transform: capitalize; padding: 0.5rem 1.2rem; margin: 0 2px; transition: all 0.3s; text-shadow: 0 2px 4px rgba(0,0,0,0.8); position: relative; opacity: 1 !important; }
         .header-wrapper.header-solid .custom-nav .nav-link { font-size: 0.82rem; padding: 0.35rem 0.75rem; }
-        .custom-nav .nav-link::after { content: ''; display: block; width: 0; height: 2px; background: #00c6ff; transition: width .3s; margin: 0 auto; }
-        .custom-nav .nav-link:hover::after { width: 100%; }
+        .custom-nav .nav-link:not(.dropdown-toggle)::after { content: ''; display: block; width: 0; height: 2px; background: #00c6ff; transition: width .3s; margin: 0 auto; }
+        .custom-nav .nav-link:not(.dropdown-toggle):hover::after { width: 100%; }
         .custom-nav .nav-link:hover { color: #ffffff !important; }
+
+        .custom-nav .dropdown-menu {
+            background: #fff;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            padding: 0.35rem 0;
+            min-width: 220px;
+        }
+        .custom-nav .dropdown-item {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #112240;
+            padding: 0.45rem 1rem;
+        }
+        .custom-nav .dropdown-item:hover {
+            background: #e8f4ff;
+            color: #0052cc;
+        }
+        .custom-nav .dropdown-toggle::after { display: none; }
+
+        .menu-caret {
+            margin-left: 0.45rem;
+            font-size: 0.85em;
+            opacity: 0.95;
+            display: inline-flex;
+            align-items: center;
+        }
 
         /* FOOTER STİLLERİ */
         footer { background-color: #112240; color: #fff; padding-top: 70px; position: relative; font-size: 0.9rem; margin-top: auto; }

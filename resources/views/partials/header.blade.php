@@ -34,8 +34,7 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav me-auto align-items-center custom-nav">
                     <li class="nav-item"><a class="nav-link" href="{{ route('baskan') }}">Başkan</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('mudurler') }}">Organizasyon Şeması</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('meclis') }}">Meclis</a></li>
+                    @include('partials.header-nav-items', ['menus' => ($headerMenus ?? collect())->whereIn('title', ['Kurumsal', 'Mevzuat'])])
                     <li class="nav-item"><a class="nav-link" href="{{ route('news.index') }}">Haberler</a></li>
                 </ul>
 
@@ -46,8 +45,11 @@
 
                 <ul class="navbar-nav ms-auto align-items-center custom-nav">
                     <li class="nav-item"><a class="nav-link" href="{{ route('announcements.index') }}">Duyurular</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('meclis-kararlari') }}">Meclis Kararları</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Kültür - Sanat</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('transparency.show') }}">
+                            Şeffaflık ve Hesap Verilebilirlik
+                        </a>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('iletisim') }}">İletişim</a></li>
                 </ul>
             </div>

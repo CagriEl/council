@@ -10,6 +10,9 @@ use App\Http\Controllers\Api\MobileHomeController;
 use App\Http\Controllers\Api\MobileMayorController;
 use App\Http\Controllers\Api\MobileMenuController;
 use App\Http\Controllers\Api\MobileNewsController;
+use App\Http\Controllers\Api\MobilePushTokenController;
+use App\Http\Controllers\Api\MobileTransportScheduleController;
+use App\Http\Controllers\Api\MobileInfrastructureWorkController;
 use App\Http\Controllers\Api\MobileOrganisationController;
 use App\Http\Controllers\Api\MobilePageController;
 use App\Http\Controllers\Api\UniversalFormController;
@@ -55,6 +58,11 @@ Route::middleware('throttle:120,1')->group(function () {
     Route::get('/directorates', [MobileDirectorateController::class, 'index'])->name('api.directorates.index');
     Route::get('/directorates/{slug}', [MobileDirectorateController::class, 'show'])->name('api.directorates.show');
     Route::get('/organisation/tree', [MobileOrganisationController::class, 'tree'])->name('api.organisation.tree');
+    Route::get('/transport/schedules', [MobileTransportScheduleController::class, 'index'])->name('api.transport.schedules');
+    Route::get('/infrastructure-works', [MobileInfrastructureWorkController::class, 'index'])->name('api.infrastructure-works.index');
+
+    Route::post('/push/register', [MobilePushTokenController::class, 'register'])->name('api.push.register');
+    Route::post('/push/unregister', [MobilePushTokenController::class, 'unregister'])->name('api.push.unregister');
 });
 
 Route::get('/test', function () {
@@ -62,7 +70,9 @@ Route::get('/test', function () {
 });
 
 Route::post('/contact/submit', [ContactController::class, 'submit'])
+    ->middleware('throttle:20,1')
     ->name('api.contact.submit');
 
 Route::post('/forms/submit', [UniversalFormController::class, 'submit'])
+    ->middleware('throttle:20,1')
     ->name('api.forms.submit');

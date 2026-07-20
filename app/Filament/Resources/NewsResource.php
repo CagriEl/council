@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Actions\SendMobilePushAction;
 use App\Filament\Resources\NewsResource\Pages;
 use App\Models\News;
 use Filament\Forms;
@@ -112,6 +113,7 @@ class NewsResource extends Resource
                 //
             ])
             ->actions([
+                SendMobilePushAction::table('news'),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ]);
