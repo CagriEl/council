@@ -26,35 +26,44 @@ class SliderResource extends Resource
                 Forms\Components\Section::make('Görsel ve Video')
                     ->description('Ana sayfada görünecek arka plan. Video yüklerseniz görsel "kapak resmi" (poster) olarak kullanılır.')
                     ->schema([
-                        // Resim Yükleme
                         Forms\Components\FileUpload::make('image_path')
                             ->label('Kapak Görseli / Resim')
                             ->image()
                             ->disk('public')
                             ->directory('sliders')
-                            ->visibility('public')
+                            ->acceptedFileTypes([
+                                'image/jpeg',
+                                'image/jpg',
+                                'image/png',
+                                'image/webp',
+                                'image/gif',
+                            ])
+                            ->maxSize(5120) // 5 MB — cPanel PHP limitlerine uyumlu
+                            ->helperText('JPG, PNG, WEBP veya GIF. En fazla 5 MB.')
+                            ->imagePreviewHeight('200')
                             ->nullable()
                             ->columnSpanFull(),
 
-                        // Video Yükleme (YENİ EKLENDİ)
                         Forms\Components\FileUpload::make('video_path')
                             ->label('Video (İsteğe Bağlı)')
                             ->disk('public')
                             ->directory('sliders/videos')
-                            ->visibility('public')
-                            ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/quicktime']) // Sadece video formatları
-                            ->maxSize(204800) // Maksimum 100MB (102400 KB)
-                            ->columnSpanFull()
+                            ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/quicktime'])
+                            ->maxSize(51200) // 50 MB
+                            ->helperText('MP4 / WEBM. En fazla 50 MB.')
+                            ->nullable()
+                            ->columnSpanFull(),
                     ]),
 
                 Forms\Components\Section::make('Detaylar')
                     ->schema([
                         Forms\Components\TextInput::make('title')
                             ->label('Başlık (Opsiyonel)'),
-                        
+
                         Forms\Components\TextInput::make('link')
                             ->label('Yönlendirilecek Link (Opsiyonel)')
-                            ->url(),
+                            ->url()
+                            ->nullable(),
 
                         Forms\Components\TextInput::make('order')
                             ->label('Sıralama')
@@ -75,15 +84,17 @@ class SliderResource extends Resource
                 Tables\Columns\ImageColumn::make('image_path')
                     ->label('Görsel')
                     ->disk('public')
+                    ->height(60)
                     ->width(100),
-                
+
                 Tables\Columns\IconColumn::make('video_path')
-                    ->label('Video Var mı?')
+                    ->label('Video')
                     ->boolean()
                     ->trueIcon('heroicon-o-video-camera')
-                    ->falseIcon('heroicon-o-x-mark'),
+                    ->falseIcon('heroicon-o-x-mark')
+                    ->getStateUsing(fn (Slider $record): bool => filled($record->video_path)),
 
-                Tables\Columns\TextColumn::make('title')->label('Başlık'),
+                Tables\Columns\TextColumn::make('title')->label('Başlık')->searchable(),
                 Tables\Columns\TextColumn::make('order')->label('Sıra')->sortable(),
                 Tables\Columns\ToggleColumn::make('is_active')->label('Durum'),
             ])
@@ -93,9 +104,7 @@ class SliderResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

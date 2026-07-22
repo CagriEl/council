@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View; // Gerekli
-use App\Models\Menu; 
+use App\Models\Menu;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,6 +14,23 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
+        // Livewire / Filament yükleme dizinleri (yazılabilir olmalı)
+        foreach ([
+            storage_path('app/public/livewire-tmp'),
+            storage_path('app/private/livewire-tmp'),
+            storage_path('app/public/sliders'),
+            storage_path('app/public/sliders/videos'),
+        ] as $directory) {
+            if (! is_dir($directory)) {
+                @mkdir($directory, 0775, true);
+            }
+            @chmod($directory, 0775);
+        }
+
         Blade::directive('parseContent', function ($expression) {
             return "<?php echo \App\Providers\AppServiceProvider::parseShortcodes($expression); ?>";
         });
