@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class SliderResource extends Resource
 {
@@ -24,33 +25,45 @@ class SliderResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Görsel ve Video')
-                    ->description('Ana sayfada görünecek arka plan. Video yüklerseniz görsel kapak (poster) olur.')
+                    ->description('Ana sayfa arka plan görseli. İsterseniz video da ekleyebilirsiniz.')
                     ->schema([
                         Forms\Components\FileUpload::make('image_path')
                             ->label('Kapak Görseli / Resim')
                             ->disk('public')
                             ->directory('sliders')
-                            ->acceptedFileTypes([
-                                'image/jpeg',
-                                'image/png',
-                                'image/webp',
-                                'image/gif',
-                            ])
-                            ->maxSize(4096) // 4 MB
-                            ->helperText('JPG/PNG/WEBP/GIF — en fazla 4 MB. Önce küçük bir JPG deneyin.')
+                            // visibility/public + mimetypes bazı sunucularda save anında 500 veriyor
+                            ->visibility('private')
                             ->fetchFileInformation(false)
                             ->nullable()
+                            ->helperText('JPG/PNG/WEBP yükleyin. Kaydet’e basınca diske yazılır.')
+                            ->saveUploadedFileUsing(function (TemporaryUploadedFile $file): ?string {
+                                try {
+                                    return $file->store('sliders', 'public');
+                                } catch (\Throwable $e) {
+                                    report($e);
+
+                                    return null;
+                                }
+                            })
                             ->columnSpanFull(),
 
                         Forms\Components\FileUpload::make('video_path')
                             ->label('Video (İsteğe Bağlı)')
                             ->disk('public')
                             ->directory('sliders/videos')
-                            ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/quicktime'])
-                            ->maxSize(20480) // 20 MB
-                            ->helperText('MP4/WEBM — en fazla 20 MB.')
+                            ->visibility('private')
                             ->fetchFileInformation(false)
                             ->nullable()
+                            ->helperText('MP4/WEBM (isteğe bağlı).')
+                            ->saveUploadedFileUsing(function (TemporaryUploadedFile $file): ?string {
+                                try {
+                                    return $file->store('sliders/videos', 'public');
+                                } catch (\Throwable $e) {
+                                    report($e);
+
+                                    return null;
+                                }
+                            })
                             ->columnSpanFull(),
                     ]),
 
@@ -61,8 +74,9 @@ class SliderResource extends Resource
 
                         Forms\Components\TextInput::make('link')
                             ->label('Yönlendirilecek Link (Opsiyonel)')
-                            ->url()
-                            ->nullable(),
+                            ->nullable()
+                            // ->url() boş/geçersiz değerde kaydı düşürmesin diye kaldırıldı
+                            ,
 
                         Forms\Components\TextInput::make('order')
                             ->label('Sıralama')

@@ -9,9 +9,6 @@ class CreateSlider extends CreateRecord
 {
     protected static string $resource = SliderResource::class;
 
-    /**
-     * FileUpload bazen tek dosyayı dizi olarak döndürür; DB string sütunu için normalize ediyoruz.
-     */
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         return $this->normalizeUploadPaths($data);
@@ -20,12 +17,12 @@ class CreateSlider extends CreateRecord
     private function normalizeUploadPaths(array $data): array
     {
         foreach (['image_path', 'video_path'] as $field) {
-            if (! isset($data[$field])) {
+            if (! array_key_exists($field, $data)) {
                 continue;
             }
 
             if (is_array($data[$field])) {
-                $data[$field] = $data[$field][0] ?? null;
+                $data[$field] = array_values(array_filter($data[$field]))[0] ?? null;
             }
 
             if ($data[$field] === '' || $data[$field] === []) {
