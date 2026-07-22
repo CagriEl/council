@@ -104,10 +104,65 @@ class PageController extends Controller
      */
     public function mudurler()
     {
-        $vicePresidents = VicePresident::with('directorates')->orderBy('order')->get();
+        $vicePresidents = VicePresident::with(['directorates' => fn ($q) => $q->orderBy('name')])
+            ->orderBy('order')
+            ->get();
+
         $allDirectorates = Directorate::with('vicePresident')->orderBy('name')->get();
 
-        return view('pages.mudurler', compact('vicePresidents', 'allDirectorates'));
+        // Başkana doğrudan bağlı birimler (şemada başkanın yanında)
+        $mayorAttached = Directorate::query()
+            ->whereNull('vice_president_id')
+            ->orderBy('name')
+            ->get();
+
+        $mayorDirectorates = collect([
+            [
+                'label' => 'Teftiş Kurulu Müdürlüğü',
+                'match' => ['teftiş', 'teftis'],
+            ],
+            [
+                'label' => 'İç Denetim',
+                'match' => ['iç denetim', 'ic denetim'],
+            ],
+            [
+                'label' => 'Özel Kalem Müdürlüğü',
+                'match' => ['özel kalem', 'ozel kalem'],
+            ],
+        ])->map(function (array $item) use ($mayorAttached, $allDirectorates) {
+            $found = $mayorAttached->first(function ($d) use ($item) {
+                $name = mb_strtolower($d->name);
+                foreach ($item['match'] as $needle) {
+                    if (str_contains($name, mb_strtolower($needle))) {
+                        return true;
+                    }
+                }
+
+                return false;
+            });
+
+            // VP altında yanlışlıkla kayıtlıysa yine de bul
+            if (! $found) {
+                $found = $allDirectorates->first(function ($d) use ($item) {
+                    $name = mb_strtolower($d->name);
+                    foreach ($item['match'] as $needle) {
+                        if (str_contains($name, mb_strtolower($needle))) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                });
+            }
+
+            return (object) [
+                'name' => $item['label'],
+                'slug' => $found->slug ?? null,
+                'manager_name' => $found->manager_name ?? null,
+            ];
+        });
+
+        return view('pages.mudurler', compact('vicePresidents', 'allDirectorates', 'mayorDirectorates'));
     }
 
     /**

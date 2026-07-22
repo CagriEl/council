@@ -158,6 +158,37 @@
         }
 
 
+        /* Başkan + yanındaki birimler */
+        .mayor-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: nowrap;
+            position: relative;
+            z-index: 10;
+        }
+        .mayor-staff-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: stretch;
+        }
+        .mayor-row .org-card {
+            align-self: center;
+        }
+        .mayor-row .type-staff {
+            border-top: 4px solid #3498db;
+            width: 200px;
+        }
+        .mayor-row .type-staff .org-name {
+            font-size: 0.82rem;
+        }
+        .org-card.is-static {
+            cursor: default;
+            pointer-events: none;
+        }
+
         /* --- KUTU TASARIMI --- */
         .org-card {
             background: white;
@@ -269,16 +300,56 @@
         <div class="org-chart-wrapper">
             <div class="tree">
                 <ul>
-                    {{-- 1. SEVİYE: BELEDİYE BAŞKANI (SABİT) --}}
+                    {{-- 1. SEVİYE: BAŞKAN + BAŞKANA BAĞLI BİRİMLER --}}
                     <li>
-                        <a href="{{ route('baskan') }}" class="org-card type-mayor">
-                            {{-- Başkanın fotosu sabit veya modelden gelebilir --}}
-                            <img src="{{ asset('assets/baskan-small.png') }}" 
-                                 onerror="this.src='https://ui-avatars.com/api/?name=Derya+Bulut&background=fff&color=1a3c6e'" 
-                                 class="org-img">
-                            <span class="org-name">Derya BULUT</span>
-                            <span class="org-title">Belediye Başkanı</span>
-                        </a>
+                        <div class="mayor-row">
+                            @php
+                                $mayorUnits = ($mayorDirectorates ?? collect())->values();
+                                $leftStaff = $mayorUnits->take(2);   // Teftiş + İç Denetim
+                                $rightStaff = $mayorUnits->slice(2); // Özel Kalem
+                            @endphp
+
+                            <div class="mayor-staff-stack">
+                                @foreach($leftStaff as $mayorUnit)
+                                    @if($mayorUnit->slug)
+                                        <a href="{{ route('mudurluk.detay', $mayorUnit->slug) }}" class="org-card type-unit type-staff">
+                                            <span class="org-name">{{ $mayorUnit->name }}</span>
+                                            @if($mayorUnit->manager_name)
+                                                <span class="org-title">{{ $mayorUnit->manager_name }}</span>
+                                            @endif
+                                        </a>
+                                    @else
+                                        <div class="org-card type-unit type-staff is-static">
+                                            <span class="org-name">{{ $mayorUnit->name }}</span>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+
+                            <a href="{{ route('baskan') }}" class="org-card type-mayor">
+                                <img src="{{ asset('assets/baskan-small.png') }}"
+                                     onerror="this.src='https://ui-avatars.com/api/?name=Derya+Bulut&background=fff&color=1a3c6e'"
+                                     class="org-img"
+                                     alt="Derya BULUT">
+                                <span class="org-name">Derya BULUT</span>
+                                <span class="org-title">Belediye Başkanı</span>
+                            </a>
+
+                            @foreach($rightStaff as $mayorUnit)
+                                @if($mayorUnit->slug)
+                                    <a href="{{ route('mudurluk.detay', $mayorUnit->slug) }}" class="org-card type-unit type-staff">
+                                        <span class="org-name">{{ $mayorUnit->name }}</span>
+                                        @if($mayorUnit->manager_name)
+                                            <span class="org-title">{{ $mayorUnit->manager_name }}</span>
+                                        @endif
+                                    </a>
+                                @else
+                                    <div class="org-card type-unit type-staff is-static">
+                                        <span class="org-name">{{ $mayorUnit->name }}</span>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
 
                         @if(($vicePresidents ?? collect())->count() > 0)
                             <ul>
