@@ -30,34 +30,40 @@
         .page-title { font-weight: 800; font-size: 2.2rem; color: #1a3c6e; margin-bottom: 10px; }
         .title-divider { width: 80px; height: 4px; background: #e74c3c; margin: 15px auto; border-radius: 2px; }
 
-        /* --- ORGANİZASYON AĞACI CSS (TAM ORTALI) --- */
+        /* --- ORGANİZASYON AĞACI CSS (TAM ORTALI, YANA KAYMASIN) --- */
         .org-chart-wrapper {
             display: flex;
             justify-content: center;
+            align-items: flex-start;
             width: 100%;
-            overflow-x: auto; /* Mobilde taşarsa kaydır */
+            max-width: 100%;
+            overflow: hidden; /* Sayfa/şema yana kaymasın */
             padding-bottom: 50px;
         }
 
         .tree {
-            display: table; /* Merkezlemek için */
+            display: inline-block;
             margin: 0 auto;
+            transform-origin: top center;
+            will-change: transform;
         }
 
         .tree ul {
             padding-top: 20px; 
             position: relative;
-            transition: all 0.5s;
             display: flex;
             justify-content: center; /* ÇOCUKLARI ORTALA */
+            margin: 0;
+            padding-left: 0;
         }
 
         .tree li {
-            float: left; text-align: center;
+            float: none;
+            text-align: center;
             list-style-type: none;
             position: relative;
-            padding: 20px 10px 0 10px;
-            transition: all 0.5s;
+            padding: 20px 8px 0 8px;
+            flex: 0 0 auto;
         }
 
         /* Çizgiler */
@@ -171,8 +177,15 @@
 
         .org-card:hover {
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            transform: translateY(-3px);
             border-color: #1a3c6e;
+        }
+
+        a.org-card.type-unit {
+            cursor: pointer;
+        }
+
+        .org-card.type-vice_mayor {
+            cursor: default;
         }
 
         .org-img {
@@ -224,8 +237,16 @@
         }
 
         /* --- YATAY ÇİZGİ DÜZELTMESİ --- */
-        .tree ul {
+        .tree > ul > li > ul {
             flex-wrap: nowrap;
+            gap: 0;
+        }
+
+        @media (max-width: 992px) {
+            .org-card { width: 170px; padding: 12px; }
+            .org-img { width: 56px; height: 56px; }
+            .org-name { font-size: 0.8rem; }
+            .tree li { padding-left: 4px; padding-right: 4px; }
         }
 
     </style>
@@ -259,52 +280,32 @@
                             <span class="org-title">Belediye Başkanı</span>
                         </a>
 
-                        @php
-                            // Başkan Yardımcılarını Çekiyoruz
-                            $vicePresidents = collect([]);
-                            try {
-                                if (class_exists('App\Models\VicePresident')) {
-                                    $vicePresidents = \App\Models\VicePresident::orderBy('order', 'asc')->get();
-                                }
-                            } catch (\Exception $e) {}
-                        @endphp
-
-                        @if($vicePresidents->count() > 0)
+                        @if(($vicePresidents ?? collect())->count() > 0)
                             <ul>
                                 {{-- 2. SEVİYE: BAŞKAN YARDIMCILARI (YAN YANA) --}}
                                 @foreach($vicePresidents as $vicePresident)
                                     <li>
-                                        {{-- Başkan Yardımcıları için şimdilik # linki --}}
-                                        <a href="#" class="org-card type-vice_mayor">
+                                        <div class="org-card type-vice_mayor">
                                             @if($vicePresident->image)
-                                                <img src="{{ Storage::url($vicePresident->image) }}" class="org-img">
+                                                <img src="{{ Storage::url($vicePresident->image) }}" class="org-img" alt="{{ $vicePresident->name }}">
                                             @else
-                                                <img src="https://ui-avatars.com/api/?name={{ urlencode($vicePresident->name ?? 'Baskan Yrd') }}&background=f0f2f5&color=1a3c6e" class="org-img">
+                                                <img src="https://ui-avatars.com/api/?name={{ urlencode($vicePresident->name ?? 'Baskan Yrd') }}&background=f0f2f5&color=1a3c6e" class="org-img" alt="{{ $vicePresident->name }}">
                                             @endif
                                             <span class="org-name">{{ $vicePresident->name }}</span>
                                             <span class="org-title">{{ $vicePresident->title ?? 'Belediye Başkan Yrd.' }}</span>
-                                        </a>
+                                        </div>
 
                                         @php
-                                            // Başkan yardımcısına bağlı müdürlükleri çekiyoruz
-                                            $directorates = collect([]);
-                                            try {
-                                                if (class_exists('App\Models\Directorate')) {
-                                                    $directorates = \App\Models\Directorate::where('vice_president_id', $vicePresident->id)
-                                                        ->orderBy('name', 'asc')
-                                                        ->get();
-                                                }
-                                            } catch (\Exception $e) {}
+                                            $directorates = $vicePresident->relationLoaded('directorates')
+                                                ? $vicePresident->directorates->sortBy('name')
+                                                : ($vicePresident->directorates()->orderBy('name')->get());
                                         @endphp
 
                                         @if($directorates->count() > 0)
-                                            {{-- 3. SEVİYE: MÜDÜRLÜKLER (ALT ALTA / DİKEY) --}}
-                                            {{-- 'vertical-nodes' sınıfını buraya ekliyoruz --}}
                                             <ul class="vertical-nodes">
                                                 @foreach($directorates as $directorate)
                                                     <li>
-                                                        {{-- HATA ÇÖZÜMÜ: Linki # olarak değiştirdik çünkü rota yok --}}
-                                                        <a href="#" class="org-card type-unit">
+                                                        <a href="{{ route('mudurluk.detay', $directorate->slug) }}" class="org-card type-unit">
                                                             <span class="org-name">{{ $directorate->name }}</span>
                                                             @if($directorate->manager_name)
                                                                 <span class="org-title">{{ $directorate->manager_name }}</span>
@@ -328,5 +329,28 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            var wrap = document.querySelector('.org-chart-wrapper');
+            var tree = wrap && wrap.querySelector('.tree');
+            if (!wrap || !tree) return;
+
+            function fitTree() {
+                tree.style.transform = 'scale(1)';
+                wrap.style.height = '';
+                var available = wrap.clientWidth;
+                var needed = tree.scrollWidth;
+                if (!available || !needed) return;
+                var scale = Math.min(1, available / needed);
+                tree.style.transform = 'scale(' + scale + ')';
+                wrap.style.height = Math.ceil(tree.getBoundingClientRect().height) + 'px';
+            }
+
+            window.addEventListener('load', fitTree);
+            window.addEventListener('resize', fitTree);
+            if (document.readyState === 'complete') fitTree();
+            else document.addEventListener('DOMContentLoaded', fitTree);
+        })();
+    </script>
 </body>
 </html>
