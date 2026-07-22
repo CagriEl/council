@@ -1,3 +1,6 @@
+{{-- Sayfa yüklenirken logo splash (tüm frontend sayfaları) --}}
+@include('partials.page-loader')
+
 {{-- Erişilebilirlik: atlama bağlantısı, araç çubuğu, görsel yardımcı stiller --}}
 <a href="#main-content" class="skip-to-content">İçeriğe geç</a>
 
