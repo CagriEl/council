@@ -4,6 +4,11 @@
     </IfModule>
 
     RewriteEngine On
+    RewriteBase /
+
+    # E-Belediye: her durumda harici portala 301
+    RewriteCond %{REQUEST_URI} e-belediye/?$ [NC]
+    RewriteRule .* https://e-belediye.kirklareli.bel.tr/ [L,R=301]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -26,7 +31,4 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
-
-    
-    
 </IfModule>

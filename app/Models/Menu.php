@@ -36,4 +36,9 @@ class Menu extends Model
     {
         return $this->belongsTo(Menu::class, 'parent_id');
     }
+
+    public function getUrlAttribute(?string $value): ?string
+    {
+        return QuickLink::normalizeEBelediyeUrl($value);
+    }
 }

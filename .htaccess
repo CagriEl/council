@@ -1,3 +1,11 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # E-Belediye yönlendirmeleri (document root proje köküyse)
+    RewriteRule ^e-belediye/?$ https://e-belediye.kirklareli.bel.tr [L,R=301]
+    RewriteRule ^public/e-belediye/?$ https://e-belediye.kirklareli.bel.tr [L,R=301]
+</IfModule>
+
 <IfModule mod_authz_core.c>
     <FilesMatch "(^\.|composer\.(json|lock)$|package(-lock)?\.json$|artisan$|phpunit\.xml$|\.env(\..*)?$)">
         Require all denied

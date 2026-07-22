@@ -130,12 +130,10 @@ Route::get('/rehber', function () {
     return view('pages.rehber');
 })->name('rehber');
 
-// İç URL'den dış e-belediye adresine yönlendirme.
-Route::get('/e-belediye', function () {
-    return redirect()->away('https://e-belediye.kirklareli.bel.tr');
-});
+// İç URL'den dış e-belediye adresine yönlendirme (301).
+Route::redirect('/e-belediye', 'https://e-belediye.kirklareli.bel.tr', 301);
+Route::redirect('/e-belediye/', 'https://e-belediye.kirklareli.bel.tr', 301);
 
 // Bazı ortamlarda uygulama /public altından servis edildiği için.
-Route::get('/public/e-belediye', function () {
-    return redirect()->away('https://e-belediye.kirklareli.bel.tr');
-});
+Route::redirect('/public/e-belediye', 'https://e-belediye.kirklareli.bel.tr', 301);
+Route::redirect('/public/e-belediye/', 'https://e-belediye.kirklareli.bel.tr', 301);
