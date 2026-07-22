@@ -59,11 +59,12 @@
         @if($turnstileEnabled && $turnstileSiteKey)
             <div class="col-12 d-flex justify-content-center">
                 <div
-                    class="cf-turnstile"
+                    class="cf-turnstile kb-turnstile"
                     data-sitekey="{{ $turnstileSiteKey }}"
                     data-theme="light"
                     data-language="tr"
-                    data-callback="onKbTurnstileSuccess"
+                    data-size="normal"
+                    style="min-height: 65px; min-width: 300px;"
                 ></div>
             </div>
         @endif
@@ -79,10 +80,43 @@
 
 @once
 @if($turnstileEnabled && $turnstileSiteKey)
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script>
-        window.onKbTurnstileSuccess = function () {};
+        window.__kbTurnstileSiteKey = @json($turnstileSiteKey);
+
+        window.__kbRenderTurnstiles = function () {
+            if (!window.turnstile || !window.__kbTurnstileSiteKey) return;
+            document.querySelectorAll('.kb-turnstile').forEach(function (el) {
+                if (el.getAttribute('data-kb-rendered') === '1') {
+                    try { window.turnstile.reset(el); } catch (err) {}
+                    return;
+                }
+                try {
+                    window.turnstile.render(el, {
+                        sitekey: window.__kbTurnstileSiteKey,
+                        theme: 'light',
+                        language: 'tr',
+                        size: 'normal',
+                    });
+                    el.setAttribute('data-kb-rendered', '1');
+                } catch (err) {
+                    console.error('Turnstile render:', err);
+                }
+            });
+        };
+
+        window.onKbTurnstileScriptLoad = function () {
+            if (window.turnstile && typeof window.turnstile.ready === 'function') {
+                window.turnstile.ready(window.__kbRenderTurnstiles);
+            } else {
+                window.__kbRenderTurnstiles();
+            }
+        };
+
+        window.addEventListener('kb:ready', function () {
+            window.setTimeout(window.__kbRenderTurnstiles, 50);
+        });
     </script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onKbTurnstileScriptLoad&render=explicit" async defer></script>
 @endif
 <script>
     async function submitContactForm(e) {
@@ -134,7 +168,7 @@
                 msgBox.classList.remove('d-none');
                 form.reset();
                 if (window.turnstile) {
-                    container.querySelectorAll('.cf-turnstile').forEach(function (el) {
+                    container.querySelectorAll('.kb-turnstile').forEach(function (el) {
                         try { window.turnstile.reset(el); } catch (err) {}
                     });
                 }
@@ -147,7 +181,7 @@
             msgBox.classList.add('alert-danger');
             msgBox.classList.remove('d-none');
             if (window.turnstile) {
-                container.querySelectorAll('.cf-turnstile').forEach(function (el) {
+                container.querySelectorAll('.kb-turnstile').forEach(function (el) {
                     try { window.turnstile.reset(el); } catch (err) {}
                 });
             }

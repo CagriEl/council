@@ -15,9 +15,8 @@
         html.kb-loading body {
             overflow: hidden !important;
         }
-        html.kb-loading body > *:not(#kb-page-loader) {
-            visibility: hidden !important;
-        }
+        /* Not: body çocuklarını visibility:hidden yapma — Turnstile iframe gizliyken
+           render olunca boş kalıyor. Overlay (#kb-page-loader) zaten ekranı kaplıyor. */
         #kb-page-loader {
             position: fixed;
             inset: 0;

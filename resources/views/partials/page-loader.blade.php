@@ -27,6 +27,7 @@
         el.classList.add('is-done');
         window.setTimeout(function () {
             if (el && el.parentNode) el.parentNode.removeChild(el);
+            try { window.dispatchEvent(new Event('kb:ready')); } catch (e) {}
         }, 450);
     }
 
