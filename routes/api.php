@@ -70,9 +70,9 @@ Route::get('/test', function () {
 });
 
 Route::post('/contact/submit', [ContactController::class, 'submit'])
-    ->middleware('throttle:20,1')
+    ->middleware('throttle:contact')
     ->name('api.contact.submit');
 
 Route::post('/forms/submit', [UniversalFormController::class, 'submit'])
-    ->middleware('throttle:20,1')
+    ->middleware('throttle:contact')
     ->name('api.forms.submit');

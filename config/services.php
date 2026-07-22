@@ -35,4 +35,15 @@ return [
         ],
     ],
 
+    'turnstile' => [
+        // Public site key (safe to expose in HTML)
+        'site_key' => env('TURNSTILE_SITE_KEY', '0x4AAAAAAD7TfR2lgr5K6EE1'),
+        // Server-only — set TURNSTILE_SECRET in .env (never commit)
+        'secret_key' => env('TURNSTILE_SECRET'),
+    ],
+
+    'contact' => [
+        'notify_to' => env('CONTACT_NOTIFY_TO', 'kirklareli@kirklareli.bel.tr'),
+    ],
+
 ];

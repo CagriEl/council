@@ -3,7 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Menu;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -14,6 +17,15 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        RateLimiter::for('contact', function (Request $request) {
+            $key = $request->ip() ?: 'unknown';
+
+            return [
+                Limit::perMinute(5)->by('contact-minute:'.$key),
+                Limit::perHour(20)->by('contact-hour:'.$key),
+            ];
+        });
+
         // Canlı sitede APP_URL yanlış olsa bile Livewire imzalı upload URL'leri
         // tarayıcıdaki gerçek host ile üretilsin (aksi halde upload 401/500 olur).
         if (! $this->app->runningInConsole()) {

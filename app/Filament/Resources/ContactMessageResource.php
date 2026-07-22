@@ -123,7 +123,16 @@ class ContactMessageResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->actions([
                 Tables\Actions\ViewAction::make()->label('Oku'),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()->label('Sil'),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Seçilenleri sil')
+                        ->modalHeading('Seçilen mesajları sil')
+                        ->modalDescription('Seçili mesajlar kalıcı olarak silinecek. Emin misiniz?')
+                        ->modalSubmitActionLabel('Evet, sil'),
+                ]),
             ]);
     }
 
