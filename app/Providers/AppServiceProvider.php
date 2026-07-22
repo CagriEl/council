@@ -14,11 +14,18 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        if ($this->app->environment('production')) {
+        // Canlı sitede APP_URL yanlış olsa bile Livewire imzalı upload URL'leri
+        // tarayıcıdaki gerçek host ile üretilsin (aksi halde upload 401/500 olur).
+        if (! $this->app->runningInConsole()) {
+            $request = request();
+            if ($request) {
+                URL::forceRootUrl($request->getSchemeAndHttpHost());
+            }
+            URL::forceScheme('https');
+        } elseif ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
 
-        // Livewire / Filament yükleme dizinleri (yazılabilir olmalı)
         foreach ([
             storage_path('app/public/livewire-tmp'),
             storage_path('app/private/livewire-tmp'),
@@ -26,20 +33,16 @@ class AppServiceProvider extends ServiceProvider
             storage_path('app/public/sliders/videos'),
         ] as $directory) {
             if (! is_dir($directory)) {
-                @mkdir($directory, 0775, true);
+                @mkdir($directory, 0777, true);
             }
-            @chmod($directory, 0775);
+            @chmod($directory, 0777);
         }
 
         Blade::directive('parseContent', function ($expression) {
             return "<?php echo \App\Providers\AppServiceProvider::parseShortcodes($expression); ?>";
         });
         try {
-            // Tüm view dosyalarıyla headerMenus değişkenini paylaş
             View::composer('*', function ($view) {
-                
-                // Sadece Header ve Ana Menüleri (parent_id olmayanları) çekiyoruz
-                // Alt menüleri 'children' ilişkisiyle alacağız
                 $headerMenus = Menu::where('location', 'header')
                                    ->where('is_active', true)
                                    ->whereNull('parent_id')
@@ -55,13 +58,12 @@ class AppServiceProvider extends ServiceProvider
             // Tablo yoksa hata verme
         }
     }
+
     public static function parseShortcodes($content)
     {
-        // Regex ile [form code="xyz"] desenini arıyoruz
         return preg_replace_callback('/\[form code="(.*?)"\]/', function ($matches) {
-            $formCode = $matches[1]; // "baskan-iletisim" gibi kodu alır
-            
-            // Component'i render edip string olarak döner
+            $formCode = $matches[1];
+
             return view('components.api-form', ['code' => $formCode])->render();
         }, $content);
     }

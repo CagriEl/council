@@ -24,23 +24,21 @@ class SliderResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Görsel ve Video')
-                    ->description('Ana sayfada görünecek arka plan. Video yüklerseniz görsel "kapak resmi" (poster) olarak kullanılır.')
+                    ->description('Ana sayfada görünecek arka plan. Video yüklerseniz görsel kapak (poster) olur.')
                     ->schema([
                         Forms\Components\FileUpload::make('image_path')
                             ->label('Kapak Görseli / Resim')
-                            ->image()
                             ->disk('public')
                             ->directory('sliders')
                             ->acceptedFileTypes([
                                 'image/jpeg',
-                                'image/jpg',
                                 'image/png',
                                 'image/webp',
                                 'image/gif',
                             ])
-                            ->maxSize(5120) // 5 MB — cPanel PHP limitlerine uyumlu
-                            ->helperText('JPG, PNG, WEBP veya GIF. En fazla 5 MB.')
-                            ->imagePreviewHeight('200')
+                            ->maxSize(4096) // 4 MB
+                            ->helperText('JPG/PNG/WEBP/GIF — en fazla 4 MB. Önce küçük bir JPG deneyin.')
+                            ->fetchFileInformation(false)
                             ->nullable()
                             ->columnSpanFull(),
 
@@ -49,8 +47,9 @@ class SliderResource extends Resource
                             ->disk('public')
                             ->directory('sliders/videos')
                             ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/quicktime'])
-                            ->maxSize(51200) // 50 MB
-                            ->helperText('MP4 / WEBM. En fazla 50 MB.')
+                            ->maxSize(20480) // 20 MB
+                            ->helperText('MP4/WEBM — en fazla 20 MB.')
+                            ->fetchFileInformation(false)
                             ->nullable()
                             ->columnSpanFull(),
                     ]),

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Manşet / Livewire yükleme dizinlerini hazırlar.
-# Sunucuda: bash scripts/fix-upload-storage.sh
+# Manşet upload 500 için sunucu düzeltmesi
+# Kullanım: cd /home/kirklareli.bel.tr/public_html && bash scripts/fix-upload-storage.sh
 
 set -euo pipefail
-
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+echo "==> Dizinler"
 mkdir -p \
   storage/app/public/livewire-tmp \
   storage/app/private/livewire-tmp \
@@ -18,40 +18,40 @@ mkdir -p \
   storage/logs \
   bootstrap/cache
 
-# 0700 livewire-tmp web kullanıcısının yazmasını engeller — 775 şart
-chmod -R ug+rwx storage bootstrap/cache || true
-chmod 775 storage/app/public/livewire-tmp storage/app/private/livewire-tmp \
-  storage/app/public/sliders storage/app/public/sliders/videos || true
+echo "==> İzinler (777 — shared hosting yazma sorununu çözer)"
+chmod -R 777 storage bootstrap/cache || true
 
-# .gitignore placeholder (boş klasör git'e girsin diye gerekmez; tmp için)
-touch storage/app/public/livewire-tmp/.gitignore
-echo '*' > storage/app/public/livewire-tmp/.gitignore
-echo '!.gitignore' >> storage/app/public/livewire-tmp/.gitignore
-
+echo "==> storage link"
 if [ ! -e public/storage ]; then
-  php artisan storage:link || true
+  php artisan storage:link || ln -sf ../storage/app/public public/storage || true
 fi
 
-php artisan config:clear || true
-php artisan cache:clear || true
-php artisan view:clear || true
+echo "==> Cache temizle (ESKI CONFIG KALIRSA UPLOAD 500 DEVAM EDER)"
+php artisan optimize:clear || {
+  php artisan config:clear || true
+  php artisan cache:clear || true
+  php artisan view:clear || true
+  php artisan route:clear || true
+}
 
 echo ""
-echo "=== Upload teşhis ==="
-echo "APP_URL (kirklareli.bel.tr olmalı):"
+echo "=== APP_URL (https://kirklareli.bel.tr OLMALI) ==="
 grep -E '^APP_URL=' .env || true
+
 echo ""
-echo "Dizinler:"
-ls -la storage/app/public/livewire-tmp storage/app/public/sliders public/storage 2>&1 | head -20
-echo ""
-echo "PHP limitleri (en az 8M olmalı):"
-php -r 'echo "upload_max_filesize=".ini_get("upload_max_filesize")." post_max_size=".ini_get("post_max_size").PHP_EOL;'
-echo ""
-echo "Yazma testi:"
-TESTFILE="storage/app/public/livewire-tmp/_write_test_$$"
-if echo ok > "$TESTFILE" 2>/dev/null; then
-  rm -f "$TESTFILE"
-  echo "OK: livewire-tmp yazılabilir"
+echo "=== Yazma testi ==="
+TEST="storage/app/public/livewire-tmp/_t_$$"
+if echo ok > "$TEST" 2>/dev/null; then
+  rm -f "$TEST"
+  echo "OK: livewire-tmp yazılabiliyor"
 else
-  echo "HATA: livewire-tmp yazılamıyor — chmod/chown kontrol edin"
+  echo "HATA: yazılamıyor — hosting destekine storage yazma izni sorun"
 fi
+
+echo ""
+echo "=== PHP limit ==="
+php -r 'echo "upload_max=".ini_get("upload_max_filesize")." post_max=".ini_get("post_max_size").PHP_EOL;'
+
+php artisan uploads:diagnose 2>/dev/null || true
+echo ""
+echo "Bitti. Admin > Manşet > küçük JPG dene."

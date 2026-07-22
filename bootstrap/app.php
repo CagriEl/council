@@ -19,5 +19,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->reportable(function (\Throwable $e): void {
+            $path = request()?->path() ?? '';
+            if (str_contains($path, 'livewire') || str_contains($path, 'upload')) {
+                \Illuminate\Support\Facades\Log::error('Upload/Livewire 500', [
+                    'message' => $e->getMessage(),
+                    'path' => $path,
+                    'file' => $e->getFile().':'.$e->getLine(),
+                ]);
+            }
+        });
     })->create();
