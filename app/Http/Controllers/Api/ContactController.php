@@ -67,7 +67,7 @@ class ContactController extends Controller
         }
 
         $payload = $validator->validated();
-        if ($spamGuard->isSpam(
+        if ($spamGuard->isBlocked(
             $payload['name'] ?? null,
             $payload['email'] ?? null,
             $payload['subject'] ?? null,
@@ -76,7 +76,7 @@ class ContactController extends Controller
         )) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Mesajınız spam olarak algılandı.',
+                'message' => 'Mesajınız güvenlik kontrolünden geçemedi. Lütfen düz metin kullanın.',
             ], 422);
         }
 

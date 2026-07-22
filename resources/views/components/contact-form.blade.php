@@ -57,15 +57,22 @@
         </div>
 
         @if($turnstileEnabled && $turnstileSiteKey)
-            <div class="col-12 d-flex justify-content-center">
-                <div
-                    class="cf-turnstile kb-turnstile"
-                    data-sitekey="{{ $turnstileSiteKey }}"
-                    data-theme="light"
-                    data-language="tr"
-                    data-size="normal"
-                    style="min-height: 65px; min-width: 300px;"
-                ></div>
+            <div class="col-12">
+                <label class="form-label fw-bold d-block text-center mb-2">Güvenlik doğrulaması</label>
+                <div class="d-flex justify-content-center">
+                    {{-- Implicit render: class=cf-turnstile + data-sitekey --}}
+                    <div
+                        class="cf-turnstile"
+                        data-sitekey="{{ $turnstileSiteKey }}"
+                        data-theme="light"
+                        data-language="tr"
+                        data-size="normal"
+                        data-appearance="always"
+                    ></div>
+                </div>
+                <p class="text-center text-muted small mt-2 mb-0" id="kb-turnstile-hint-{{ $source }}">
+                    Kutucuk görünmezse sayfayı yenileyin veya reklam engelleyiciyi kapatın.
+                </p>
             </div>
         @endif
 
@@ -80,43 +87,8 @@
 
 @once
 @if($turnstileEnabled && $turnstileSiteKey)
-    <script>
-        window.__kbTurnstileSiteKey = @json($turnstileSiteKey);
-
-        window.__kbRenderTurnstiles = function () {
-            if (!window.turnstile || !window.__kbTurnstileSiteKey) return;
-            document.querySelectorAll('.kb-turnstile').forEach(function (el) {
-                if (el.getAttribute('data-kb-rendered') === '1') {
-                    try { window.turnstile.reset(el); } catch (err) {}
-                    return;
-                }
-                try {
-                    window.turnstile.render(el, {
-                        sitekey: window.__kbTurnstileSiteKey,
-                        theme: 'light',
-                        language: 'tr',
-                        size: 'normal',
-                    });
-                    el.setAttribute('data-kb-rendered', '1');
-                } catch (err) {
-                    console.error('Turnstile render:', err);
-                }
-            });
-        };
-
-        window.onKbTurnstileScriptLoad = function () {
-            if (window.turnstile && typeof window.turnstile.ready === 'function') {
-                window.turnstile.ready(window.__kbRenderTurnstiles);
-            } else {
-                window.__kbRenderTurnstiles();
-            }
-        };
-
-        window.addEventListener('kb:ready', function () {
-            window.setTimeout(window.__kbRenderTurnstiles, 50);
-        });
-    </script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onKbTurnstileScriptLoad&render=explicit" async defer></script>
+    {{-- Implicit mode: async/defer OK; do NOT call turnstile.ready() --}}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 @endif
 <script>
     async function submitContactForm(e) {
@@ -168,7 +140,7 @@
                 msgBox.classList.remove('d-none');
                 form.reset();
                 if (window.turnstile) {
-                    container.querySelectorAll('.kb-turnstile').forEach(function (el) {
+                    container.querySelectorAll('.cf-turnstile').forEach(function (el) {
                         try { window.turnstile.reset(el); } catch (err) {}
                     });
                 }
@@ -181,7 +153,7 @@
             msgBox.classList.add('alert-danger');
             msgBox.classList.remove('d-none');
             if (window.turnstile) {
-                container.querySelectorAll('.kb-turnstile').forEach(function (el) {
+                container.querySelectorAll('.cf-turnstile').forEach(function (el) {
                     try { window.turnstile.reset(el); } catch (err) {}
                 });
             }
