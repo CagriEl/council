@@ -72,9 +72,15 @@ class AnnouncementResource extends Resource
                             ->directory('announcements/covers')
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make('file_path')
-                            ->label('Ek Dosya (PDF)')
+                            ->label('Ek Dosya (PDF / ZIP)')
                             ->directory('announcements')
-                            ->acceptedFileTypes(['application/pdf'])
+                            ->acceptedFileTypes([
+                                'application/pdf',
+                                'application/zip',
+                                'application/x-zip-compressed',
+                                'application/x-zip',
+                            ])
+                            ->helperText('PDF veya ZIP yükleyebilirsiniz.')
                             ->columnSpanFull(),
                     ])->columns(2),
             ]);

@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\News;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Throwable;
 
 class SearchController extends Controller
 {
@@ -20,28 +22,38 @@ class SearchController extends Controller
         if (Str::length($q) >= 2) {
             $like = '%'.addcslashes($q, '%_\\').'%';
 
-            $news = News::query()
-                ->publishedForPublic()
-                ->where(function ($query) use ($like) {
-                    $query->where('title', 'like', $like)
-                        ->orWhere('summary', 'like', $like)
-                        ->orWhere('content', 'like', $like);
-                })
-                ->orderByDesc('published_at')
-                ->orderByDesc('id')
-                ->limit(50)
-                ->get();
+            try {
+                $news = News::query()
+                    ->publishedForPublic()
+                    ->where(function ($query) use ($like) {
+                        $query->where('title', 'like', $like)
+                            ->orWhere('summary', 'like', $like)
+                            ->orWhere('content', 'like', $like);
+                    })
+                    ->orderByDesc('published_at')
+                    ->orderByDesc('id')
+                    ->limit(50)
+                    ->get();
+            } catch (Throwable $e) {
+                Log::warning('Search news query failed', ['message' => $e->getMessage()]);
+                $news = collect();
+            }
 
-            $announcements = Announcement::query()
-                ->publishedForPublic()
-                ->where(function ($query) use ($like) {
-                    $query->where('title', 'like', $like)
-                        ->orWhere('content', 'like', $like);
-                })
-                ->orderByDesc('date')
-                ->orderByDesc('id')
-                ->limit(50)
-                ->get();
+            try {
+                $announcements = Announcement::query()
+                    ->publishedForPublic()
+                    ->where(function ($query) use ($like) {
+                        $query->where('title', 'like', $like)
+                            ->orWhere('content', 'like', $like);
+                    })
+                    ->orderByDesc('date')
+                    ->orderByDesc('id')
+                    ->limit(50)
+                    ->get();
+            } catch (Throwable $e) {
+                Log::warning('Search announcements query failed', ['message' => $e->getMessage()]);
+                $announcements = collect();
+            }
         }
 
         return view('pages.arama', [

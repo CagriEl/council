@@ -83,10 +83,10 @@
                         Kırklareli Belediyesi, şeffaf, katılımcı ve yenilikçi belediyecilik anlayışıyla şehrimize değer katmaya devam ediyor. Tarihi dokusu, kültürel zenginliği ve modern yüzüyle Kırklareli hepimizin.
                     </p>
                     <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.facebook.com/kirklarelibelediyesi" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://x.com/Kirkbelbasin" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="X"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/kirklarelibelediyesi" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="{{ route('iletisim') }}" class="social-link" aria-label="İletişim"><i class="fas fa-envelope"></i></a>
                     </div>
                 </div>
 
@@ -94,11 +94,12 @@
                 <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
                     <h5 class="footer-title">KURUMSAL</h5>
                     <ul class="footer-links">
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Başkan</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Meclis Üyeleri</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Organizasyon Şeması</a></li>
+                        <li><a href="{{ route('baskan') }}"><i class="fas fa-chevron-right"></i> Başkan</a></li>
+                        <li><a href="{{ route('meclis') }}"><i class="fas fa-chevron-right"></i> Meclis Üyeleri</a></li>
+                        <li><a href="{{ route('mudurler') }}"><i class="fas fa-chevron-right"></i> Organizasyon Şeması</a></li>
                         <li><a href="{{ route('strategic-plans.index') }}"><i class="fas fa-chevron-right"></i> Stratejik Plan</a></li>
                         <li><a href="{{ route('activity-reports.index') }}"><i class="fas fa-chevron-right"></i> Faaliyet Raporları</a></li>
+                        <li><a href="{{ route('rehber') }}"><i class="fas fa-chevron-right"></i> Telefon Rehberi</a></li>
                     </ul>
                 </div>
 

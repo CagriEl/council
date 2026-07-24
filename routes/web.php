@@ -7,7 +7,6 @@ use App\Http\Controllers\Frontend\TransparencyController;
 use App\Http\Controllers\PageController;
 use App\Models\ActivityReport;
 use App\Models\CouncilDecision;
-use App\Models\CouncilMember;
 use App\Models\Mayor;
 use App\Models\StrategicPlan;
 use Illuminate\Http\Request;
@@ -56,7 +55,6 @@ Route::get('/baskan', function () {
 
 Route::get('/meclis', [PageController::class, 'meclis'])->name('meclis');
 
-// HATA ALDIĞINIZ KISIM BURASIYDI:
 // Metod ismi 'mudurlukler' değil, 'mudurler' olmalı.
 Route::get('/mudurler', [PageController::class, 'mudurler'])->name('mudurler');
 
@@ -91,19 +89,13 @@ Route::get('/haberler', function () {
     return redirect()->route('announcements.index', ['tip' => 'duyuru']);
 })->name('news.index');
 Route::get('/ara', [SearchController::class, 'index'])->name('search');
+Route::redirect('/arama', '/ara', 301);
 Route::get('/haber/{slug}', [NewsController::class, 'show'])->name('news.detail');
 
 Route::get('/sayfa/{slug}', [App\Http\Controllers\Frontend\PageController::class, 'show'])->name('page.detail');
 
 Route::get('/meclis-uyeleri', function () {
-    // Veritabanından aktif üyeleri çekiyoruz
-    // Eğer sort_order sütunu yoksa hata almamak için veritabanı yapınızı kontrol edin
-    $members = CouncilMember::where('is_active', true)
-        ->orderBy('sort_order', 'asc')
-        ->orderBy('name', 'asc')
-        ->get();
-
-    return view('pages.meclis', compact('members'));
+    return redirect()->route('meclis', status: 301);
 })->name('council.index');
 
 Route::get('/meclis-kararlari', function () {
@@ -122,12 +114,17 @@ Route::get('/iletisim', function () {
     return view('pages.iletisim');
 })->name('iletisim');
 
+// İç görev paneli herkese açık olmamalı
 Route::get('/gorev', function () {
-    return view('pages.gorev');
+    abort(404);
 })->name('gorev');
 
 Route::get('/rehber', function () {
-    return view('pages.rehber');
+    $directorates = \App\Models\Directorate::query()
+        ->orderBy('name')
+        ->get(['name', 'slug', 'manager_name', 'phone', 'email']);
+
+    return view('pages.rehber', compact('directorates'));
 })->name('rehber');
 
 // İç URL'den dış e-belediye adresine yönlendirme (301).

@@ -73,14 +73,26 @@
                             {!! $contentWithoutSourceLink !!}
                         </div>
 
-                        <!-- PDF Dosya Linki -->
+                        <!-- Ek Dosya Linki (PDF / ZIP) -->
                         @if(!empty($announcement->file_path))
+                            @php
+                                $ext = strtolower(pathinfo($announcement->file_path, PATHINFO_EXTENSION));
+                                $isZip = $ext === 'zip';
+                            @endphp
                             <div class="mt-4">
-                                <a href="{{ asset('storage/' . $announcement->file_path) }}" target="_blank" class="pdf-download-box">
-                                    <i class="fas fa-file-pdf fa-2x me-3"></i>
+                                <a href="{{ asset('storage/' . $announcement->file_path) }}"
+                                   @if($isZip) download @else target="_blank" @endif
+                                   class="pdf-download-box">
+                                    <i class="fas {{ $isZip ? 'fa-file-zipper' : 'fa-file-pdf' }} fa-2x me-3"></i>
                                     <div>
-                                        <div style="font-weight: 700;">EKİ GÖRÜNTÜLE</div>
-                                        <div style="font-size: 0.85rem;">Dosyayı indirmek veya görüntülemek için tıklayın.</div>
+                                        <div style="font-weight: 700;">
+                                            {{ $isZip ? 'ZIP DOSYASINI İNDİR' : 'EKİ GÖRÜNTÜLE' }}
+                                        </div>
+                                        <div style="font-size: 0.85rem;">
+                                            {{ $isZip
+                                                ? 'Sıkıştırılmış ek dosyayı indirmek için tıklayın.'
+                                                : 'Dosyayı indirmek veya görüntülemek için tıklayın.' }}
+                                        </div>
                                     </div>
                                 </a>
                             </div>

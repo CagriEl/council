@@ -17,6 +17,10 @@ class PageController extends Controller
             return redirect()->route('mudurler');
         }
 
+        if ($slug === 'mudurluklerimiz') {
+            return redirect()->route('mudurler');
+        }
+
         // Slug'a göre sayfayı bul, aktif değilse 404 ver
         $page = Page::where('slug', $slug)
             ->where('is_active', true)

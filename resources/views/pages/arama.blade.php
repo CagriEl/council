@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arama@if(\Illuminate\Support\Str::length($q) >= 2) — {{ \Illuminate\Support\Str::limit($q, 40) }}@endif - T.C. Kırklareli Belediyesi</title>
+    <title>
+        @if(strlen($q) >= 2)
+            Arama — {{ \Illuminate\Support\Str::limit($q, 40) }} - T.C. Kırklareli Belediyesi
+        @else
+            Arama - T.C. Kırklareli Belediyesi
+        @endif
+    </title>
     @include('layouts.frontend-head')
     <style>
         .search-result-card {
@@ -38,9 +44,9 @@
         </div>
     </form>
 
-    @if(\Illuminate\Support\Str::length($q) > 0 && \Illuminate\Support\Str::length($q) < 2)
+    @if(strlen($q) > 0 && strlen($q) < 2)
         <p class="text-muted">Arama yapmak için en az 2 karakter girin.</p>
-    @elseif(\Illuminate\Support\Str::length($q) >= 2)
+    @elseif(strlen($q) >= 2)
         @if($news->isEmpty() && $announcements->isEmpty())
             <p class="text-muted">“{{ $q }}” için sonuç bulunamadı.</p>
         @else
@@ -50,7 +56,7 @@
                     <a href="{{ route('news.detail', $item->slug) }}" class="search-result-card">
                         <span class="badge-type text-danger">Haber</span>
                         <div class="res-title">{{ $item->title }}</div>
-                        <div class="res-snippet">{{ Str::limit(strip_tags($item->summary ?: $item->content), 160) }}</div>
+                        <div class="res-snippet">{{ \Illuminate\Support\Str::limit(strip_tags($item->summary ?: $item->content), 160) }}</div>
                     </a>
                 @endforeach
             @endif
@@ -61,7 +67,7 @@
                     <a href="{{ route('announcement.show', $item->slug) }}" class="search-result-card">
                         <span class="badge-type text-primary">Duyuru</span>
                         <div class="res-title">{{ $item->title }}</div>
-                        <div class="res-snippet">{{ Str::limit(strip_tags((string) $item->content), 160) }}</div>
+                        <div class="res-snippet">{{ \Illuminate\Support\Str::limit(strip_tags((string) $item->content), 160) }}</div>
                     </a>
                 @endforeach
             @endif
@@ -73,6 +79,7 @@
 </div>
 </main>
 
+@include('layouts.footer')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-@include('layouts.footer')
+</html>
