@@ -20,6 +20,7 @@ class AnnouncementController extends Controller
             ->publishedForPublic()
             ->when($currentTip, fn ($q) => $q->where('type', $currentTip))
             ->orderByDesc('date')
+            ->orderByDesc('created_at')
             ->orderByDesc('id');
 
         $announcements = $query->paginate(12)->withQueryString();

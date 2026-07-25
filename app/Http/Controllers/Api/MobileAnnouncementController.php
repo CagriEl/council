@@ -28,6 +28,7 @@ class MobileAnnouncementController extends Controller
             ->publishedForPublic()
             ->when($type, fn ($q) => $q->where('type', $type))
             ->orderByDesc('date')
+            ->orderByDesc('created_at')
             ->orderByDesc('id');
 
         return AnnouncementListResource::collection($query->paginate($perPage)->withQueryString());

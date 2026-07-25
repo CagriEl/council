@@ -68,16 +68,19 @@ class MobileHomeController extends Controller
         }
 
         if (in_array('announcements_by_type', $include, true)) {
+            $announcementQuery = fn (string $type) => Announcement::query()
+                ->publishedForPublic()
+                ->where('type', $type)
+                ->orderByDesc('date')
+                ->orderByDesc('created_at')
+                ->orderByDesc('id')
+                ->take(5)
+                ->get();
+
             $payload['announcements_by_type'] = [
-                'duyuru' => AnnouncementListResource::collection(
-                    Announcement::query()->publishedForPublic()->where('type', 'duyuru')->latest('date')->take(5)->get()
-                )->resolve(),
-                'resmi' => AnnouncementListResource::collection(
-                    Announcement::query()->publishedForPublic()->where('type', 'resmi')->latest('date')->take(5)->get()
-                )->resolve(),
-                'ihale' => AnnouncementListResource::collection(
-                    Announcement::query()->publishedForPublic()->where('type', 'ihale')->latest('date')->take(5)->get()
-                )->resolve(),
+                'duyuru' => AnnouncementListResource::collection($announcementQuery('duyuru'))->resolve(),
+                'resmi' => AnnouncementListResource::collection($announcementQuery('resmi'))->resolve(),
+                'ihale' => AnnouncementListResource::collection($announcementQuery('ihale'))->resolve(),
             ];
         }
 
