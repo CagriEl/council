@@ -108,6 +108,15 @@ class AnnouncementResource extends Resource
                 SendMobilePushAction::table('announcement'),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Seçilenleri sil')
+                        ->modalHeading('Seçilen duyuruları sil')
+                        ->modalDescription('Seçili duyurular kalıcı olarak silinecek. Emin misiniz?')
+                        ->modalSubmitActionLabel('Evet, sil'),
+                ]),
             ]);
     }
 
