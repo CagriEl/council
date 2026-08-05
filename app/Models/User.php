@@ -17,7 +17,10 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        // Panel'e yalnızca en az bir rolü olan kullanıcılar girebilir.
+        // Menü/resource görünürlüğü policy + Spatie yetkileri ile kısıtlanır;
+        // super_admin Gate::before ile tüm yetkilere sahiptir.
+        return $this->roles()->exists();
     }
 
     /**

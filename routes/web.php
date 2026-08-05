@@ -134,3 +134,8 @@ Route::redirect('/e-belediye/', 'https://e-belediye.kirklareli.bel.tr', 301);
 // Bazı ortamlarda uygulama /public altından servis edildiği için.
 Route::redirect('/public/e-belediye', 'https://e-belediye.kirklareli.bel.tr', 301);
 Route::redirect('/public/e-belediye/', 'https://e-belediye.kirklareli.bel.tr', 301);
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/contact-messages/{contactMessage}/print', \App\Http\Controllers\Admin\ContactMessagePrintController::class)
+        ->name('admin.contact-messages.print');
+});

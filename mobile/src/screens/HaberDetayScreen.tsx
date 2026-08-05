@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
+  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -35,6 +36,7 @@ export function HaberDetayScreen() {
     formattedDate?: string;
     categoryLabel?: string;
     contentHtml?: string;
+    fileUrl?: string;
   }>();
 
   const [imageSrc, setImageSrc] = useState(params.imageUrl || null);
@@ -42,6 +44,9 @@ export function HaberDetayScreen() {
   const [content, setContent] = useState(
     stripHtml(params.contentHtml) || params.excerpt || '',
   );
+  const [fileUrl, setFileUrl] = useState(params.fileUrl || null);
+  const [categoryLabel, setCategoryLabel] = useState(params.categoryLabel ?? '');
+  const [formattedDate, setFormattedDate] = useState(params.formattedDate ?? '');
   const [loadingDetail, setLoadingDetail] = useState(!params.contentHtml);
 
   useEffect(() => {
@@ -66,6 +71,9 @@ export function HaberDetayScreen() {
       setTitle(item.title);
       setContent(stripHtml(item.contentHtml) || item.excerpt);
       if (item.imageUrl) setImageSrc(item.imageUrl);
+      if (item.fileUrl) setFileUrl(item.fileUrl);
+      if (item.categoryLabel) setCategoryLabel(item.categoryLabel);
+      if (item.formattedDate) setFormattedDate(item.formattedDate);
       setLoadingDetail(false);
     };
 
@@ -103,11 +111,11 @@ export function HaberDetayScreen() {
         </View>
 
         <View style={styles.body}>
-          {params.categoryLabel ? (
-            <Text style={styles.badge}>{params.categoryLabel}</Text>
+          {categoryLabel ? (
+            <Text style={styles.badge}>{categoryLabel}</Text>
           ) : null}
-          {params.formattedDate ? (
-            <Text style={styles.date}>{params.formattedDate}</Text>
+          {formattedDate ? (
+            <Text style={styles.date}>{formattedDate}</Text>
           ) : null}
           <Text style={styles.title}>{title}</Text>
           {loadingDetail ? (
@@ -115,6 +123,16 @@ export function HaberDetayScreen() {
           ) : (
             <Text style={styles.content}>{content || 'İçerik bulunamadı.'}</Text>
           )}
+
+          {fileUrl ? (
+            <Pressable
+              style={styles.fileBtn}
+              onPress={() => Linking.openURL(fileUrl)}
+            >
+              <MaterialIcons name="picture-as-pdf" size={22} color={colors.white} />
+              <Text style={styles.fileBtnText}>Dosyayı Görüntüle / İndir</Text>
+            </Pressable>
+          ) : null}
         </View>
       </ScrollView>
     </View>
@@ -181,5 +199,20 @@ const styles = StyleSheet.create({
     ...typography.body,
     marginTop: spacing.lg,
     color: colors.onSurfaceVariant,
+  },
+  fileBtn: {
+    marginTop: spacing['2xl'],
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  fileBtnText: {
+    ...typography.bodyMedium,
+    color: colors.white,
   },
 });

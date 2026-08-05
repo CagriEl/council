@@ -8,10 +8,10 @@ type AppExtra = {
 
 const extra = (Constants.expoConfig?.extra ?? {}) as AppExtra;
 
-const PROD_API_BASE_URLS = ['https://yeni.kirklarelidev.com.tr/public/api'] as const;
+const PROD_API_BASE_URLS = ['https://kirklareli.bel.tr/api'] as const;
 const DEV_API_BASE_URLS = [
+  'https://kirklareli.bel.tr/api',
   'http://kirklareli.test/api',
-  'https://yeni.kirklarelidev.com.tr/public/api',
 ] as const;
 
 /** Native build sırasında app.config.ts extra alanından gelir; geliştirmede __DEV__ kullanılır. */
@@ -24,12 +24,13 @@ export const APP_CONFIG = {
   apiBaseUrls: extra.apiBaseUrls ?? (isProduction ? PROD_API_BASE_URLS : DEV_API_BASE_URLS),
   siteBaseUrl:
     extra.siteBaseUrl ??
-    (isProduction ? 'https://yeni.kirklarelidev.com.tr/public' : 'http://kirklareli.test'),
+    (isProduction ? 'https://kirklareli.bel.tr' : 'https://kirklareli.bel.tr'),
   eBelediyeUrl: 'https://e-belediye.kirklareli.bel.tr',
+  /** Kartlı su / Baylan yükleme — e-belediye portalı */
   baylanCardTopUpUrl: 'https://e-belediye.kirklareli.bel.tr',
   aloBelediyePhone: '153',
   callCenterPhone: '4440139',
   instagramUrl: 'https://www.instagram.com/kirklarelibelediyesi',
-  apiTimeoutMs: 8000,
-  newsTimeoutMs: 12000,
+  apiTimeoutMs: 10000,
+  newsTimeoutMs: 15000,
 } as const;

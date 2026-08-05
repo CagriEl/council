@@ -16,7 +16,9 @@ function AppShell() {
       <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="haberler" />
-        <Stack.Screen name="news/[slug]" />
+        <Stack.Screen name="news" />
+        <Stack.Screen name="ihaleler" />
+        <Stack.Screen name="meclis-uyeleri" />
         <Stack.Screen name="mudur" />
         <Stack.Screen name="meclis-kararlari" />
         <Stack.Screen name="saatler" />

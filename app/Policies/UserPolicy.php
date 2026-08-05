@@ -11,61 +11,61 @@ class UserPolicy
 
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->can('view_any_user');
     }
 
     public function view(User $user, User $model): bool
     {
-        return true;
+        return $user->can('view_user');
     }
 
     public function create(User $user): bool
     {
-        return true;
+        return $user->can('create_user');
     }
 
     public function update(User $user, User $model): bool
     {
-        return true;
+        return $user->can('update_user');
     }
 
     public function delete(User $user, User $model): bool
     {
-        return $user->id !== $model->id;
+        return $user->id !== $model->id && $user->can('delete_user');
     }
 
     public function deleteAny(User $user): bool
     {
-        return true;
+        return $user->can('delete_any_user');
     }
 
     public function forceDelete(User $user, User $model): bool
     {
-        return $user->id !== $model->id;
+        return $user->id !== $model->id && $user->can('force_delete_user');
     }
 
     public function forceDeleteAny(User $user): bool
     {
-        return true;
+        return $user->can('force_delete_any_user');
     }
 
     public function restore(User $user, User $model): bool
     {
-        return true;
+        return $user->can('restore_user');
     }
 
     public function restoreAny(User $user): bool
     {
-        return true;
+        return $user->can('restore_any_user');
     }
 
     public function replicate(User $user, User $model): bool
     {
-        return true;
+        return $user->can('replicate_user');
     }
 
     public function reorder(User $user): bool
     {
-        return true;
+        return $user->can('reorder_user');
     }
 }

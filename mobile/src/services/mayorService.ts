@@ -1,6 +1,6 @@
 import { mockMayor } from '../mock/data';
 import { resolveImageUrl, stripHtml } from '../utils/format';
-import { fetchWithFallback, unwrapSingle } from './apiClient';
+import { fetchWithFallback, getStorageBase, unwrapSingle } from './apiClient';
 
 export type MayorProfile = {
   name: string;
@@ -12,7 +12,7 @@ export type MayorProfile = {
 
 export async function fetchMayorProfile(): Promise<MayorProfile> {
   try {
-    const { payload } = await fetchWithFallback('/mayor');
+    const { payload, baseUrl } = await fetchWithFallback('/mayor');
     const raw = unwrapSingle(payload);
     if (!raw) return mockMayor;
 
@@ -23,6 +23,7 @@ export async function fetchMayorProfile(): Promise<MayorProfile> {
       title: String(raw.title ?? mockMayor.title),
       imageUrl: resolveImageUrl(
         typeof imagePath === 'string' ? imagePath : null,
+        getStorageBase(baseUrl),
       ),
       biography: stripHtml(String(raw.description_html ?? mockMayor.biography)),
       message: stripHtml(String(raw.message_html ?? mockMayor.message)),

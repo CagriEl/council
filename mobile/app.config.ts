@@ -3,8 +3,8 @@ import type { ConfigContext, ExpoConfig } from 'expo/config';
 const APP_ENV = process.env.APP_ENV ?? 'development';
 const IS_PRODUCTION = APP_ENV === 'production';
 
-const PROD_API_BASE_URL = 'https://yeni.kirklarelidev.com.tr/public/api';
-const DEV_API_BASE_URLS = ['http://kirklareli.test/api', PROD_API_BASE_URL];
+const PROD_API_BASE_URL = 'https://kirklareli.bel.tr/api';
+const DEV_API_BASE_URLS = [PROD_API_BASE_URL, 'http://kirklareli.test/api'];
 
 /**
  * Expo yapılandırması. Production native build için: APP_ENV=production
@@ -70,9 +70,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     extra: {
       appEnv: APP_ENV,
       apiBaseUrls: IS_PRODUCTION ? [PROD_API_BASE_URL] : DEV_API_BASE_URLS,
-      siteBaseUrl: IS_PRODUCTION
-        ? 'https://yeni.kirklarelidev.com.tr/public'
-        : 'http://kirklareli.test',
+      siteBaseUrl: 'https://kirklareli.bel.tr',
     },
   } as ExpoConfig;
 };

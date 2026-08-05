@@ -17,6 +17,7 @@ class ContactMessageResource extends Resource
     protected static ?string $navigationLabel = 'Gelen Mesajlar';
     protected static ?string $modelLabel = 'Mesaj';
     protected static ?string $pluralModelLabel = 'Mesajlar';
+    protected static ?string $navigationGroup = 'Formlar';
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -123,6 +124,12 @@ class ContactMessageResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->actions([
                 Tables\Actions\ViewAction::make()->label('Oku'),
+                Tables\Actions\Action::make('print')
+                    ->label('Çıktı Al')
+                    ->icon('heroicon-o-printer')
+                    ->color('gray')
+                    ->url(fn (ContactMessage $record): string => route('admin.contact-messages.print', $record))
+                    ->openUrlInNewTab(),
                 Tables\Actions\DeleteAction::make()->label('Sil'),
             ])
             ->bulkActions([

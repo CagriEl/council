@@ -17,6 +17,13 @@ class ContentStatsWidget extends BaseWidget
 
     protected static ?string $pollingInterval = '60s';
 
+    public static function canView(): bool
+    {
+        return NewsResource::canViewAny()
+            || AnnouncementResource::canViewAny()
+            || ContactMessageResource::canViewAny();
+    }
+
     protected function getHeading(): ?string
     {
         return 'İçerik istatistikleri';
@@ -24,22 +31,32 @@ class ContentStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        return [
-            Stat::make('Haberler', (string) News::query()->count())
+        $stats = [];
+
+        if (NewsResource::canViewAny()) {
+            $stats[] = Stat::make('Haberler', (string) News::query()->count())
                 ->description('Toplam haber kaydı')
                 ->descriptionIcon('heroicon-o-newspaper')
                 ->color('success')
-                ->url(NewsResource::getUrl('index')),
-            Stat::make('Duyurular', (string) Announcement::query()->count())
+                ->url(NewsResource::getUrl('index'));
+        }
+
+        if (AnnouncementResource::canViewAny()) {
+            $stats[] = Stat::make('Duyurular', (string) Announcement::query()->count())
                 ->description('Toplam duyuru kaydı')
                 ->descriptionIcon('heroicon-o-megaphone')
                 ->color('info')
-                ->url(AnnouncementResource::getUrl('index')),
-            Stat::make('İletişim formları', (string) ContactMessage::query()->count())
+                ->url(AnnouncementResource::getUrl('index'));
+        }
+
+        if (ContactMessageResource::canViewAny()) {
+            $stats[] = Stat::make('İletişim formları', (string) ContactMessage::query()->count())
                 ->description('Gelen iletişim mesajları')
                 ->descriptionIcon('heroicon-o-envelope')
                 ->color('warning')
-                ->url(ContactMessageResource::getUrl('index')),
-        ];
+                ->url(ContactMessageResource::getUrl('index'));
+        }
+
+        return $stats;
     }
 }

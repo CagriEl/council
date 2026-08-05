@@ -4,17 +4,29 @@ import {
   FlatList,
   Pressable,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EmptyState } from '../components/EmptyState';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { fetchNews, type NewsItem } from '../services/newsService';
+import {
+  fetchAnnouncementsByType,
+  type AnnouncementType,
+  type NewsItem,
+} from '../services/newsService';
 import { getTypeIcon } from '../utils/format';
 import { ambientShadow, colors, radius, spacing, typography } from '../theme';
+
+const TABS: { key: AnnouncementType | 'all'; label: string }[] = [
+  { key: 'all', label: 'Tümü' },
+  { key: 'duyuru', label: 'Genel' },
+  { key: 'resmi', label: 'Resmî' },
+  { key: 'ihale', label: 'İhale' },
+];
 
 function NewsCard({ item, onPress }: { item: NewsItem; onPress: () => void }) {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -36,15 +48,26 @@ function NewsCard({ item, onPress }: { item: NewsItem; onPress: () => void }) {
           </View>
           <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
           <Text style={styles.excerpt} numberOfLines={2}>{item.excerpt}</Text>
+          {item.hasAttachment ? (
+            <Text style={styles.attach}>📎 Ek dosya var</Text>
+          ) : null}
         </View>
       </Pressable>
     </Animated.View>
   );
 }
 
-export function HaberlerScreen() {
+type Props = {
+  initialTip?: AnnouncementType | 'all';
+  title?: string;
+};
+
+export function HaberlerScreen({ initialTip = 'all', title = 'Duyurular' }: Props) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const params = useLocalSearchParams<{ tip?: string }>();
+  const paramTip = params.tip as AnnouncementType | 'all' | undefined;
+  const [tip, setTip] = useState<AnnouncementType | 'all'>(paramTip ?? initialTip);
   const [items, setItems] = useState<NewsItem[]>([]);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -55,10 +78,11 @@ export function HaberlerScreen() {
   const [scrollY, setScrollY] = useState(0);
   const seenIds = useRef(new Set<number>());
 
-  const loadPage = useCallback(async (targetPage: number, reset = false) => {
+  const loadPage = useCallback(async (targetPage: number, reset = false, activeTip = tip) => {
     try {
       setError(null);
-      const result = await fetchNews(targetPage);
+      const filter = activeTip === 'all' ? null : activeTip;
+      const result = await fetchAnnouncementsByType(targetPage, filter);
       setItems((prev) => {
         const next = reset ? [] : [...prev];
         if (reset) seenIds.current = new Set();
@@ -78,11 +102,12 @@ export function HaberlerScreen() {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, []);
+  }, [tip]);
 
   useEffect(() => {
-    loadPage(1, true);
-  }, []);
+    setLoading(true);
+    loadPage(1, true, tip);
+  }, [tip]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -108,6 +133,7 @@ export function HaberlerScreen() {
         formattedDate: item.formattedDate,
         categoryLabel: item.categoryLabel,
         contentHtml: item.contentHtml ?? item.excerpt,
+        fileUrl: item.fileUrl ?? '',
       },
     } as never);
   };
@@ -115,16 +141,36 @@ export function HaberlerScreen() {
   return (
     <View style={styles.container}>
       <ScreenHeader
-        title="Duyurular"
+        title={title}
         scrollY={scrollY}
         onBack={() => router.back()}
       />
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tabs}
+      >
+        {TABS.map((tab) => {
+          const active = tip === tab.key;
+          return (
+            <Pressable
+              key={tab.key}
+              style={[styles.tab, active && styles.tabActive]}
+              onPress={() => setTip(tab.key)}
+            >
+              <Text style={[styles.tabText, active && styles.tabTextActive]}>{tab.label}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
       {loading ? (
         <EmptyState title="Yükleniyor..." />
       ) : error ? (
         <EmptyState title="Hata" message={error} actionLabel="Tekrar Dene" onAction={() => loadPage(1, true)} />
       ) : items.length === 0 ? (
-        <EmptyState title="Duyuru bulunamadı" message="Şu an gösterilecek duyuru yok." />
+        <EmptyState title="Kayıt bulunamadı" message="Bu kategoride gösterilecek içerik yok." />
       ) : (
         <FlatList
           data={items}
@@ -155,6 +201,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  tabs: {
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
+    gap: spacing.sm,
+  },
+  tab: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.full,
+    backgroundColor: colors.surfaceContainerLow,
+  },
+  tabActive: {
+    backgroundColor: colors.primary,
+  },
+  tabText: {
+    ...typography.caption,
+    color: colors.onSurfaceVariant,
+    fontWeight: '600',
+  },
+  tabTextActive: {
+    color: colors.white,
   },
   card: {
     flexDirection: 'row',
@@ -204,5 +272,10 @@ const styles = StyleSheet.create({
   },
   excerpt: {
     ...typography.bodySmall,
+  },
+  attach: {
+    ...typography.caption,
+    color: colors.tertiary,
+    marginTop: spacing.xs,
   },
 });

@@ -11,6 +11,9 @@ const ICON_MAP: Record<QuickAccessItem['icon'], keyof typeof MaterialIcons.glyph
   contact_page: 'contact-page',
   gavel: 'gavel',
   construction: 'construction',
+  campaign: 'campaign',
+  account_balance: 'account-balance',
+  groups: 'groups',
 };
 
 type Props = {

@@ -47,7 +47,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
   const tokenData = await Notifications.getExpoPushTokenAsync();
   const token = tokenData.data;
 
-  await fetchWithFallback('/push/register', 8000, {
+  await fetchWithFallback('/push/register', 10000, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Platform': Platform.OS },
     body: JSON.stringify({ token, platform: Platform.OS }),

@@ -6,7 +6,7 @@ import {
   markAllNotificationsRead,
   markNotificationRead,
 } from '../services/notificationStorage';
-import { fetchNews, type NewsItem } from '../services/newsService';
+import { fetchAnnouncementsByType, type NewsItem } from '../services/newsService';
 import type { AppNotification } from '../types/notification';
 
 export type NotificationListItem = AppNotification & {
@@ -35,7 +35,7 @@ export function useNotifications() {
 
   const refresh = useCallback(async () => {
     const [newsResult, readIds, pushUnreadIds] = await Promise.all([
-      fetchNews(1),
+      fetchAnnouncementsByType(1, null, 30),
       getReadNotificationIds(),
       getPushUnreadIds(),
     ]);

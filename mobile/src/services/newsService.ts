@@ -2,6 +2,8 @@ import { mockAnnouncements } from '../mock/data';
 import { formatDateTR, resolveImageUrl } from '../utils/format';
 import { fetchWithFallback, getStorageBase, unwrapList, unwrapMeta, unwrapSingle } from './apiClient';
 
+export type AnnouncementType = 'duyuru' | 'resmi' | 'ihale';
+
 export type NewsItem = {
   id: number;
   title: string;
@@ -14,6 +16,8 @@ export type NewsItem = {
   announcementType: string;
   slug?: string;
   contentHtml?: string;
+  fileUrl?: string | null;
+  hasAttachment?: boolean;
 };
 
 export type NewsPaginatedResult = {
@@ -30,6 +34,7 @@ function mapRawItem(raw: Record<string, unknown>, baseUrl: string): NewsItem | n
   const type = String(raw.type ?? raw.announcementType ?? 'duyuru');
   const date = String(raw.date ?? raw.published_at ?? raw.publishedAt ?? '');
   const imagePath = raw.image_url ?? raw.imageUrl ?? null;
+  const filePath = raw.file_url ?? raw.fileUrl ?? null;
 
   return {
     id,
@@ -46,14 +51,21 @@ function mapRawItem(raw: Record<string, unknown>, baseUrl: string): NewsItem | n
     categoryLabel: String(raw.type_label ?? raw.categoryLabel ?? 'Duyuru'),
     announcementType: type,
     contentHtml: raw.content_html ? String(raw.content_html) : undefined,
+    fileUrl: typeof filePath === 'string' && filePath !== '' ? filePath : null,
+    hasAttachment: Boolean(raw.has_attachment ?? (typeof filePath === 'string' && filePath !== '')),
   };
 }
 
-export async function fetchNews(page = 1): Promise<NewsPaginatedResult> {
+export async function fetchAnnouncementsByType(
+  page = 1,
+  tip?: AnnouncementType | null,
+  perPage = 20,
+): Promise<NewsPaginatedResult> {
   try {
+    const tipQuery = tip ? `&tip=${encodeURIComponent(tip)}` : '';
     const { payload, baseUrl } = await fetchWithFallback(
-      `/announcements?page=${page}&per_page=50&tip=duyuru`,
-      12000,
+      `/announcements?page=${page}&per_page=${perPage}${tipQuery}`,
+      15000,
     );
 
     const rawItems = unwrapList(payload)
@@ -69,20 +81,28 @@ export async function fetchNews(page = 1): Promise<NewsPaginatedResult> {
       total: meta?.total ?? rawItems.length,
     };
   } catch {
+    const filtered = tip
+      ? mockAnnouncements.filter((item) => item.announcementType === tip)
+      : mockAnnouncements;
     return {
-      items: mockAnnouncements,
+      items: filtered,
       currentPage: 1,
       lastPage: 1,
-      total: mockAnnouncements.length,
+      total: filtered.length,
     };
   }
+}
+
+/** @deprecated Use fetchAnnouncementsByType — kept for existing imports */
+export async function fetchNews(page = 1): Promise<NewsPaginatedResult> {
+  return fetchAnnouncementsByType(page, 'duyuru');
 }
 
 export async function fetchAnnouncementDetail(slug: string): Promise<NewsItem | null> {
   try {
     const { payload, baseUrl } = await fetchWithFallback(
       `/announcements/${encodeURIComponent(slug)}`,
-      12000,
+      15000,
     );
     const raw = unwrapSingle(payload);
     if (!raw) return null;
@@ -95,7 +115,7 @@ export async function fetchAnnouncementDetail(slug: string): Promise<NewsItem | 
 export async function fetchAnnouncementById(id: number): Promise<NewsItem | null> {
   try {
     const { payload, baseUrl } = await fetchWithFallback(
-      `/announcements?page=1&per_page=50&tip=duyuru`,
+      `/announcements?page=1&per_page=50`,
     );
     const items = unwrapList(payload)
       .map((item) => mapRawItem(item as Record<string, unknown>, baseUrl))
@@ -113,13 +133,14 @@ export async function fetchAnnouncementById(id: number): Promise<NewsItem | null
 }
 
 export async function fetchHeroAnnouncements(): Promise<NewsItem[]> {
-  const result = await fetchNews(1);
-  return result.items.slice(0, 3);
+  const result = await fetchAnnouncementsByType(1, 'duyuru', 5);
+  return result.items.slice(0, 5);
 }
 
-export async function fetchAnnouncementCount(): Promise<number> {
+export async function fetchAnnouncementCount(tip?: AnnouncementType): Promise<number> {
   try {
-    const { payload } = await fetchWithFallback('/announcements?page=1&per_page=1&tip=duyuru');
+    const tipQuery = tip ? `&tip=${encodeURIComponent(tip)}` : '';
+    const { payload } = await fetchWithFallback(`/announcements?page=1&per_page=1${tipQuery}`);
     const meta = unwrapMeta(payload);
     return meta?.total ?? 0;
   } catch {

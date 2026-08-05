@@ -42,7 +42,9 @@ export const mockAnnouncements: NewsItem[] = [
 
 export const mockQuickAccessItems = [
   { id: 'mayor', label: 'Başkan', icon: 'badge' as const, route: '/mudur' },
-  { id: 'news', label: 'Haberler', icon: 'newspaper' as const, route: '/haberler' },
+  { id: 'news', label: 'Haberler', icon: 'newspaper' as const, route: '/news' },
+  { id: 'announcements', label: 'Duyurular', icon: 'campaign' as const, route: '/haberler' },
+  { id: 'tenders', label: 'İhaleler', icon: 'account_balance' as const, route: '/ihaleler' },
   { id: 'request', label: 'Talep', icon: 'pending_actions' as const, route: '/requests/new' },
   { id: 'schedule', label: 'Saatler', icon: 'schedule' as const, route: '/saatler' },
   {
@@ -52,6 +54,7 @@ export const mockQuickAccessItems = [
     route: '/infrastructure',
   },
   { id: 'directory', label: 'Rehber', icon: 'contact_page' as const, route: '/directory' },
+  { id: 'members', label: 'Meclis Üyeleri', icon: 'groups' as const, route: '/meclis-uyeleri' },
   { id: 'council', label: 'Meclis Kararları', icon: 'gavel' as const, route: '/meclis-kararlari' },
 ];
 
