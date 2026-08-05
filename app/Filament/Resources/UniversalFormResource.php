@@ -25,6 +25,8 @@ class UniversalFormResource extends Resource
 
     protected static ?string $navigationGroup = 'Formlar';
 
+    protected static ?int $navigationSort = -19;
+
     public static function form(Form $form): Form
     {
         return $form
