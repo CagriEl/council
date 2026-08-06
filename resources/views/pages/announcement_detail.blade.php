@@ -45,11 +45,6 @@
             <!-- SAĞ TARAF (HABER DETAYI) -->
             <div class="col-lg-9 ps-lg-5">
                 
-                <!-- Tarih -->
-                <div class="content-date">
-                    <i class="far fa-calendar-alt me-2"></i>{{ $announcement->created_at->format('d.m.Y l') }}
-                </div>
-
                 <!-- Ana Başlık -->
                 <h1 class="content-title">{{ $announcement->title }}</h1>
 

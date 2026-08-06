@@ -30,9 +30,23 @@
         .ann-list-card .title { font-size: 0.98rem; font-weight: 700; color: #1a3c6e; line-height: 1.35; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .ann-list-card .meta { font-size: 0.8rem; color: #888; margin-top: auto; }
         .ann-placeholder { display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 2rem; min-height: 125px; }
+        .duyuru-search {
+            display: flex; gap: 10px; margin-bottom: 1.5rem; max-width: 560px;
+        }
+        .duyuru-search input {
+            flex: 1; border: 1px solid #dee2e6; border-radius: 50px; padding: 12px 18px;
+            font-size: 0.95rem; outline: none;
+        }
+        .duyuru-search input:focus { border-color: #1a3c6e; box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.12); }
+        .duyuru-search button {
+            border: none; border-radius: 50px; padding: 12px 22px; font-weight: 600;
+            background: linear-gradient(90deg, #0052cc, #00c6ff); color: #fff; white-space: nowrap;
+        }
+        .duyuru-search-clear { font-size: 0.9rem; margin-bottom: 1rem; }
         @media (max-width: 576px) {
             .ann-list-card { flex-direction: column; }
             .ann-list-card .img-wrap { width: 100%; height: 160px; }
+            .duyuru-search { flex-direction: column; max-width: none; }
         }
     </style>
 </head>
@@ -47,11 +61,33 @@
     <div class="title-divider mb-4"></div>
     <p class="text-muted mb-4">Genel duyurular, resmî ilanlar ve ihale duyurularına buradan ulaşabilirsiniz.</p>
 
+    <form method="get" action="{{ route('announcements.index') }}" class="duyuru-search" role="search">
+        @if($currentTip)
+            <input type="hidden" name="tip" value="{{ $currentTip }}">
+        @endif
+        <input
+            type="search"
+            name="q"
+            value="{{ $search }}"
+            placeholder="Duyurularda ara…"
+            aria-label="Duyurularda ara"
+            minlength="2"
+        >
+        <button type="submit"><i class="fas fa-search me-1"></i> Ara</button>
+    </form>
+
+    @if(strlen($search) >= 2)
+        <p class="duyuru-search-clear text-muted">
+            “{{ $search }}” için sonuçlar gösteriliyor.
+            <a href="{{ route('announcements.index', array_filter(['tip' => $currentTip])) }}">Aramayı temizle</a>
+        </p>
+    @endif
+
     <div class="duyuru-filter">
-        <a href="{{ route('announcements.index') }}" class="{{ $currentTip === null ? 'active' : '' }}">Tümü</a>
-        <a href="{{ route('announcements.index', ['tip' => 'duyuru']) }}" class="{{ $currentTip === 'duyuru' ? 'active' : '' }}">Genel duyurular</a>
-        <a href="{{ route('announcements.index', ['tip' => 'resmi']) }}" class="{{ $currentTip === 'resmi' ? 'active' : '' }}">Resmî ilanlar</a>
-        <a href="{{ route('announcements.index', ['tip' => 'ihale']) }}" class="{{ $currentTip === 'ihale' ? 'active' : '' }}">İhale duyuruları</a>
+        <a href="{{ route('announcements.index', array_filter(['q' => $search ?: null])) }}" class="{{ $currentTip === null ? 'active' : '' }}">Tümü</a>
+        <a href="{{ route('announcements.index', array_filter(['tip' => 'duyuru', 'q' => $search ?: null])) }}" class="{{ $currentTip === 'duyuru' ? 'active' : '' }}">Genel duyurular</a>
+        <a href="{{ route('announcements.index', array_filter(['tip' => 'resmi', 'q' => $search ?: null])) }}" class="{{ $currentTip === 'resmi' ? 'active' : '' }}">Resmî ilanlar</a>
+        <a href="{{ route('announcements.index', array_filter(['tip' => 'ihale', 'q' => $search ?: null])) }}" class="{{ $currentTip === 'ihale' ? 'active' : '' }}">İhale duyuruları</a>
     </div>
 
     @forelse($announcements as $item)
