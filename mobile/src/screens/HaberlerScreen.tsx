@@ -4,7 +4,6 @@ import {
   FlatList,
   Pressable,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -106,8 +105,9 @@ export function HaberlerScreen({ initialTip = 'all', title = 'Duyurular' }: Prop
 
   useEffect(() => {
     setLoading(true);
+    setItems([]);
     loadPage(1, true, tip);
-  }, [tip]);
+  }, [tip, loadPage]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -146,53 +146,60 @@ export function HaberlerScreen({ initialTip = 'all', title = 'Duyurular' }: Prop
         onBack={() => router.back()}
       />
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.tabs}
-      >
+      <View style={styles.tabs}>
         {TABS.map((tab) => {
           const active = tip === tab.key;
           return (
             <Pressable
               key={tab.key}
               style={[styles.tab, active && styles.tabActive]}
-              onPress={() => setTip(tab.key)}
+              onPress={() => {
+                if (tab.key === tip) return;
+                setTip(tab.key);
+              }}
             >
-              <Text style={[styles.tabText, active && styles.tabTextActive]}>{tab.label}</Text>
+              <Text
+                style={[styles.tabText, active && styles.tabTextActive]}
+                numberOfLines={1}
+              >
+                {tab.label}
+              </Text>
             </Pressable>
           );
         })}
-      </ScrollView>
+      </View>
 
-      {loading ? (
-        <EmptyState title="Yükleniyor..." />
-      ) : error ? (
-        <EmptyState title="Hata" message={error} actionLabel="Tekrar Dene" onAction={() => loadPage(1, true)} />
-      ) : items.length === 0 ? (
-        <EmptyState title="Kayıt bulunamadı" message="Bu kategoride gösterilecek içerik yok." />
-      ) : (
-        <FlatList
-          data={items}
-          keyExtractor={(item) => String(item.id)}
-          contentContainerStyle={{
-            paddingTop: spacing.md,
-            paddingBottom: insets.bottom + spacing['4xl'],
-            paddingHorizontal: spacing.xl,
-            gap: spacing.md,
-          }}
-          onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)}
-          scrollEventThrottle={16}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
-          }
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0.3}
-          renderItem={({ item }) => (
-            <NewsCard item={item} onPress={() => openDetail(item)} />
-          )}
-        />
-      )}
+      <View style={styles.listWrap}>
+        {loading ? (
+          <EmptyState title="Yükleniyor..." />
+        ) : error ? (
+          <EmptyState title="Hata" message={error} actionLabel="Tekrar Dene" onAction={() => loadPage(1, true)} />
+        ) : items.length === 0 ? (
+          <EmptyState title="Kayıt bulunamadı" message="Bu kategoride gösterilecek içerik yok." />
+        ) : (
+          <FlatList
+            style={styles.list}
+            data={items}
+            keyExtractor={(item) => String(item.id)}
+            contentContainerStyle={{
+              paddingTop: spacing.md,
+              paddingBottom: insets.bottom + spacing['4xl'],
+              paddingHorizontal: spacing.xl,
+              gap: spacing.md,
+            }}
+            onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)}
+            scrollEventThrottle={16}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+            }
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0.3}
+            renderItem={({ item }) => (
+              <NewsCard item={item} onPress={() => openDetail(item)} />
+            )}
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -203,15 +210,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   tabs: {
-    paddingHorizontal: spacing.xl,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
     gap: spacing.sm,
   },
   tab: {
-    paddingHorizontal: spacing.lg,
+    flex: 1,
+    minHeight: 40,
+    paddingHorizontal: spacing.sm,
     paddingVertical: spacing.sm,
     borderRadius: radius.full,
     backgroundColor: colors.surfaceContainerLow,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tabActive: {
     backgroundColor: colors.primary,
@@ -219,10 +232,18 @@ const styles = StyleSheet.create({
   tabText: {
     ...typography.caption,
     color: colors.onSurfaceVariant,
-    fontWeight: '600',
+    fontWeight: '700',
+    fontSize: 13,
   },
   tabTextActive: {
     color: colors.white,
+  },
+  listWrap: {
+    flex: 1,
+    minHeight: 0,
+  },
+  list: {
+    flex: 1,
   },
   card: {
     flexDirection: 'row',
@@ -255,7 +276,7 @@ const styles = StyleSheet.create({
   badge: {
     ...typography.caption,
     color: colors.primary,
-    backgroundColor: 'rgba(0,102,138,0.1)',
+    backgroundColor: 'rgba(11,110,153,0.1)',
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: radius.sm,

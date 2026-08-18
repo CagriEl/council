@@ -172,11 +172,14 @@
             
             @forelse($members as $member)
                 @php
-                    // Parti ismini al
-                    $displayParty = $member->politicalParty->name ?? $member->party;
+                    // API ile aynı çözümleme: yanlış "Bağımsız" ilişkisinde party metnini tercih eder
+                    $displayParty = $member->displayPartyName();
                     
-                    // Panelden girilen özel rengi al
-                    $partyColor = $member->politicalParty->color ?? null;
+                    // Panelden girilen özel rengi al (ilişki gerçek parti ise)
+                    $partyColor = null;
+                    if ($member->politicalParty && $displayParty && ! str_contains(mb_strtolower((string) $member->politicalParty->name), 'bağımsız') && ! str_contains(mb_strtolower((string) $member->politicalParty->name), 'diğer')) {
+                        $partyColor = $member->politicalParty->color;
+                    }
                     
                     // Fallback CSS sınıfı mantığı (Renk yoksa çalışır)
                     $badgeClass = 'badge-default';

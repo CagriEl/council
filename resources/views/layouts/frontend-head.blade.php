@@ -319,11 +319,29 @@
             margin-bottom: 2rem;
         }
 
+        .featured-image-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 1.75rem;
+            padding: 12px;
+            background: #f4f6f8;
+            border-radius: 12px;
+            max-height: min(70vh, 560px);
+            overflow: hidden;
+        }
+
         .featured-image {
-            width: 100%;
+            display: block;
+            width: auto;
+            max-width: 100%;
+            max-height: min(70vh, 536px);
+            height: auto;
+            object-fit: contain;
+            object-position: center;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+            margin: 0 auto;
         }
 
         /* PDF Butonu */
@@ -379,11 +397,16 @@
         } */
 
         .page-featured-image {
-            width: 100%;
-            max-height: 500px;
-            object-fit: cover;
+            display: block;
+            width: auto;
+            max-width: 100%;
+            max-height: min(70vh, 520px);
+            height: auto;
+            object-fit: contain;
+            object-position: center;
+            background: #f4f6f8;
             border-radius: 10px;
-            margin-bottom: 2rem;
+            margin: 0 auto 2rem;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
@@ -393,10 +416,17 @@
             color: #444;
         }
 
-        .page-content img {
+        .page-content img,
+        .content-text img {
+            display: block;
+            width: auto !important;
             max-width: 100%;
-            height: auto;
+            max-height: min(75vh, 640px);
+            height: auto !important;
+            object-fit: contain;
+            object-position: center;
             border-radius: 8px;
+            margin: 1.25rem auto;
         }
 
         .page-content-list ul {

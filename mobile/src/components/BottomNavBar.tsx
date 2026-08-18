@@ -3,7 +3,7 @@ import { BlurView } from 'expo-blur';
 import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { APP_CONFIG } from '../config';
-import { colors, radius, spacing, typography } from '../theme';
+import { ambientShadow, colors, radius, spacing, typography } from '../theme';
 
 export type TabKey = 'home' | 'payment' | 'card' | 'infrastructure' | 'directory';
 
@@ -45,12 +45,16 @@ export function BottomNavBar({ activeTab, onTabPress }: Props) {
         const active = activeTab === tab.key;
         return (
           <Pressable key={tab.key} style={styles.tab} onPress={() => handlePress(tab)}>
-            <MaterialIcons
-              name={tab.icon}
-              size={24}
-              color={active ? colors.primary : colors.onSurfaceVariant}
-            />
-            <Text style={[styles.label, active && styles.labelActive]}>{tab.label}</Text>
+            <View style={[styles.iconPill, active && styles.iconPillActive]}>
+              <MaterialIcons
+                name={tab.icon}
+                size={22}
+                color={active ? colors.primary : colors.onSurfaceVariant}
+              />
+            </View>
+            <Text style={[styles.label, active && styles.labelActive]} numberOfLines={1}>
+              {tab.label}
+            </Text>
           </Pressable>
         );
       })}
@@ -78,25 +82,39 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   androidGlass: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: 'rgba(255, 255, 255, 0.97)',
+    borderWidth: 1,
+    borderColor: 'rgba(11, 110, 153, 0.08)',
+    ...ambientShadow,
   },
   row: {
     flexDirection: 'row',
     paddingTop: spacing.sm,
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: spacing.xs,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
-    gap: 4,
-    paddingVertical: spacing.sm,
+    gap: 2,
+    paddingVertical: spacing.xs,
+  },
+  iconPill: {
+    width: 40,
+    height: 32,
+    borderRadius: radius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconPillActive: {
+    backgroundColor: colors.navActiveBg,
   },
   label: {
     ...typography.caption,
-    fontSize: 11,
+    fontSize: 10,
+    color: colors.onSurfaceVariant,
   },
   labelActive: {
     color: colors.primary,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });

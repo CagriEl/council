@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 const APP_ENV = process.env.APP_ENV ?? 'development';
@@ -6,17 +8,21 @@ const IS_PRODUCTION = APP_ENV === 'production';
 const PROD_API_BASE_URL = 'https://kirklareli.bel.tr/api';
 const DEV_API_BASE_URLS = [PROD_API_BASE_URL, 'http://kirklareli.test/api'];
 
-/**
- * Expo yapılandırması. Production native build için: APP_ENV=production
- */
+const EAS_PROJECT_ID =
+  process.env.EAS_PROJECT_ID ?? 'a74e138c-3264-48d0-b522-1f8fb402843a';
+
 export default ({ config }: ConfigContext): ExpoConfig => {
+  const googleServicesPath = path.join(__dirname, 'google-services.json');
+  const hasGoogleServices = fs.existsSync(googleServicesPath);
+
   const android: NonNullable<ExpoConfig['android']> = {
-    package: 'com.corporateportal.app',
-    versionCode: 1,
+    package: 'com.kirklarelibelediyesi',
+    versionCode: 3,
     adaptiveIcon: {
-      backgroundColor: '#ffffff',
+      backgroundColor: '#0B6E99',
       foregroundImage: './assets/belediye-logo.png',
     },
+    ...(hasGoogleServices ? { googleServicesFile: './google-services.json' } : {}),
   };
 
   if (!IS_PRODUCTION) {
@@ -27,7 +33,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: 'Kırklareli Belediyesi',
     slug: 'kirklareli-belediyesi',
-    version: '1.0.0',
+    version: '1.0.1',
     orientation: 'portrait',
     icon: './assets/belediye-logo.png',
     scheme: 'kirklareli',
@@ -35,13 +41,13 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     splash: {
       image: './assets/belediye-logo.png',
       resizeMode: 'contain',
-      backgroundColor: '#f7f9fb',
+      backgroundColor: '#0B6E99',
     },
     newArchEnabled: true,
     ios: {
       supportsTablet: false,
-      bundleIdentifier: 'com.corporateportal.app',
-      buildNumber: '1',
+      bundleIdentifier: 'com.kirklarelibelediyesi',
+      buildNumber: '2',
       infoPlist: {
         NSAllowsArbitraryLoads: !IS_PRODUCTION,
         UIBackgroundModes: ['remote-notification'],
@@ -59,7 +65,15 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         'expo-notifications',
         {
           icon: './assets/belediye-logo.png',
-          color: '#00668a',
+          color: '#0B6E99',
+        },
+      ],
+      [
+        'expo-build-properties',
+        {
+          ios: {
+            buildReactNativeFromSource: false,
+          },
         },
       ],
       './plugins/withAndroidReleaseSigning.js',
@@ -71,6 +85,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       appEnv: APP_ENV,
       apiBaseUrls: IS_PRODUCTION ? [PROD_API_BASE_URL] : DEV_API_BASE_URLS,
       siteBaseUrl: 'https://kirklareli.bel.tr',
+      eas: {
+        projectId: EAS_PROJECT_ID,
+      },
     },
   } as ExpoConfig;
 };

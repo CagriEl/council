@@ -46,31 +46,11 @@ function mapAnnouncement(raw: Record<string, unknown>, baseUrl: string): NewsIte
 export async function fetchHomeFeed(): Promise<HomePayload> {
   try {
     const { payload, baseUrl } = await fetchWithFallback(
-      '/home?include=sliders,announcements_by_type,mayor',
+      '/home?include=announcements_by_type,mayor',
       15000,
     );
 
     const root = (payload && typeof payload === 'object' ? payload : {}) as Record<string, unknown>;
-
-    const sliders = Array.isArray(root.sliders)
-      ? root.sliders
-          .map((item) => {
-            const raw = item as Record<string, unknown>;
-            const id = Number(raw.id);
-            if (!id) return null;
-            return {
-              id,
-              title: String(raw.title ?? ''),
-              imageUrl: resolveImageUrl(
-                typeof raw.image_url === 'string' ? raw.image_url : null,
-                getStorageBase(baseUrl),
-              ),
-              link: raw.link ? String(raw.link) : null,
-              order: Number(raw.order ?? 0),
-            } satisfies HomeSlider;
-          })
-          .filter((item): item is HomeSlider => item !== null)
-      : [];
 
     const byType = (root.announcements_by_type ?? {}) as Record<string, unknown>;
     const merged: NewsItem[] = [];
@@ -95,7 +75,7 @@ export async function fetchHomeFeed(): Promise<HomePayload> {
       : null;
 
     return {
-      sliders,
+      sliders: [],
       announcements: merged.slice(0, 8),
       mayorName: mayorRaw?.name ? String(mayorRaw.name) : null,
     };

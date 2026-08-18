@@ -12,8 +12,11 @@
 @include('partials.header', ['style' => 'solid'])
 
 @php
-    $rawContent = trim(strip_tags((string) ($page->content ?? '')));
-    $isEmptyContent = $rawContent === ''
+    $htmlContent = (string) ($page->content ?? '');
+    $rawContent = trim(preg_replace('/\s+/u', ' ', strip_tags($htmlContent)) ?? '');
+    // Yalnızca görsel/medya içeren sayfalar (ör. misyon-vizyon) boş sayılmasın
+    $hasMedia = (bool) preg_match('/<(img|iframe|video|embed|object|figure|svg)\b/i', $htmlContent);
+    $isEmptyContent = (! $hasMedia && $rawContent === '')
         || str_contains(mb_strtolower($rawContent), 'içerik henüz yüklenemedi')
         || str_contains(mb_strtolower($rawContent), 'liste yüklenemedi');
 @endphp

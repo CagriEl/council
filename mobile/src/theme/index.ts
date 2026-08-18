@@ -1,4 +1,4 @@
-export { colors, ghostBorder, ambientShadow } from './colors';
+export { colors, ghostBorder, ambientShadow, quickAccessTints } from './colors';
 export { fonts, typography } from './typography';
 
 export const spacing = {

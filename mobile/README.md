@@ -122,6 +122,15 @@ Sonra `npm run build:android:aab` tekrar çalıştırın.
 
 Örnek: `cp .env.example .env` (isteğe bağlı; native build'de shell'den `APP_ENV` yeterli)
 
-### Android push (FCM)
+### Android push (FCM) — zorunlu
 
-Push bildirimleri için Firebase projesi + `google-services.json` gerekir. `expo prebuild` sonrası Firebase Console'dan Android uygulaması ekleyip dosyayı `android/app/` altına koyun. Ayrıntı: [Expo FCM credentials](https://docs.expo.dev/push-notifications/fcm-credentials/).
+Site “Kayıtlı cihaz yok” diyorsa APK henüz Expo push token’ı alamıyordur. Sıra:
+
+1. [Firebase Console](https://console.firebase.google.com/) → proje oluştur
+2. Android uygulaması ekle → paket: `com.kirklarelibelediyesi`
+3. `google-services.json` indir → `mobile/google-services.json` olarak koy
+4. `npx eas init` → oluşan `projectId`’yi `EAS_PROJECT_ID=...` ile build’e ver veya `app.config.ts` `extra.eas.projectId` alanına yaz
+5. Expo’ya FCM V1 service account yükle: [FCM credentials](https://docs.expo.dev/push-notifications/fcm-credentials/)
+6. `npm run build:android:apk` tekrar çalıştır, telefonda bildirime izin ver
+
+Doğrulama (sunucu): `php artisan tinker` → `\App\Models\PushToken::count()`

@@ -20,7 +20,7 @@
         }
         .ann-list-card:hover { transform: translateX(4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #3498db; }
         .ann-list-card .img-wrap { width: 160px; flex-shrink: 0; overflow: hidden; background: #e9ecef; }
-        .ann-list-card .img-wrap img { width: 100%; height: 100%; min-height: 125px; object-fit: cover; transition: transform 0.5s; }
+        .ann-list-card .img-wrap img { width: 100%; height: 100%; min-height: 125px; object-fit: cover; object-position: center top; transition: transform 0.5s; }
         .ann-list-card:hover .img-wrap img { transform: scale(1.05); }
         .ann-list-card .body { padding: 16px 18px; display: flex; flex-direction: column; justify-content: center; flex: 1; }
         .ann-list-card .type-badge { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; }

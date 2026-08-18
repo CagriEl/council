@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  Image,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -23,15 +22,13 @@ import {
   fetchSocialLinks,
   type QuickAccessItem,
 } from '../services/dashboardService';
-import type { HomeSlider } from '../services/homeService';
 import type { NewsItem } from '../services/newsService';
-import { ambientShadow, colors, radius, spacing, typography } from '../theme';
+import { colors, spacing, typography } from '../theme';
 
 export function DashboardScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [announcements, setAnnouncements] = useState<NewsItem[]>([]);
-  const [sliders, setSliders] = useState<HomeSlider[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { unreadCount, refresh: refreshNotifications } = useNotifications();
@@ -40,7 +37,6 @@ export function DashboardScreen() {
 
   const load = useCallback(async () => {
     const [home, hero] = await Promise.all([fetchHomeFeed(), fetchAnnouncements()]);
-    setSliders(home.sliders);
     setAnnouncements(home.announcements.length > 0 ? home.announcements.slice(0, 5) : hero);
     setLoading(false);
     await refreshNotifications();
@@ -96,28 +92,6 @@ export function DashboardScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
       >
-        {sliders.length > 0 ? (
-          <View style={styles.section}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.sliderRow}
-            >
-              {sliders.map((slider) => (
-                <View key={slider.id} style={styles.sliderCard}>
-                  {slider.imageUrl ? (
-                    <Image source={{ uri: slider.imageUrl }} style={styles.sliderImage} />
-                  ) : (
-                    <View style={[styles.sliderImage, styles.sliderPlaceholder]}>
-                      <Text style={styles.sliderTitle}>{slider.title}</Text>
-                    </View>
-                  )}
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        ) : null}
-
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Güncel Duyurular</Text>
@@ -161,40 +135,17 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     ...typography.h2,
+    color: colors.primaryDark,
   },
   link: {
     ...typography.caption,
-    color: colors.primary,
+    color: colors.secondary,
     fontWeight: '700',
   },
   sectionTitlePadded: {
     ...typography.h2,
     paddingHorizontal: spacing.xl,
     marginBottom: spacing.lg,
-  },
-  sliderRow: {
-    paddingHorizontal: spacing.xl,
-    gap: spacing.md,
-  },
-  sliderCard: {
-    width: 280,
-    height: 140,
-    borderRadius: radius.xl,
-    overflow: 'hidden',
-    backgroundColor: colors.surfaceContainerLow,
-    ...ambientShadow,
-  },
-  sliderImage: {
-    width: '100%',
-    height: '100%',
-  },
-  sliderPlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.lg,
-  },
-  sliderTitle: {
-    ...typography.bodyMedium,
-    textAlign: 'center',
+    color: colors.primaryDark,
   },
 });

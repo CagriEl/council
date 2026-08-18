@@ -17,6 +17,15 @@ import {
 } from '../src/services/councilMembersService';
 import { ambientShadow, colors, radius, spacing, typography } from '../src/theme';
 
+function isLightColor(hex: string): boolean {
+  const raw = hex.replace('#', '');
+  if (raw.length < 6) return false;
+  const r = parseInt(raw.slice(0, 2), 16);
+  const g = parseInt(raw.slice(2, 4), 16);
+  const b = parseInt(raw.slice(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 160;
+}
+
 export default function MeclisUyeleriRoute() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -63,24 +72,31 @@ export default function MeclisUyeleriRoute() {
               tintColor={colors.primary}
             />
           }
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              {item.imageUrl ? (
-                <Image source={{ uri: item.imageUrl }} style={styles.photo} />
-              ) : (
-                <View style={[styles.photo, styles.photoPlaceholder]}>
-                  <Text style={styles.initial}>{item.name.slice(0, 1)}</Text>
-                </View>
-              )}
-              <Text style={styles.name} numberOfLines={2}>{item.name}</Text>
-              <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
-              {item.party ? (
-                <View style={[styles.party, item.partyColor ? { backgroundColor: item.partyColor } : null]}>
-                  <Text style={styles.partyText}>{item.party}</Text>
-                </View>
-              ) : null}
-            </View>
-          )}
+          renderItem={({ item }) => {
+            const partyBg = item.partyColor ?? colors.primary;
+            const lightParty = isLightColor(partyBg);
+            return (
+              <View style={styles.card}>
+                <View style={[styles.accentBar, { backgroundColor: partyBg }]} />
+                {item.imageUrl ? (
+                  <Image source={{ uri: item.imageUrl }} style={styles.photo} />
+                ) : (
+                  <View style={[styles.photo, styles.photoPlaceholder]}>
+                    <Text style={styles.initial}>{item.name.slice(0, 1)}</Text>
+                  </View>
+                )}
+                <Text style={styles.name} numberOfLines={2}>{item.name}</Text>
+                <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
+                {item.party ? (
+                  <View style={[styles.party, { backgroundColor: partyBg }]}>
+                    <Text style={[styles.partyText, lightParty && styles.partyTextDark]}>
+                      {item.party}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+            );
+          }}
         />
       )}
     </View>
@@ -93,17 +109,30 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     backgroundColor: colors.surfaceContainerLowest,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     padding: spacing.md,
     alignItems: 'center',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(11, 110, 153, 0.06)',
     ...ambientShadow,
+  },
+  accentBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 4,
   },
   photo: {
     width: 88,
     height: 88,
     borderRadius: radius.full,
+    marginTop: spacing.sm,
     marginBottom: spacing.sm,
-    backgroundColor: colors.surfaceContainerLow,
+    backgroundColor: colors.primarySoft,
+    borderWidth: 3,
+    borderColor: colors.white,
   },
   photoPlaceholder: { alignItems: 'center', justifyContent: 'center' },
   initial: { ...typography.h1, color: colors.primary },
@@ -111,14 +140,15 @@ const styles = StyleSheet.create({
     ...typography.bodyMedium,
     textAlign: 'center',
     fontFamily: typography.h2.fontFamily,
+    color: colors.onSurface,
   },
-  title: { ...typography.caption, textAlign: 'center', marginTop: 2 },
+  title: { ...typography.caption, textAlign: 'center', marginTop: 2, color: colors.onSurfaceVariant },
   party: {
     marginTop: spacing.sm,
-    backgroundColor: colors.primary,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radius.sm,
+    paddingVertical: 4,
+    borderRadius: radius.full,
   },
   partyText: { ...typography.caption, color: colors.white, fontWeight: '700' },
+  partyTextDark: { color: colors.onSurface },
 });

@@ -1,5 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ambientShadow, colors, radius, spacing, typography } from '../theme';
@@ -20,13 +21,13 @@ export function TopAppBar({ notificationCount = 0, onNotificationPress }: Props)
         <View style={styles.logo}>
           <Image source={belediyeLogo} style={styles.logoImage} resizeMode="contain" />
         </View>
-        <View>
-          <Text style={styles.title}>Kırklareli Belediyesi</Text>
+        <View style={styles.brandText}>
+          <Text style={styles.title} numberOfLines={1}>Kırklareli Belediyesi</Text>
           <Text style={styles.subtitle}>Resmi Mobil Uygulama</Text>
         </View>
       </View>
       <Pressable style={styles.notifBtn} onPress={onNotificationPress}>
-        <MaterialIcons name="notifications-none" size={24} color={colors.onSurface} />
+        <MaterialIcons name="notifications-none" size={24} color={colors.primary} />
         {notificationCount > 0 ? (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>{notificationCount > 9 ? '9+' : notificationCount}</Text>
@@ -44,7 +45,15 @@ export function TopAppBar({ notificationCount = 0, onNotificationPress }: Props)
     );
   }
 
-  return <View style={[styles.wrapper, styles.androidGlass]}>{content}</View>;
+  return (
+    <View style={styles.wrapper}>
+      <LinearGradient
+        colors={['#E8F6FC', 'rgba(243, 247, 250, 0.96)']}
+        style={StyleSheet.absoluteFill}
+      />
+      {content}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -54,9 +63,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-  },
-  androidGlass: {
-    backgroundColor: 'rgba(247, 249, 251, 0.92)',
+    overflow: 'hidden',
   },
   inner: {
     paddingHorizontal: spacing.xl,
@@ -70,6 +77,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     flex: 1,
+    minWidth: 0,
+  },
+  brandText: {
+    flex: 1,
+    minWidth: 0,
   },
   logo: {
     width: 44,
@@ -79,6 +91,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(11, 110, 153, 0.12)',
     ...ambientShadow,
   },
   logoImage: {
@@ -88,18 +102,22 @@ const styles = StyleSheet.create({
   title: {
     ...typography.h2,
     fontSize: 17,
+    color: colors.primaryDark,
   },
   subtitle: {
     ...typography.caption,
     marginTop: 2,
+    color: colors.secondary,
   },
   notifBtn: {
     width: 44,
     height: 44,
     borderRadius: radius.full,
-    backgroundColor: colors.surfaceContainerLow,
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(11, 110, 153, 0.12)',
   },
   badge: {
     position: 'absolute',

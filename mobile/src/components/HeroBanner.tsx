@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primaryContainer,
+    backgroundColor: colors.primary,
     padding: spacing.xl,
   },
   placeholderEmoji: {
@@ -152,23 +152,24 @@ const styles = StyleSheet.create({
   placeholderText: {
     ...typography.bodySmall,
     textAlign: 'center',
-    color: colors.onSurface,
+    color: colors.white,
   },
   overlay: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
     padding: spacing.lg,
   },
   badge: {
     ...typography.caption,
     color: colors.white,
-    backgroundColor: 'rgba(0,102,138,0.8)',
+    backgroundColor: colors.secondary,
     alignSelf: 'flex-start',
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
-    borderRadius: radius.sm,
+    borderRadius: radius.full,
     marginBottom: spacing.sm,
     overflow: 'hidden',
+    fontWeight: '700',
   },
   title: {
     ...typography.h2,
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
   },
   date: {
     ...typography.caption,
-    color: 'rgba(255,255,255,0.85)',
+    color: 'rgba(255,255,255,0.9)',
     marginTop: 4,
   },
   dots: {
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
   skeleton: {
     marginHorizontal: spacing.xl,
     borderRadius: radius.xl,
-    backgroundColor: colors.surfaceContainerLow,
+    backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },

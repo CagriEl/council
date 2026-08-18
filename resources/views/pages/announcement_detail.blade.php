@@ -54,7 +54,9 @@
                     <div class="col-lg-12 mb-4">
                         <!-- Eğer Resim Varsa -->
                         @if($announcement->image_path)
-                            <img src="{{ asset('storage/' . $announcement->image_path) }}" alt="{{ $announcement->title }}" class="featured-image float-lg-end ms-lg-4 mb-3" style="max-width: 50%; height: auto;">
+                            <div class="featured-image-wrap">
+                                <img src="{{ asset('storage/' . $announcement->image_path) }}" alt="{{ $announcement->title }}" class="featured-image">
+                            </div>
                         @endif
 
                         @php

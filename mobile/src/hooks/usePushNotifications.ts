@@ -10,7 +10,9 @@ export function usePushNotifications() {
   const handledInitial = useRef(false);
 
   useEffect(() => {
-    registerForPushNotifications().catch(() => null);
+    registerForPushNotifications().catch((error) => {
+      console.error('[push] usePushNotifications:', error);
+    });
 
     const navigateFromPayload = (data: unknown) => {
       const payload = parsePushPayload(data);

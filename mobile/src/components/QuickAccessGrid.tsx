@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { QuickAccessItem } from '../services/dashboardService';
-import { ambientShadow, colors, radius, spacing, typography } from '../theme';
+import { ambientShadow, colors, quickAccessTints, radius, spacing, typography } from '../theme';
 
 const ICON_MAP: Record<QuickAccessItem['icon'], keyof typeof MaterialIcons.glyphMap> = {
   badge: 'badge',
@@ -22,10 +22,12 @@ type Props = {
 };
 
 function QuickAccessCard({ item, onPress }: { item: QuickAccessItem; onPress: () => void }) {
+  const tint = quickAccessTints[item.icon] ?? { bg: colors.primarySoft, icon: colors.primary };
+
   return (
     <Pressable style={styles.card} onPress={onPress}>
-      <View style={styles.iconWrap}>
-        <MaterialIcons name={ICON_MAP[item.icon]} size={26} color={colors.primary} />
+      <View style={[styles.iconWrap, { backgroundColor: tint.bg }]}>
+        <MaterialIcons name={ICON_MAP[item.icon]} size={26} color={tint.icon} />
         {item.badge ? (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>{item.badge}</Text>
@@ -55,17 +57,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   card: {
-    width: '47%',
+    flexGrow: 1,
+    flexBasis: '45%',
+    maxWidth: '48%',
     backgroundColor: colors.surfaceContainerLowest,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(11, 110, 153, 0.06)',
     ...ambientShadow,
   },
   iconWrap: {
     width: 48,
     height: 48,
-    borderRadius: radius.full,
-    backgroundColor: colors.surfaceContainerLow,
+    borderRadius: radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.md,

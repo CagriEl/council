@@ -26,6 +26,7 @@ export function EmptyState({ title, message, actionLabel, onAction }: Props) {
 
 const styles = StyleSheet.create({
   wrap: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing['4xl'],

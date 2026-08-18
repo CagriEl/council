@@ -38,7 +38,9 @@
                 <div class="row">
                     <div class="col-12">
                         @if($news->image_path)
-                            <img src="{{ asset('storage/' . $news->image_path) }}" alt="{{ $news->title }}" class="featured-image float-lg-end ms-lg-4 mb-3" style="max-width: 50%; height: auto;">
+                            <div class="featured-image-wrap">
+                                <img src="{{ asset('storage/' . $news->image_path) }}" alt="{{ $news->title }}" class="featured-image">
+                            </div>
                         @endif
                         <div class="content-text">{!! $news->content !!}</div>
                     </div>

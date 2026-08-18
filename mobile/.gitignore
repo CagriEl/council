@@ -36,6 +36,7 @@ yarn-error.*
 android-signing.properties
 kirklareli-release.keystore
 *.keystore
+google-services.json
 
 # typescript
 *.tsbuildinfo

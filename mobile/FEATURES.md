@@ -1,7 +1,7 @@
 # Kırklareli Belediyesi — Mobil Uygulama Özellik Dökümanı
 
 > **Uygulama:** `Kırklareli Belediyesi` · **Platform:** React Native / Expo 54 · **Versiyon:** 1.0.0  
-> **Paket Tanımlayıcı:** `com.corporateportal.app`  
+> **Paket Tanımlayıcı:** `com.kirklarelibelediyesi`  
 > **Mimari Konsept:** "The Architectural Calm" (bkz. [DESIGN.md](DESIGN.md))
 
 ---

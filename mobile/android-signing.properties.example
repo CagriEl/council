@@ -4,7 +4,7 @@
 #    keytool -genkeypair -v -storetype PKCS12 -keystore kirklareli-release.keystore -alias kirklareli -keyalg RSA -keysize 2048 -validity 10000
 # 3. Aşağıdaki değerleri doldurun — dosyayı repoya eklemeyin.
 
-KIRKLARELI_UPLOAD_STORE_FILE=../kirklareli-release.keystore
+KIRKLARELI_UPLOAD_STORE_FILE=../../kirklareli-release.keystore
 KIRKLARELI_UPLOAD_KEY_ALIAS=kirklareli
 KIRKLARELI_UPLOAD_STORE_PASSWORD=degistirin
 KIRKLARELI_UPLOAD_KEY_PASSWORD=degistirin
