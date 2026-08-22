@@ -41,6 +41,7 @@ class MobileAnnouncementController extends Controller
     {
         $announcement = Announcement::query()
             ->publishedForPublic()
+            ->with('galleryImages')
             ->where('slug', $slug)
             ->firstOrFail();
 

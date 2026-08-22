@@ -23,6 +23,11 @@ class AnnouncementDetailResource extends JsonResource
             'content_html' => $this->content,
             'image_url' => StorageUrl::fromPath($this->image_path),
             'file_url' => StorageUrl::fromPath($this->file_path),
+            'gallery' => $this->whenLoaded('galleryImages', fn () => $this->galleryImages->map(fn ($image) => [
+                'id' => $image->id,
+                'image_url' => StorageUrl::fromPath($image->image_path),
+                'sort_order' => $image->sort_order,
+            ])->values()->all(), []),
             'date' => $this->date?->toIso8601String(),
             'published_at' => $this->published_at?->toIso8601String(),
             'unpublished_at' => $this->unpublished_at?->toIso8601String(),

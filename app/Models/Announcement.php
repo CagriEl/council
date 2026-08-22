@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Announcement extends Model
 {
@@ -15,6 +16,11 @@ class Announcement extends Model
      * $guarded = []; demek "Hiçbir sütunu koruma, hepsine veri yazılmasına izin ver" demektir.
      */
     protected $guarded = [];
+
+    public function galleryImages(): HasMany
+    {
+        return $this->hasMany(AnnouncementImage::class)->orderBy('sort_order');
+    }
 
     /**
      * Sitede görünürlük başlangıcı: published_at doluysa o, değilse date.

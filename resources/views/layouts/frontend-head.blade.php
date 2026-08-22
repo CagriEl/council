@@ -320,28 +320,50 @@
         }
 
         .featured-image-wrap {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 1.75rem;
-            padding: 12px;
-            background: #f4f6f8;
-            border-radius: 12px;
-            max-height: min(70vh, 560px);
-            overflow: hidden;
+            margin: 0 0 1.5rem;
+            padding: 0;
+            background: transparent;
+            max-height: none;
+            overflow: visible;
         }
 
         .featured-image {
             display: block;
-            width: auto;
+            width: 100%;
             max-width: 100%;
-            max-height: min(70vh, 536px);
             height: auto;
             object-fit: contain;
             object-position: center;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.12);
             margin: 0 auto;
+        }
+
+        .featured-image-wrap.is-landscape .featured-image {
+            max-height: 420px;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .featured-image-wrap.is-portrait {
+            float: right;
+            width: min(38%, 340px);
+            margin: 0.15rem 0 1rem 1.5rem;
+        }
+
+        .featured-image-wrap.is-portrait .featured-image {
+            width: 100%;
+            max-height: min(58vh, 460px);
+            object-fit: contain;
+            background: #f4f6f8;
+        }
+
+        @media (max-width: 768px) {
+            .featured-image-wrap.is-portrait {
+                float: none;
+                width: min(72%, 280px);
+                margin: 0 auto 1.25rem;
+            }
         }
 
         /* PDF Butonu */
@@ -398,16 +420,23 @@
 
         .page-featured-image {
             display: block;
-            width: auto;
+            width: 100%;
             max-width: 100%;
-            max-height: min(70vh, 520px);
+            max-height: 420px;
             height: auto;
-            object-fit: contain;
-            object-position: center;
+            object-fit: cover;
+            object-position: center top;
             background: #f4f6f8;
             border-radius: 10px;
             margin: 0 auto 2rem;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .page-featured-image.is-portrait {
+            width: auto;
+            max-width: min(100%, 360px);
+            max-height: min(58vh, 460px);
+            object-fit: contain;
         }
 
         .page-content {
@@ -421,12 +450,98 @@
             display: block;
             width: auto !important;
             max-width: 100%;
-            max-height: min(75vh, 640px);
+            max-height: 420px;
             height: auto !important;
             object-fit: contain;
             object-position: center;
             border-radius: 8px;
             margin: 1.25rem auto;
+        }
+
+        .page-content img.is-portrait,
+        .content-text img.is-portrait {
+            float: right;
+            max-width: min(38%, 340px) !important;
+            max-height: min(58vh, 460px);
+            margin: 0.15rem 0 1rem 1.5rem;
+        }
+
+        .content-text::after,
+        .page-content::after,
+        .col-12::after,
+        .col-lg-12::after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+
+        @media (max-width: 768px) {
+            .page-content img.is-portrait,
+            .content-text img.is-portrait {
+                float: none;
+                max-width: min(72%, 280px) !important;
+                margin: 0 auto 1.25rem;
+            }
+        }
+
+        /* Duyuru fotoğraf galerisi */
+        .announcement-gallery-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #1a3c6e;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #00c6ff;
+            display: inline-block;
+        }
+
+        .announcement-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+        }
+
+        .announcement-gallery-item {
+            border: none;
+            padding: 0;
+            background: #f4f6f8;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: zoom-in;
+            aspect-ratio: 4 / 3;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .announcement-gallery-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .announcement-gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            margin: 0;
+            max-height: none;
+            border-radius: 0;
+        }
+
+        .announcement-gallery-modal-image {
+            max-width: 100%;
+            max-height: min(82vh, 900px);
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 576px) {
+            .announcement-gallery-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
 
         .page-content-list ul {

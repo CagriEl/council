@@ -94,6 +94,44 @@
                                 </a>
                             </div>
                         @endif
+
+                        @if($announcement->galleryImages->isNotEmpty())
+                            <section class="announcement-gallery mt-5" aria-label="Fotoğraf galerisi">
+                                <h2 class="announcement-gallery-title">Fotoğraf Galerisi</h2>
+                                <div class="announcement-gallery-grid">
+                                    @foreach($announcement->galleryImages as $galleryImage)
+                                        <button
+                                            type="button"
+                                            class="announcement-gallery-item"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#announcementGalleryModal"
+                                            data-gallery-src="{{ asset('storage/' . $galleryImage->image_path) }}"
+                                            data-gallery-alt="{{ $announcement->title }} — fotoğraf {{ $loop->iteration }}"
+                                        >
+                                            <img
+                                                src="{{ asset('storage/' . $galleryImage->image_path) }}"
+                                                alt="{{ $announcement->title }} — fotoğraf {{ $loop->iteration }}"
+                                                loading="lazy"
+                                            >
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </section>
+
+                            <div class="modal fade" id="announcementGalleryModal" tabindex="-1" aria-labelledby="announcementGalleryModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-xl">
+                                    <div class="modal-content bg-dark border-0">
+                                        <div class="modal-header border-0 pb-0">
+                                            <h2 class="modal-title visually-hidden" id="announcementGalleryModalLabel">Fotoğraf önizleme</h2>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                                        </div>
+                                        <div class="modal-body p-2 p-md-3 text-center">
+                                            <img id="announcementGalleryModalImage" src="" alt="" class="announcement-gallery-modal-image">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -104,6 +142,17 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @if($announcement->galleryImages->isNotEmpty())
+        <script>
+            document.querySelectorAll('.announcement-gallery-item').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var img = document.getElementById('announcementGalleryModalImage');
+                    img.src = button.dataset.gallerySrc;
+                    img.alt = button.dataset.galleryAlt || '';
+                });
+            });
+        </script>
+    @endif
 </body>
 @include('layouts.footer')
 

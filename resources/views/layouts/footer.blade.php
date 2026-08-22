@@ -159,3 +159,24 @@
             </div>
         </div>
     </footer>
+    <script>
+        (function () {
+            function markOrientation(img, target) {
+                var apply = function () {
+                    if (!img.naturalWidth) return;
+                    var portrait = img.naturalHeight > img.naturalWidth;
+                    target.classList.toggle('is-portrait', portrait);
+                    target.classList.toggle('is-landscape', !portrait);
+                };
+                if (img.complete && img.naturalWidth) apply();
+                else img.addEventListener('load', apply);
+            }
+
+            document.querySelectorAll('.featured-image').forEach(function (img) {
+                markOrientation(img, img.closest('.featured-image-wrap') || img);
+            });
+            document.querySelectorAll('.page-featured-image, .page-content img, .content-text img').forEach(function (img) {
+                markOrientation(img, img);
+            });
+        })();
+    </script>

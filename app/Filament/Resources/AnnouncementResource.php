@@ -71,6 +71,30 @@ class AnnouncementResource extends Resource
                             ->image()
                             ->directory('announcements/covers')
                             ->columnSpanFull(),
+                    ])->columns(2),
+
+                Forms\Components\Section::make('Fotoğraf Galerisi')
+                    ->description('Kapak görseli dışında, duyuru detay sayfasında içeriğin altında gösterilecek ek fotoğraflar.')
+                    ->schema([
+                        Forms\Components\Repeater::make('galleryImages')
+                            ->relationship()
+                            ->schema([
+                                Forms\Components\FileUpload::make('image_path')
+                                    ->label('Fotoğraf')
+                                    ->image()
+                                    ->directory('announcements/gallery')
+                                    ->required(),
+                            ])
+                            ->orderColumn('sort_order')
+                            ->reorderable()
+                            ->addActionLabel('Fotoğraf ekle')
+                            ->defaultItems(0)
+                            ->grid(2)
+                            ->columnSpanFull(),
+                    ]),
+
+                Forms\Components\Section::make('Ek Dosya')
+                    ->schema([
                         Forms\Components\FileUpload::make('file_path')
                             ->label('Ek Dosya (PDF / ZIP)')
                             ->directory('announcements')
@@ -82,7 +106,7 @@ class AnnouncementResource extends Resource
                             ])
                             ->helperText('PDF veya ZIP yükleyebilirsiniz.')
                             ->columnSpanFull(),
-                    ])->columns(2),
+                    ]),
             ]);
     }
 
