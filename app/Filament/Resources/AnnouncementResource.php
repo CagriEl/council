@@ -74,22 +74,18 @@ class AnnouncementResource extends Resource
                     ])->columns(2),
 
                 Forms\Components\Section::make('Fotoğraf Galerisi')
-                    ->description('Kapak görseli dışında, duyuru detay sayfasında içeriğin altında gösterilecek ek fotoğraflar.')
+                    ->description('Kapak görseli dışında, duyuru detayında içeriğin altında gösterilir. Birden fazla fotoğrafı aynı anda seçip yükleyebilirsiniz.')
                     ->schema([
-                        Forms\Components\Repeater::make('galleryImages')
-                            ->relationship()
-                            ->schema([
-                                Forms\Components\FileUpload::make('image_path')
-                                    ->label('Fotoğraf')
-                                    ->image()
-                                    ->directory('announcements/gallery')
-                                    ->required(),
-                            ])
-                            ->orderColumn('sort_order')
+                        Forms\Components\FileUpload::make('gallery_paths')
+                            ->label('Galeri Fotoğrafları')
+                            ->multiple()
+                            ->image()
+                            ->directory('announcements/gallery')
                             ->reorderable()
-                            ->addActionLabel('Fotoğraf ekle')
-                            ->defaultItems(0)
-                            ->grid(2)
+                            ->appendFiles()
+                            ->panelLayout('grid')
+                            ->helperText('Ctrl/Cmd ile çoklu seçim yapabilir veya sürükleyip bırakabilirsiniz. Sıralama sitedeki görünümü belirler.')
+                            ->dehydrated(false)
                             ->columnSpanFull(),
                     ]),
 
