@@ -80,12 +80,13 @@ class AnnouncementResource extends Resource
                             ->label('Galeri Fotoğrafları')
                             ->multiple()
                             ->image()
+                            ->disk('public')
                             ->directory('announcements/gallery')
+                            ->visibility('public')
                             ->reorderable()
                             ->appendFiles()
                             ->panelLayout('grid')
                             ->helperText('Ctrl/Cmd ile çoklu seçim yapabilir veya sürükleyip bırakabilirsiniz. Sıralama sitedeki görünümü belirler.')
-                            ->dehydrated(false)
                             ->columnSpanFull(),
                     ]),
 
