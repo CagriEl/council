@@ -41,6 +41,8 @@ Route::get('/api/docs', function () {
 
 Route::view('/api-docs', 'api-docs')->name('api-docs');
 
+Route::get('/sitemap.xml', \App\Http\Controllers\SitemapController::class)->name('sitemap');
+
 // Ana Sayfa
 Route::get('/', [PageController::class, 'home'])->name('home');
 
