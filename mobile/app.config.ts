@@ -17,7 +17,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 
   const android: NonNullable<ExpoConfig['android']> = {
     package: 'com.kirklarelibelediyesi',
-    versionCode: 3,
+    versionCode: 5,
     adaptiveIcon: {
       backgroundColor: '#0B6E99',
       foregroundImage: './assets/belediye-logo.png',
@@ -33,7 +33,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: 'Kırklareli Belediyesi',
     slug: 'kirklareli-belediyesi',
-    version: '1.0.1',
+    version: '1.0.3',
     orientation: 'portrait',
     icon: './assets/belediye-logo.png',
     scheme: 'kirklareli',
@@ -47,7 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ios: {
       supportsTablet: false,
       bundleIdentifier: 'com.kirklarelibelediyesi',
-      buildNumber: '2',
+      buildNumber: '4',
       infoPlist: {
         NSAllowsArbitraryLoads: !IS_PRODUCTION,
         UIBackgroundModes: ['remote-notification'],
@@ -73,6 +73,26 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         {
           ios: {
             buildReactNativeFromSource: false,
+          },
+          android: {
+            // Play Store "kod karartma" eşiği + boyut optimizasyonu
+            enableMinifyInReleaseBuilds: true,
+            enableShrinkResourcesInReleaseBuilds: true,
+            enableBundleCompression: true,
+            // Emülatör (x86) mimarilerini release AAB'den çıkar
+            buildArchs: ['armeabi-v7a', 'arm64-v8a'],
+            networkInspector: false,
+            extraProguardRules: `
+-keep class expo.modules.** { *; }
+-keep @expo.modules.core.interfaces.DoNotStrip class *
+-keepclassmembers class * {
+  @expo.modules.core.interfaces.DoNotStrip *;
+}
+-keep class com.swmansion.rnscreens.** { *; }
+-keep class expo.modules.notifications.** { *; }
+-keep class com.swmansion.reanimated.** { *; }
+-keep class com.swmansion.worklets.** { *; }
+            `.trim(),
           },
         },
       ],

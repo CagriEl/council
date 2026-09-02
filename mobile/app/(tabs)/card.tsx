@@ -14,10 +14,6 @@ export default function CardScreen() {
     if (route) router.push(route as never);
   };
 
-  const openTopUp = () => {
-    Linking.openURL(APP_CONFIG.baylanCardTopUpUrl);
-  };
-
   return (
     <View style={styles.container}>
       <View style={[styles.content, { paddingBottom: insets.bottom + 100 }]}>
@@ -25,22 +21,14 @@ export default function CardScreen() {
           <MaterialIcons name="credit-card" size={40} color={colors.primary} />
         </View>
         <Text style={styles.title}>Kartlı Su Yükleme</Text>
-        <Text style={styles.message}>
-          Kartlı su sayacınıza bakiye yüklemek için güvenli e-belediye portalına yönlendirileceksiniz.
-          İşlem portal üzerinde tamamlanır.
-        </Text>
-
-        <Pressable style={styles.btn} onPress={openTopUp}>
-          <MaterialIcons name="open-in-new" size={20} color={colors.white} />
-          <Text style={styles.btnText}>Yükleme Portalını Aç</Text>
-        </Pressable>
-
-        <View style={styles.tips}>
-          <Text style={styles.tipTitle}>Nasıl yapılır?</Text>
-          <Text style={styles.tip}>1. Portala giriş yapın veya abone bilgilerinizi girin</Text>
-          <Text style={styles.tip}>2. Kart / sayaç bilgilerinizi kontrol edin</Text>
-          <Text style={styles.tip}>3. Yüklemek istediğiniz tutarı seçip ödemeyi tamamlayın</Text>
+        <View style={styles.badge}>
+          <MaterialIcons name="schedule" size={18} color={colors.secondary} />
+          <Text style={styles.badgeText}>Yakında yayında</Text>
         </View>
+        <Text style={styles.message}>
+          Kartlı su sayacınıza bakiye yükleme özelliği çok yakında uygulama içinde kullanıma
+          açılacaktır.
+        </Text>
 
         <Pressable onPress={() => Linking.openURL(`tel:${APP_CONFIG.callCenterPhone}`)}>
           <Text style={styles.help}>Yardım: {APP_CONFIG.callCenterPhone}</Text>
@@ -75,40 +63,24 @@ const styles = StyleSheet.create({
     ...typography.h1,
     textAlign: 'center',
   },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.secondaryContainer,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.full,
+  },
+  badgeText: {
+    ...typography.bodyMedium,
+    color: colors.secondary,
+  },
   message: {
     ...typography.body,
     color: colors.onSurfaceVariant,
     textAlign: 'center',
     maxWidth: 340,
-  },
-  btn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing['2xl'],
-    paddingVertical: spacing.md,
-    borderRadius: radius.md,
-  },
-  btnText: {
-    ...typography.bodyMedium,
-    color: colors.white,
-  },
-  tips: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: colors.surfaceContainerLowest,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    gap: spacing.sm,
-  },
-  tipTitle: {
-    ...typography.bodyMedium,
-    marginBottom: spacing.xs,
-  },
-  tip: {
-    ...typography.bodySmall,
-    color: colors.onSurfaceVariant,
   },
   help: {
     ...typography.caption,
