@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { QuickAccessItem } from '../services/dashboardService';
 import { ambientShadow, colors, quickAccessTints, radius, spacing, typography } from '../theme';

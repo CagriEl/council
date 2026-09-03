@@ -12,6 +12,21 @@ export type PaginationMeta = {
   total?: number;
 };
 
+function extractErrorMessage(payload: unknown, status: number): string {
+  if (payload && typeof payload === 'object') {
+    const body = payload as { message?: unknown; errors?: Record<string, string[] | string> };
+    if (typeof body.message === 'string' && body.message.trim()) {
+      return body.message.trim();
+    }
+    if (body.errors && typeof body.errors === 'object') {
+      const first = Object.values(body.errors)[0];
+      if (Array.isArray(first) && typeof first[0] === 'string') return first[0];
+      if (typeof first === 'string') return first;
+    }
+  }
+  return `İstek başarısız (${status})`;
+}
+
 export async function fetchWithFallback(
   path: string,
   timeoutMs: number = APP_CONFIG.apiTimeoutMs,
@@ -39,15 +54,32 @@ export async function fetchWithFallback(
       if (response.ok && payload !== null) {
         return { payload, baseUrl };
       }
-      errors.push(`${baseUrl}${path} -> ${response.status}`);
+      errors.push(extractErrorMessage(payload, response.status));
     } catch (error) {
       clearTimeout(timer);
       const message = error instanceof Error ? error.message : 'unknown';
-      errors.push(`${baseUrl}${path} -> ${message}`);
+      errors.push(message.includes('Abort') ? 'Bağlantı zaman aşımı' : message);
     }
   }
 
-  throw new Error(errors.join(' | '));
+  throw new Error(errors[0] ?? 'İstek başarısız');
+}
+
+/** JSON POST — platform başlığı ile. */
+export async function postJsonWithFallback(
+  path: string,
+  body: Record<string, unknown>,
+  timeoutMs: number = APP_CONFIG.apiTimeoutMs,
+  extraHeaders?: Record<string, string>,
+): Promise<{ payload: unknown; baseUrl: string }> {
+  return fetchWithFallback(path, timeoutMs, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(extraHeaders ?? {}),
+    },
+    body: JSON.stringify(body),
+  });
 }
 
 /**
@@ -81,15 +113,15 @@ export async function postMultipartWithFallback(
       if (response.ok && payload !== null) {
         return { payload, baseUrl };
       }
-      errors.push(`${baseUrl}${path} -> ${response.status}`);
+      errors.push(extractErrorMessage(payload, response.status));
     } catch (error) {
       clearTimeout(timer);
       const message = error instanceof Error ? error.message : 'unknown';
-      errors.push(`${baseUrl}${path} -> ${message}`);
+      errors.push(message.includes('Abort') ? 'Bağlantı zaman aşımı' : message);
     }
   }
 
-  throw new Error(errors.join(' | '));
+  throw new Error(errors[0] ?? 'İstek başarısız');
 }
 
 export function unwrapList(payload: unknown): unknown[] {

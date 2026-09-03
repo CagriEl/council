@@ -37,7 +37,7 @@ export function RequestFormScreen() {
     const next: FormErrors = {};
     if (name.trim().length < 3) next.name = 'Ad soyad en az 3 karakter olmalı.';
     if (!/^[0-9+\s()-]{7,}$/.test(phone.trim())) next.phone = 'Geçerli bir telefon numarası girin.';
-    if (message.trim().length < 3) next.message = 'Açıklama en az 3 karakter olmalı.';
+    if (message.trim().length < 5) next.message = 'Açıklama en az 5 karakter olmalı.';
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -56,11 +56,12 @@ export function RequestFormScreen() {
       Alert.alert('Başarılı', 'Talebiniz alındı. En kısa sürede size dönüş yapılacaktır.', [
         { text: 'Tamam', onPress: () => router.back() },
       ]);
-    } catch {
-      Alert.alert(
-        'Gönderilemedi',
-        'Talebiniz şu an iletilemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.',
-      );
+    } catch (error) {
+      const detail =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Talebiniz şu an iletilemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.';
+      Alert.alert('Gönderilemedi', detail);
     } finally {
       setSubmitting(false);
     }

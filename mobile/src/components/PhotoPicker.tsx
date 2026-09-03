@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing, typography } from '../theme';
@@ -9,7 +9,11 @@ type Props = {
 };
 
 export function PhotoPicker({ uri, onChange }: Props) {
-  const pickImage = async () => {
+  const applyAsset = (asset: ImagePicker.ImagePickerAsset) => {
+    onChange(asset.uri);
+  };
+
+  const pickFromGallery = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
       Alert.alert('İzin Gerekli', 'Fotoğraf eklemek için galeri izni vermeniz gerekiyor.');
@@ -18,12 +22,41 @@ export function PhotoPicker({ uri, onChange }: Props) {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
-      quality: 0.8,
+      quality: 0.7,
+      allowsEditing: true,
+      aspect: [4, 3],
     });
 
     if (!result.canceled && result.assets[0]) {
-      onChange(result.assets[0].uri);
+      applyAsset(result.assets[0]);
     }
+  };
+
+  const takePhoto = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('İzin Gerekli', 'Fotoğraf çekmek için kamera izni vermeniz gerekiyor.');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      quality: 0.7,
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      applyAsset(result.assets[0]);
+    }
+  };
+
+  const showOptions = () => {
+    Alert.alert('Fotoğraf Ekle', 'Nasıl eklemek istersiniz?', [
+      { text: 'Kamera', onPress: () => void takePhoto() },
+      { text: 'Galeri', onPress: () => void pickFromGallery() },
+      { text: 'İptal', style: 'cancel' },
+    ]);
   };
 
   return (
@@ -37,10 +70,22 @@ export function PhotoPicker({ uri, onChange }: Props) {
           </Pressable>
         </View>
       ) : (
-        <Pressable style={styles.picker} onPress={pickImage}>
-          <MaterialIcons name="add-a-photo" size={28} color={colors.primary} />
-          <Text style={styles.pickerText}>Galeriden seç</Text>
-        </Pressable>
+        <View style={styles.actions}>
+          <Pressable style={styles.picker} onPress={showOptions}>
+            <MaterialIcons name="add-a-photo" size={28} color={colors.primary} />
+            <Text style={styles.pickerText}>Kamera veya galeri</Text>
+          </Pressable>
+          <View style={styles.row}>
+            <Pressable style={styles.secondaryBtn} onPress={() => void takePhoto()}>
+              <MaterialIcons name="photo-camera" size={20} color={colors.primary} />
+              <Text style={styles.secondaryText}>Çek</Text>
+            </Pressable>
+            <Pressable style={styles.secondaryBtn} onPress={() => void pickFromGallery()}>
+              <MaterialIcons name="photo-library" size={20} color={colors.primary} />
+              <Text style={styles.secondaryText}>Galeri</Text>
+            </Pressable>
+          </View>
+        </View>
       )}
     </View>
   );
@@ -54,6 +99,9 @@ const styles = StyleSheet.create({
     ...typography.label,
     marginBottom: spacing.sm,
   },
+  actions: {
+    gap: spacing.sm,
+  },
   picker: {
     backgroundColor: colors.surfaceContainerLow,
     borderRadius: radius.md,
@@ -65,6 +113,27 @@ const styles = StyleSheet.create({
   pickerText: {
     ...typography.bodySmall,
     color: colors.primary,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  secondaryBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.surfaceContainerLowest,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(11, 110, 153, 0.12)',
+    paddingVertical: spacing.md,
+  },
+  secondaryText: {
+    ...typography.bodySmall,
+    color: colors.primary,
+    fontWeight: '600',
   },
   previewWrap: {
     position: 'relative',

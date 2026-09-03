@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { APP_CONFIG } from '../config';
 import { ambientShadow, colors, radius, spacing, typography } from '../theme';

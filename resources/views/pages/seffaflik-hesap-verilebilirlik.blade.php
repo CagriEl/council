@@ -173,13 +173,18 @@
                             </p>
 
                             @forelse($activeSection['documents'] as $document)
+                                @php
+                                    $docUrl = ! empty($document['file_path'])
+                                        ? asset('storage/' . ltrim($document['file_path'], '/'))
+                                        : ($document['url'] ?? '#');
+                                @endphp
                                 <article class="transparency-doc">
                                     <div class="transparency-doc-title">{{ $document['title'] }}</div>
                                     <div class="transparency-doc-actions">
-                                        <a class="btn-transparency" href="{{ $document['url'] }}" target="_blank" rel="noopener noreferrer">
+                                        <a class="btn-transparency" href="{{ $docUrl }}" target="_blank" rel="noopener noreferrer">
                                             <i class="fas fa-eye me-1"></i> Aç
                                         </a>
-                                        <a class="btn-transparency" href="{{ $document['url'] }}" target="_blank" rel="noopener noreferrer" download>
+                                        <a class="btn-transparency" href="{{ $docUrl }}" target="_blank" rel="noopener noreferrer" download>
                                             <i class="fas fa-download me-1"></i> İndir
                                         </a>
                                     </div>
