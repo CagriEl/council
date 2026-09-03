@@ -8,7 +8,6 @@ use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Storage;
@@ -32,6 +31,13 @@ class ManageTransparencyDocuments extends Page implements HasForms
 
     protected static ?string $slug = 'seffaflik-belgeleri';
 
+    public ?string $sectionSlug = null;
+
+    /**
+     * @var list<array{title: string, file_path: ?string, url: ?string}>
+     */
+    public array $documents = [];
+
     /**
      * @var array<string, mixed>|null
      */
@@ -39,12 +45,13 @@ class ManageTransparencyDocuments extends Page implements HasForms
 
     public function mount(): void
     {
-        $defaultSlug = TransparencySections::all()->first()['slug']
+        $this->sectionSlug = TransparencySections::all()->first()['slug']
             ?? TransparencySections::defaultSlug();
 
+        $this->loadDocuments();
         $this->form->fill([
-            'section_slug' => $defaultSlug,
-            'documents' => $this->documentsForSlug($defaultSlug),
+            'new_title' => null,
+            'new_file' => null,
         ]);
     }
 
@@ -52,108 +59,199 @@ class ManageTransparencyDocuments extends Page implements HasForms
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Bölüm seçin')
-                    ->description('Önce hangi gruba belge ekleyeceğinizi seçin. Sadece o grubun belgeleri listelenir.')
+                Forms\Components\Section::make('Yeni belge ekle')
+                    ->description('Seçili gruba PDF eklemek için doldurun.')
                     ->schema([
-                        Forms\Components\Select::make('section_slug')
-                            ->label('Başlık / grup')
-                            ->options(fn (): array => TransparencySections::all()
-                                ->mapWithKeys(fn (array $section) => [
-                                    ($section['slug'] ?? '') => $section['title'] ?? ($section['slug'] ?? ''),
-                                ])
-                                ->filter(fn ($title, $slug) => $slug !== '')
-                                ->all())
-                            ->required()
-                            ->native(false)
-                            ->searchable()
-                            ->live()
-                            ->afterStateUpdated(function (?string $state, Forms\Set $set): void {
-                                $set('documents', $this->documentsForSlug($state));
-                            }),
-                        Forms\Components\Placeholder::make('section_url')
-                            ->label('Sitede görüneceği adres')
-                            ->content(function (Get $get): string {
-                                $slug = $get('section_slug');
-                                if (! $slug) {
-                                    return '—';
-                                }
-
-                                return url('/seffaflik-hesap-verilebilirlik/'.$slug);
-                            }),
-                    ]),
-
-                Forms\Components\Section::make('Belgeler')
-                    ->description('Seçili gruba ait raporları buradan ekleyin, silin veya sıralayın.')
-                    ->schema([
-                        Forms\Components\Repeater::make('documents')
-                            ->label('Belgeler')
-                            ->schema([
-                                Forms\Components\TextInput::make('title')
-                                    ->label('Belge başlığı')
-                                    ->placeholder('Örn: 2026 YILI MALİ DURUM BEKLENTİLER RAPORU')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->columnSpan(2),
-                                Forms\Components\FileUpload::make('file_path')
-                                    ->label('PDF')
-                                    ->disk('public')
-                                    ->directory('transparency')
-                                    ->visibility('public')
-                                    ->acceptedFileTypes(['application/pdf'])
-                                    ->required(fn (Get $get): bool => blank($get('external_url')))
-                                    ->columnSpan(2),
-                                Forms\Components\TextInput::make('external_url')
-                                    ->label('Harici URL (PDF yoksa)')
-                                    ->url()
-                                    ->columnSpan(2),
-                            ])
-                            ->columns(2)
-                            ->defaultItems(0)
-                            ->addActionLabel('Belge ekle')
-                            ->reorderable()
-                            ->collapsible()
-                            ->cloneable()
-                            ->itemLabel(fn (array $state): ?string => filled($state['title'] ?? null) ? $state['title'] : 'Yeni belge')
-                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('new_title')
+                            ->label('Belge başlığı')
+                            ->placeholder('Örn: 2026 YILI MALİ DURUM BEKLENTİLER RAPORU')
+                            ->maxLength(255)
+                            ->requiredWith('new_file'),
+                        Forms\Components\FileUpload::make('new_file')
+                            ->label('PDF dosyası')
+                            ->disk('public')
+                            ->directory('transparency')
+                            ->visibility('public')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->requiredWith('new_title'),
                     ]),
             ])
             ->statePath('data');
     }
 
-    public function save(): void
+    public function updatedSectionSlug(): void
+    {
+        $this->loadDocuments();
+        $this->form->fill([
+            'new_title' => null,
+            'new_file' => null,
+        ]);
+    }
+
+    public function addDocument(): void
     {
         $state = $this->form->getState();
-        $slug = trim((string) ($state['section_slug'] ?? ''));
+        $title = trim((string) ($state['new_title'] ?? ''));
+        $file = $state['new_file'] ?? null;
 
-        if ($slug === '') {
+        if (is_array($file)) {
+            $file = $file[0] ?? null;
+        }
+
+        $file = is_string($file) && $file !== '' ? ltrim($file, '/') : null;
+
+        if ($title === '' || ! $file) {
             Notification::make()
-                ->title('Lütfen bir bölüm seçin')
+                ->title('Başlık ve PDF zorunludur')
                 ->danger()
                 ->send();
 
             return;
         }
 
-        $documents = [];
-        foreach ($state['documents'] ?? [] as $document) {
-            $filePath = $document['file_path'] ?? null;
-            if (is_array($filePath)) {
-                $filePath = $filePath[0] ?? null;
-            }
+        $this->documents[] = [
+            'title' => $title,
+            'file_path' => $file,
+            'url' => Storage::disk('public')->url($file),
+        ];
 
-            $filePath = is_string($filePath) && $filePath !== '' ? ltrim($filePath, '/') : null;
-            $externalUrl = is_string($document['external_url'] ?? null) ? trim((string) $document['external_url']) : null;
+        $this->persistDocuments();
 
-            if (! $filePath && ! $externalUrl) {
-                continue;
-            }
+        $this->form->fill([
+            'new_title' => null,
+            'new_file' => null,
+        ]);
 
-            $documents[] = array_filter([
-                'title' => trim((string) ($document['title'] ?? 'Belge')),
-                'file_path' => $filePath,
-                'url' => $filePath ? Storage::disk('public')->url($filePath) : $externalUrl,
-            ], fn ($value) => $value !== null && $value !== '');
+        Notification::make()
+            ->title('Belge eklendi')
+            ->success()
+            ->send();
+    }
+
+    public function removeDocument(int $index): void
+    {
+        if (! array_key_exists($index, $this->documents)) {
+            return;
         }
+
+        unset($this->documents[$index]);
+        $this->documents = array_values($this->documents);
+        $this->persistDocuments();
+
+        Notification::make()
+            ->title('Belge silindi')
+            ->success()
+            ->send();
+    }
+
+    public function moveDocumentUp(int $index): void
+    {
+        if ($index <= 0 || ! array_key_exists($index, $this->documents)) {
+            return;
+        }
+
+        [$this->documents[$index - 1], $this->documents[$index]] = [$this->documents[$index], $this->documents[$index - 1]];
+        $this->persistDocuments();
+    }
+
+    public function moveDocumentDown(int $index): void
+    {
+        if (! array_key_exists($index, $this->documents) || ! array_key_exists($index + 1, $this->documents)) {
+            return;
+        }
+
+        [$this->documents[$index + 1], $this->documents[$index]] = [$this->documents[$index], $this->documents[$index + 1]];
+        $this->persistDocuments();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getSectionOptionsProperty(): array
+    {
+        return TransparencySections::all()
+            ->mapWithKeys(fn (array $section) => [
+                (string) ($section['slug'] ?? '') => (string) ($section['title'] ?? $section['slug'] ?? ''),
+            ])
+            ->filter(fn (string $title, string $slug) => $slug !== '')
+            ->all();
+    }
+
+    public function getSelectedSectionTitleProperty(): string
+    {
+        if (! $this->sectionSlug) {
+            return '';
+        }
+
+        return (string) (TransparencySections::find($this->sectionSlug)['title'] ?? $this->sectionSlug);
+    }
+
+    public function getSelectedSectionUrlProperty(): string
+    {
+        if (! $this->sectionSlug) {
+            return '';
+        }
+
+        return url('/seffaflik-hesap-verilebilirlik/'.$this->sectionSlug);
+    }
+
+    public function documentPublicUrl(array $document): string
+    {
+        if (! empty($document['file_path'])) {
+            return asset('storage/'.ltrim((string) $document['file_path'], '/'));
+        }
+
+        return (string) ($document['url'] ?? '#');
+    }
+
+    private function loadDocuments(): void
+    {
+        if (! $this->sectionSlug) {
+            $this->documents = [];
+
+            return;
+        }
+
+        $section = TransparencySections::find($this->sectionSlug);
+        $this->documents = collect($section['documents'] ?? [])
+            ->map(fn ($document) => [
+                'title' => (string) ($document['title'] ?? 'Belge'),
+                'file_path' => $document['file_path'] ?? null,
+                'url' => $document['url'] ?? null,
+            ])
+            ->values()
+            ->all();
+    }
+
+    private function persistDocuments(): void
+    {
+        $slug = trim((string) $this->sectionSlug);
+        if ($slug === '') {
+            return;
+        }
+
+        $documents = collect($this->documents)
+            ->map(function (array $document) {
+                $filePath = is_string($document['file_path'] ?? null) && $document['file_path'] !== ''
+                    ? ltrim($document['file_path'], '/')
+                    : null;
+                $url = $filePath
+                    ? Storage::disk('public')->url($filePath)
+                    : ($document['url'] ?? null);
+
+                if (! $filePath && ! $url) {
+                    return null;
+                }
+
+                return array_filter([
+                    'title' => trim((string) ($document['title'] ?? 'Belge')) ?: 'Belge',
+                    'file_path' => $filePath,
+                    'url' => $url,
+                ], fn ($value) => $value !== null && $value !== '');
+            })
+            ->filter()
+            ->values()
+            ->all();
 
         $sections = TransparencySections::all()
             ->map(function (array $section) use ($slug, $documents) {
@@ -169,36 +267,6 @@ class ManageTransparencyDocuments extends Page implements HasForms
             ->all();
 
         TransparencySections::save($sections);
-
-        $title = TransparencySections::find($slug)['title'] ?? $slug;
-
-        Notification::make()
-            ->title("“{$title}” belgeleri kaydedildi")
-            ->success()
-            ->send();
-    }
-
-    /**
-     * @return list<array{title: string, file_path: ?string, external_url: ?string}>
-     */
-    private function documentsForSlug(?string $slug): array
-    {
-        if (! $slug) {
-            return [];
-        }
-
-        $section = TransparencySections::find($slug);
-        if (! $section) {
-            return [];
-        }
-
-        return collect($section['documents'] ?? [])
-            ->map(fn (array $document) => [
-                'title' => $document['title'] ?? '',
-                'file_path' => $document['file_path'] ?? null,
-                'external_url' => empty($document['file_path']) ? ($document['url'] ?? null) : null,
-            ])
-            ->values()
-            ->all();
+        $this->loadDocuments();
     }
 }
