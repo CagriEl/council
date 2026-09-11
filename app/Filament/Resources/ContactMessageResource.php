@@ -29,11 +29,11 @@ class ContactMessageResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('source')
                             ->label('Kaynak Sayfa')
-                            ->formatStateUsing(fn (string $state): string => match ($state) {
+                            ->formatStateUsing(fn (?string $state): string => match ($state) {
                                 'iletisim-sayfasi' => 'İletişim Sayfası',
                                 'baskan-sayfasi'   => 'Başkan Sayfası',
-                                'mobil-app'        => 'Mobil Uygulama',
-                                default            => $state,
+                                'mobil-app', 'mobile-talep', 'mobil' => 'Mobil Uygulama',
+                                default            => $state ?: '—',
                             })
                             ->readOnly(),
                         Forms\Components\TextInput::make('platform')
@@ -93,17 +93,18 @@ class ContactMessageResource extends Resource
                 Tables\Columns\TextColumn::make('source')
                     ->label('Kaynak')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
                         'iletisim-sayfasi' => 'İletişim',
                         'baskan-sayfasi'   => 'Başkan',
-                        'mobil-app'        => 'Mobil',
-                        default            => $state,
+                        'mobil-app', 'mobile-talep', 'mobil' => 'Mobil',
+                        default            => $state ?: '—',
                     })
-                    ->colors([
-                        'primary' => 'iletisim-sayfasi',
-                        'success' => 'baskan-sayfasi',
-                        'warning' => 'mobil-app',
-                    ])
+                    ->color(fn (?string $state): string => match ($state) {
+                        'iletisim-sayfasi' => 'primary',
+                        'baskan-sayfasi' => 'success',
+                        'mobil-app', 'mobile-talep', 'mobil' => 'warning',
+                        default => 'gray',
+                    })
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('payload.name')

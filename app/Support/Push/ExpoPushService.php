@@ -65,7 +65,12 @@ class ExpoPushService
         string $contentType,
         int $contentId,
     ): array {
-        $tokens = PushToken::query()->pluck('token')->all();
+        $tokens = PushToken::query()
+            ->where('token', 'like', 'ExponentPushToken[%')
+            ->pluck('token')
+            ->unique()
+            ->values()
+            ->all();
         $total = count($tokens);
 
         if ($total === 0) {
@@ -84,6 +89,7 @@ class ExpoPushService
                     'data' => $data,
                     'sound' => 'default',
                     'priority' => 'high',
+                    'channelId' => 'default',
                 ],
                 $chunk,
             );

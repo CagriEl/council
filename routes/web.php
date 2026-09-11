@@ -43,6 +43,16 @@ Route::view('/api-docs', 'api-docs')->name('api-docs');
 
 Route::get('/sitemap.xml', \App\Http\Controllers\SitemapController::class)->name('sitemap');
 
+Route::get('/tanitim', function () {
+    $path = public_path('tanitim/tanitim.pdf');
+    abort_unless(is_file($path), 404, 'Tanıtım PDF bulunamadı.');
+
+    return response()->file($path, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="tanitim.pdf"',
+    ]);
+})->name('tanitim');
+
 // Ana Sayfa
 Route::get('/', [PageController::class, 'home'])->name('home');
 

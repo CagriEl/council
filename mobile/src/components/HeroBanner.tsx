@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   Dimensions,
   Image,
   NativeScrollEvent,
@@ -11,14 +10,13 @@ import {
   Text,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { buildNewsFallbackUrl } from '../utils/format';
 import type { NewsItem } from '../services/newsService';
 import { ambientShadow, colors, radius, spacing, typography } from '../theme';
 
 const { width: SW } = Dimensions.get('window');
 const BANNER_W = SW - spacing.xl * 2;
-const BANNER_H = 200;
+const BANNER_H = 210;
 
 type Props = {
   items: NewsItem[];
@@ -26,17 +24,17 @@ type Props = {
   onPressItem?: (item: NewsItem) => void;
 };
 
-function BannerImage({ uri, title }: { uri: string | null; title: string }) {
+function BannerImage({ uri }: { uri: string | null }) {
   const [src, setSrc] = useState(uri);
   const [failed, setFailed] = useState(false);
 
+  useEffect(() => {
+    setSrc(uri);
+    setFailed(false);
+  }, [uri]);
+
   if (!src || failed) {
-    return (
-      <View style={styles.placeholder}>
-        <Text style={styles.placeholderEmoji}>📢</Text>
-        <Text style={styles.placeholderText} numberOfLines={2}>{title}</Text>
-      </View>
-    );
+    return <View style={styles.placeholder} />;
   }
 
   return (
@@ -96,23 +94,29 @@ export function HeroBanner({ items, loading, onPressItem }: Props) {
         scrollEventThrottle={16}
         contentContainerStyle={styles.scrollContent}
       >
-        {items.map((item) => (
-          <Pressable
-            key={item.id}
-            style={[styles.card, { width: BANNER_W, height: BANNER_H }]}
-            onPress={() => onPressItem?.(item)}
-          >
-            <BannerImage uri={item.imageUrl} title={item.title} />
-            <LinearGradient
-              colors={['transparent', 'rgba(0,0,0,0.75)']}
-              style={styles.overlay}
+        {items.map((item) => {
+          const title = (item.title || item.excerpt || 'Duyuru').trim();
+          return (
+            <Pressable
+              key={item.id}
+              style={[styles.card, { width: BANNER_W }]}
+              onPress={() => onPressItem?.(item)}
             >
-              <Text style={styles.badge}>{item.categoryLabel}</Text>
-              <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
-              <Text style={styles.date}>{item.formattedDate}</Text>
-            </LinearGradient>
-          </Pressable>
-        ))}
+              <View style={styles.media}>
+                <BannerImage uri={item.imageUrl} />
+              </View>
+              <View style={styles.body}>
+                <Text style={styles.badge}>{item.categoryLabel || 'Duyuru'}</Text>
+                <Text style={styles.title} numberOfLines={3}>
+                  {title}
+                </Text>
+                {item.formattedDate ? (
+                  <Text style={styles.date}>{item.formattedDate}</Text>
+                ) : null}
+              </View>
+            </Pressable>
+          );
+        })}
       </ScrollView>
       <View style={styles.dots}>
         {items.map((item, i) => (
@@ -131,8 +135,12 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: radius.xl,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceContainerLow,
+    backgroundColor: colors.surfaceContainerLowest,
     ...ambientShadow,
+  },
+  media: {
+    height: 120,
+    backgroundColor: colors.primarySoft,
   },
   image: {
     width: '100%',
@@ -140,46 +148,30 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: colors.primary,
-    padding: spacing.xl,
   },
-  placeholderEmoji: {
-    fontSize: 40,
-    marginBottom: spacing.sm,
-  },
-  placeholderText: {
-    ...typography.bodySmall,
-    textAlign: 'center',
-    color: colors.white,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
-    padding: spacing.lg,
+  body: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    gap: 6,
+    backgroundColor: colors.surfaceContainerLowest,
   },
   badge: {
     ...typography.caption,
-    color: colors.white,
-    backgroundColor: colors.secondary,
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: radius.full,
-    marginBottom: spacing.sm,
-    overflow: 'hidden',
+    color: colors.secondary,
     fontWeight: '700',
+    alignSelf: 'flex-start',
   },
   title: {
-    ...typography.h2,
-    color: colors.white,
-    fontSize: 18,
+    fontFamily: typography.h2.fontFamily,
+    fontSize: 16,
+    lineHeight: 22,
+    color: colors.onSurface,
+    fontWeight: '700',
   },
   date: {
     ...typography.caption,
-    color: 'rgba(255,255,255,0.9)',
-    marginTop: 4,
+    color: colors.onSurfaceVariant,
   },
   dots: {
     flexDirection: 'row',
@@ -201,7 +193,5 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.xl,
     borderRadius: radius.xl,
     backgroundColor: colors.primarySoft,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

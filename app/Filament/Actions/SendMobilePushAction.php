@@ -58,7 +58,11 @@ class SendMobilePushAction
                 if ($result['total'] === 0) {
                     Notification::make()
                         ->title('Kayıtlı cihaz yok')
-                        ->body('Henüz mobil uygulamadan bildirim izni veren cihaz bulunmuyor.')
+                        ->body(
+                            'Henüz mobil uygulamadan bildirim izni veren cihaz bulunmuyor. '
+                            .'Kullanıcıların uygulamayı açıp bildirim izni vermesi gerekir. '
+                            .'Android için google-services.json (FCM) yapılandırması zorunludur.'
+                        )
                         ->warning()
                         ->send();
 

@@ -17,13 +17,20 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 
   const android: NonNullable<ExpoConfig['android']> = {
     package: 'com.kirklarelibelediyesi',
-    versionCode: 7,
+    versionCode: 10,
     adaptiveIcon: {
       backgroundColor: '#0B6E99',
       foregroundImage: './assets/android-icon-foreground.png',
       backgroundImage: './assets/android-icon-background.png',
     },
-    permissions: ['CAMERA', 'READ_MEDIA_IMAGES'],
+    // Fotoğraf özelliği kaldırıldı; geniş depolama izinleri de bloklanır (Play politikası).
+    blockedPermissions: [
+      'android.permission.CAMERA',
+      'android.permission.READ_MEDIA_IMAGES',
+      'android.permission.READ_MEDIA_VIDEO',
+      'android.permission.READ_MEDIA_VISUAL_USER_SELECTED',
+      'android.permission.RECORD_AUDIO',
+    ],
     ...(hasGoogleServices ? { googleServicesFile: './google-services.json' } : {}),
   };
 
@@ -35,7 +42,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: 'Kırklareli Belediyesi',
     slug: 'kirklareli-belediyesi',
-    version: '1.0.5',
+    version: '1.0.8',
     orientation: 'portrait',
     icon: './assets/icon.png',
     scheme: 'kirklareli',
@@ -49,14 +56,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ios: {
       supportsTablet: false,
       bundleIdentifier: 'com.kirklarelibelediyesi',
-      buildNumber: '6',
+      buildNumber: '9',
       infoPlist: {
         NSAllowsArbitraryLoads: !IS_PRODUCTION,
         UIBackgroundModes: ['remote-notification'],
-        NSCameraUsageDescription:
-          'Talep formuna fotoğraf eklemek için kamera erişimi gerekir.',
-        NSPhotoLibraryUsageDescription:
-          'Talep formuna fotoğraf eklemek için galeri erişimi gerekir.',
       },
     },
     android,
@@ -67,13 +70,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     plugins: [
       'expo-router',
       'expo-font',
-      [
-        'expo-image-picker',
-        {
-          photosPermission: 'Talep formuna fotoğraf eklemek için galeri erişimi gerekir.',
-          cameraPermission: 'Talep formuna fotoğraf eklemek için kamera erişimi gerekir.',
-        },
-      ],
       [
         'expo-notifications',
         {
@@ -88,11 +84,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
             buildReactNativeFromSource: false,
           },
           android: {
-            // Play Store "kod karartma" eşiği + boyut optimizasyonu
             enableMinifyInReleaseBuilds: true,
             enableShrinkResourcesInReleaseBuilds: true,
             enableBundleCompression: true,
-            // Emülatör + eski 32-bit cihazları çıkar (Play Store arm64 split)
             buildArchs: ['arm64-v8a'],
             networkInspector: false,
             extraProguardRules: `
@@ -122,6 +116,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       eas: {
         projectId: EAS_PROJECT_ID,
       },
+      hasGoogleServices,
     },
   } as ExpoConfig;
 };

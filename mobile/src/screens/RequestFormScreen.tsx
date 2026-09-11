@@ -12,7 +12,6 @@ import {
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FormField } from '../components/FormField';
-import { PhotoPicker } from '../components/PhotoPicker';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { submitContactForm } from '../services/contactService';
 import { colors, radius, spacing, typography } from '../theme';
@@ -29,7 +28,6 @@ export function RequestFormScreen() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
-  const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -51,7 +49,6 @@ export function RequestFormScreen() {
         name: name.trim(),
         phone: phone.trim(),
         message: message.trim(),
-        photoUri,
       });
       Alert.alert('Başarılı', 'Talebiniz alındı. En kısa sürede size dönüş yapılacaktır.', [
         { text: 'Tamam', onPress: () => router.back() },
@@ -82,7 +79,8 @@ export function RequestFormScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.hint}>
-            Talep ve şikayetlerinizi bu form aracılığıyla iletebilirsiniz.
+            Talep ve şikayetlerinizi bu form aracılığıyla iletebilirsiniz. Mesajınız belediye
+            iletişim kayıtlarına mobil uygulama talebi olarak düşer.
           </Text>
 
           <FormField
@@ -113,8 +111,6 @@ export function RequestFormScreen() {
             error={errors.message}
             textAlignVertical="top"
           />
-
-          <PhotoPicker uri={photoUri} onChange={setPhotoUri} />
 
           <Pressable
             style={[styles.submitBtn, submitting && styles.submitBtnDisabled]}

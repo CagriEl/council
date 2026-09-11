@@ -6,6 +6,9 @@
     RewriteEngine On
     RewriteBase /
 
+    # /tanitim → public/tanitim/tanitim.pdf (klasör varken de PDF açılsın)
+    RewriteRule ^tanitim/?$ tanitim/tanitim.pdf [L]
+
     # E-Belediye: her durumda harici portala 301
     RewriteCond %{REQUEST_URI} e-belediye/?$ [NC]
     RewriteRule .* https://e-belediye.kirklareli.bel.tr/ [L,R=301]

@@ -39,7 +39,7 @@ function mapRawItem(raw: Record<string, unknown>, baseUrl: string): NewsItem | n
   return {
     id,
     slug: raw.slug ? String(raw.slug) : undefined,
-    title: String(raw.title ?? ''),
+    title: String(raw.title ?? raw.baslik ?? '').trim() || 'Duyuru',
     excerpt: String(raw.excerpt ?? raw.summary ?? ''),
     imageUrl: resolveImageUrl(
       typeof imagePath === 'string' ? imagePath : null,

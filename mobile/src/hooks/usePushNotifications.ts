@@ -3,16 +3,17 @@ import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { emitNotificationChanges } from '../services/notificationEvents';
 import { registerPushNotification } from '../services/notificationStorage';
-import { parsePushPayload, registerForPushNotifications } from '../services/pushService';
+import {
+  parsePushPayload,
+  startPushRegistrationLifecycle,
+} from '../services/pushService';
 
 export function usePushNotifications() {
   const router = useRouter();
   const handledInitial = useRef(false);
 
   useEffect(() => {
-    registerForPushNotifications().catch((error) => {
-      console.error('[push] usePushNotifications:', error);
-    });
+    const stopLifecycle = startPushRegistrationLifecycle();
 
     const navigateFromPayload = (data: unknown) => {
       const payload = parsePushPayload(data);
@@ -61,6 +62,7 @@ export function usePushNotifications() {
     }
 
     return () => {
+      stopLifecycle();
       receivedSubscription.remove();
       responseSubscription.remove();
     };

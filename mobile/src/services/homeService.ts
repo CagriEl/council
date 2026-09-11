@@ -22,11 +22,12 @@ function mapAnnouncement(raw: Record<string, unknown>, baseUrl: string): NewsIte
   const date = String(raw.date ?? raw.published_at ?? '');
   const imagePath = raw.image_url ?? null;
   const filePath = raw.file_url ?? null;
+  const title = String(raw.title ?? raw.baslik ?? raw.name ?? '').trim();
 
   return {
     id,
     slug: raw.slug ? String(raw.slug) : undefined,
-    title: String(raw.title ?? ''),
+    title: title || 'Duyuru',
     excerpt: String(raw.excerpt ?? ''),
     imageUrl: resolveImageUrl(
       typeof imagePath === 'string' ? imagePath : null,
