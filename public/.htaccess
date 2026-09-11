@@ -35,3 +35,11 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# PDF tarayıcıda açılsın (indirme yerine)
+<IfModule mod_headers.c>
+    <FilesMatch "^tanitim\.pdf$">
+        Header set Content-Type "application/pdf"
+        Header set Content-Disposition "inline; filename=\"tanitim.pdf\""
+    </FilesMatch>
+</IfModule>
