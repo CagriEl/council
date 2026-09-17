@@ -27,7 +27,7 @@
                         <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
                         <div class="info-content">
                             <h5>Adres</h5>
-                            <p>Karakaş Mahallesi, Zincirlikuyu Caddesi<br>No: 12, 39000 Merkez / Kırklareli</p>
+                            <p>Karacaibrahim Mahallesi. Mustafa Kemal Bulvarı No:1<br>Kırklareli - Merkez</p>
                         </div>
                     </div>
 

@@ -131,7 +131,7 @@
                     <ul class="footer-links footer-contact">
                         <li>
                             <i class="fas fa-map-marker-alt"></i>
-                            <span>Karakaş Mahallesi, Cumhuriyet Meydanı No:1, 39000 Merkez/Kırklareli</span>
+                            <span>Karacaibrahim Mahallesi. Mustafa Kemal Bulvarı No:1 / Kırklareli - Merkez</span>
                         </li>
                         <li>
                             <i class="fas fa-phone-alt"></i>
